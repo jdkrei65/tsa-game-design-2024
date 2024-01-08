@@ -1,52 +1,55 @@
 import { gameify } from './gameify/gameify.js';
+import { dialogue } from './dialogue.js';
+import { build } from './build.js';
 
 const canvasElement = document.querySelector('#game-canvas');
 const screen = new gameify.Screen(canvasElement, 800, 600);
+screen.setAntialiasing(false);
 
+// Init imported things
+dialogue.setScreen(screen);
+dialogue.setScene('tutorial');
+build.setScreen(screen);
+
+// Temp buildings
 const buildingTileset = new gameify.Tileset("images/placeholder4.png", 32, 32);
 const buildingMap = new gameify.Tilemap(32, 32);
 buildingMap.setTileset(buildingTileset);
-buildingMap.place(
-    0, 0,
-    10, 10,
-    0,
-    2, 2
-);
 screen.add(buildingMap);
-
-const image = buildingTileset.getTile(0, 0, 2, 1); //new gameify.Image("images/placeholder4.png")
+// Temp build preview
+const image = buildingTileset.getTile(0, 0, 2, 1);
 const previewPlaceSprite = new gameify.Sprite(0, 0, image);
 screen.add(previewPlaceSprite);
 
-console.log(buildingMap.listTiles())
-console.log(buildingMap.tiles)
-
 const plainsWorldScene = new gameify.Scene(screen);
-plainsWorldScene.onUpdate((deltaTime) => { /* deltaTime is time since last update, in miliseconds */
+plainsWorldScene.onUpdate((deltaTime) => {
     
     const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
-    const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition)
+    const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
 
-    previewPlaceSprite.position = mouseMapPosition.multiply(buildingMap.twidth)
+    previewPlaceSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
 
     previewPlaceSprite.update(deltaTime);
 
     screen.camera.focus(new gameify.Vector2d(200, 200), new gameify.Vector2d(24, 24));
 
-    if (screen.mouse.eventJustHappened('left')) {
-        buildingMap.place(
-            0, 0,
-            mouseMapPosition.x, mouseMapPosition.y,
-            0,
-            2, 1
-        );
-    }
+    //dialogue.setText(`x: ${mouseMapPosition.x}, y: ${mouseMapPosition.y}`);
+
+    build.update(screen);
+    dialogue.updateBox();
 
 });
 plainsWorldScene.onDraw(() => {
-    screen.clear('#ffe');
-    buildingMap.draw();
-    previewPlaceSprite.draw();
+    screen.clear('#efe');
+    //screen.context.globalAlpha = 0.5;
+    //previewPlaceSprite.draw();
+    //screen.context.globalAlpha = 1;
+    
+    build.draw();
+
+    screen.camera.setDrawMode('ui');
+    dialogue.drawBox();
+    build.drawUI();
 });
 
 screen.setScene(plainsWorldScene);
