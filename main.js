@@ -5,11 +5,20 @@ import { build } from './build.js';
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
         ERROR: ${error}
+        <br>
         AT: ${source} ${lineno}:${colno}
-
         <hr>
     `;
 }
+(function (oldLog) {
+    console.log = (...args) => {
+        document.querySelector('#err').innerHTML += `
+            LOG: ${args}
+            <hr>
+        `;
+        oldLog(...args);
+    }
+})(console.log)
 
 
 const canvasElement = document.querySelector('#game-canvas');
