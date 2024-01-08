@@ -12,7 +12,6 @@ window.onerror = onerror = (event, source, lineno, colno, error) => {
 }
 
 
-bh = 2;
 const canvasElement = document.querySelector('#game-canvas');
 const screen = new gameify.Screen(canvasElement, 800, 600);
 screen.setAntialiasing(false);
