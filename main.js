@@ -2,6 +2,17 @@ import { gameify } from './gameify/gameify.js';
 import { dialogue } from './dialogue.js';
 import { build } from './build.js';
 
+window.onerror = onerror = (event, source, lineno, colno, error) => {
+    document.querySelector('#err').innerHTML += `
+        ERROR: ${error}
+        AT: ${source} ${lineno}:${colno}
+
+        <hr>
+    `;
+}
+
+
+bh = 2;
 const canvasElement = document.querySelector('#game-canvas');
 const screen = new gameify.Screen(canvasElement, 800, 600);
 screen.setAntialiasing(false);
