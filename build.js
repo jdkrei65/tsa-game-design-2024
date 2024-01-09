@@ -1,46 +1,54 @@
 import { gameify } from './gameify/gameify.js';
+import { message } from './message.js';
 
 let buildModeActive = false;
 let currentlyBuilding = false;
 
-const buildingTileset = new gameify.Tileset("images/placeholder5.png", 32, 32);
+const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const buildingMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingTileset);
 const buildButtonImages = {
     build:          buildingTileset.getTile(0, 0),
     buildActive:    buildingTileset.getTile(1, 0),
-    "House":          buildingTileset.getTile(2, 0),
-    "Gatherer's Hut":      buildingTileset.getTile(0, 1),
-    "Water Tank":      buildingTileset.getTile(1, 1),
+    "house":          buildingTileset.getTile(2, 0),
+    "forager's hut":      buildingTileset.getTile(0, 1),
+    "water tank":      buildingTileset.getTile(1, 1),
+    demolishBuilding: buildingTileset.getTile(1, 3),
 }
 
+// 2d array [x][y]
+const placedBuildings = [];
+const collisionTileMaps = [];
+
 const buildings = {
-    "House":      {
+    "house":      {
         image: buildingTileset.getTile(2, 1),
-        cost: { wood: 10, stone: 10 },
-        placed: []
+        cost: { wood: 10, stone: 10 }
     },
-    "Gatherer's Hut":  {
+    "forager's hut":  {
         image: buildingTileset.getTile(0, 2),
-        cost: { wood: 15 },
-        placed: []
+        cost: { wood: 15 }
     },
-    "Water Tank":  {
+    "water tank":  {
         image: buildingTileset.getTile(1, 2),
-        cost: { wood: 5, stone: 5 },
-        placed: []
+        cost: { wood: 5, stone: 5 }
+    },
+    demolishBuilding: {
+        image: buildingTileset.getTile(1, 3),
+        cost: {}
     }
 }
 
+// Resource cost display
 const resourceCostImage = new gameify.Image("images/bulidCostBox.png");
 resourceCostImage.opacity = 0;
 const resourceCostSprite = new gameify.Sprite(10, 68, resourceCostImage);
-const resourceCostTextStyle = new gameify.TextStyle('Arial', 16, 'black');
+const resourceCostTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 resourceCostTextStyle.opacity = 0;
 resourceCostTextStyle.lineHeight = 1.25;
-const resourceCostText = new gameify.Text('Resource Cost', 20, 78, resourceCostTextStyle);
+const resourceCostText = new gameify.Text('Resource Cost', 24, 78, resourceCostTextStyle);
 resourceCostSprite.scale = 1.5;
-const previewBuildSprite = new gameify.Sprite(0, 0, buildings["House"].image);
+const previewBuildSprite = new gameify.Sprite(0, 0, buildings["house"].image);
 previewBuildSprite.scale = 2;
 
 const buildButtons = [];
@@ -87,8 +95,39 @@ const getMissingResources = (building, resources) => {
     return missing;
 }
 const placeBuilding = (building, position, resources) => {
+
+    if (building === buildings.demolishBuilding) {
+        if (!placedBuildings[position.y] || !placedBuildings[position.y][position.x]) {
+            console.warn('Nothing to demolish at ' + position);
+            return;
+        }
+
+        // refund the cost of the building
+        for (const res in placedBuildings[position.y][position.x].cost) {
+            resources[res] += placedBuildings[position.y][position.x].cost[res];
+        }
+
+        placedBuildings[position.y][position.x] = undefined;
+        buildingMap.remove(position.x, position.y);
+        return;
+    }
+
+    if (placedBuildings[position.y] && placedBuildings[position.y][position.x]) {
+        message.showText(`Cannot place building! There\nis already a buliding here.`);
+        return;
+    }
+
+    for (const map of collisionTileMaps) {
+        if (map.get(position.x, position.y)) {
+            message.showText(`Cannot place building!\nThere is an obstacle here.`);
+            return;
+        }
+    }
+
     // Check if we have enough resources
-    if (getMissingResources(building, resources).length !== 0) {
+    const missing = getMissingResources(building, resources);
+    if (missing.length !== 0) {
+        message.showText(`Cannot place building!\nNot enough resouces.`);
         return;
     }
 
@@ -98,7 +137,8 @@ const placeBuilding = (building, position, resources) => {
     }
 
     // Place the tile
-    building.placed.push(position);
+    placedBuildings[position.y] = placedBuildings[position.y] || [];
+    placedBuildings[position.y][position.x] = building;
     const tile = building.image.tileData;
 
     buildingMap.place(
@@ -119,6 +159,9 @@ buildButtons['buildActive'].click = () => {
 let buttonHovered = false;
 
 export const build = {
+    collideWithMap: (tileMap) => {
+        collisionTileMaps.push(tileMap);
+    },
     setScreen: (screen) => {
         for (const bt in buildButtons) {
             const button = buildButtons[bt];
@@ -167,38 +210,38 @@ export const build = {
             previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
 
             if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
-                if (!buildingMap.get(mouseMapPosition.x, mouseMapPosition.y)) {
-
-                    placeBuilding(buildings[currentlyBuilding], mouseMapPosition, resources);
-
-                } else {
-                    console.warn('Already placed at ' + mouseMapPosition);
-                }
+                placeBuilding(buildings[currentlyBuilding], mouseMapPosition, resources);
             }
         }
 
         // Draw cost if build mode is enabled,
         // AND if the player is either building something,
         // or just hovering a button
-        if (buildModeActive && (currentlyBuilding || buttonHovered)) {
-            let building = buildings[buttonHovered];
-            let buildingName = buttonHovered;
-            if (!building) {
-                building = buildings[currentlyBuilding];
-                buildingName = currentlyBuilding;
-            }
-            if (building) {
+        let currentBuilding = buildings[buttonHovered];
+        let buildingName = buttonHovered;
+        if (!currentBuilding) {
+            currentBuilding = buildings[currentlyBuilding];
+            buildingName = currentlyBuilding;
+        }
+        if (buildModeActive && currentBuilding) {
+            
+            if (currentBuilding) {
                 const opacity = Math.min(1, resourceCostText.style.opacity + deltaTime / 200);
                 resourceCostText.style.opacity = opacity;
                 resourceCostSprite.image.opacity = opacity;
 
-                const missing = getMissingResources(building, resources);
-                const cost = building.cost;
+                const missing = getMissingResources(currentBuilding, resources);
+                const cost = currentBuilding.cost;
 // Indentation matters for text strings
-                resourceCostText.string = `Cost of ${buildingName}:
-    ${cost.wood  || 0} wood  ${missing.includes('wood') ? '(missing)' : ''}
-    ${cost.stone || 0} stone ${missing.includes('stone') ? '(missing)' : ''}
-    ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}`;
+                resourceCostText.string = `Build ${buildingName}:
+   ${cost.wood  || 0} wood  ${missing.includes('wood') ? '(missing)' : ''}
+   ${cost.stone || 0} stone ${missing.includes('stone') ? '(missing)' : ''}
+   ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}`;
+                if (currentBuilding === buildings.demolishBuilding) {
+                    resourceCostText.string = `Demolish buliding
+      (refunds entire
+      cost of building)`;
+                }
             }
         } else {
             // fade the box out
