@@ -5,7 +5,7 @@ const dlBox = new gameify.Sprite(0, 0, dlBoxImage);
 dlBox.position = new gameify.Vector2d(10, 400);
 dlBox.scale = 6
 
-const dlTextStyle = new gameify.TextStyle('Arial', 18, 'black', 'red', 2);
+const dlTextStyle = new gameify.TextStyle('Arial', 18, 'black');
 const dlText = new gameify.Text("...", 40, 435, dlTextStyle);
 const dlContinueText = new gameify.Text("[SPACE to continue]", 40, 545, dlTextStyle);
 

@@ -9,27 +9,38 @@ buildingMap.setTileset(buildingTileset);
 const buildButtonImages = {
     build:          buildingTileset.getTile(0, 0),
     buildActive:    buildingTileset.getTile(1, 0),
-    house:          buildingTileset.getTile(2, 0),
-    gatherHut:      buildingTileset.getTile(0, 1),
-    waterTank:      buildingTileset.getTile(1, 1),
+    "House":          buildingTileset.getTile(2, 0),
+    "Gatherer's Hut":      buildingTileset.getTile(0, 1),
+    "Water Tank":      buildingTileset.getTile(1, 1),
 }
 
 const buildings = {
-    house:      {
+    "House":      {
         image: buildingTileset.getTile(2, 1),
+        cost: { wood: 10, stone: 10 },
         placed: []
     },
-    gatherHut:  {
+    "Gatherer's Hut":  {
         image: buildingTileset.getTile(0, 2),
+        cost: { wood: 15 },
         placed: []
     },
-    waterTank:  {
+    "Water Tank":  {
         image: buildingTileset.getTile(1, 2),
+        cost: { wood: 5, stone: 5 },
         placed: []
     }
 }
 
-const previewBuildSprite = new gameify.Sprite(0, 0, buildings.house.image);
+const resourceCostImage = new gameify.Image("images/bulidCostBox.png");
+resourceCostImage.opacity = 0;
+const resourceCostSprite = new gameify.Sprite(10, 68, resourceCostImage);
+const resourceCostTextStyle = new gameify.TextStyle('Arial', 16, 'black');
+resourceCostTextStyle.opacity = 0;
+resourceCostTextStyle.lineHeight = 1.25;
+const resourceCostText = new gameify.Text('Resource Cost', 20, 78, resourceCostTextStyle);
+resourceCostSprite.scale = 1.5;
+const previewBuildSprite = new gameify.Sprite(0, 0, buildings["House"].image);
 previewBuildSprite.scale = 2;
 
 const buildButtons = [];
@@ -66,6 +77,37 @@ const exitBuildMode = () => {
     currentlyBuilding = false;
     buildButtons['build'].active = true;
 }
+const getMissingResources = (building, resources) => {
+    const missing = [];
+    for (const res in building.cost) {
+        if (resources[res] < building.cost[res]) {
+            missing.push(res);
+        }
+    }
+    return missing;
+}
+const placeBuilding = (building, position, resources) => {
+    // Check if we have enough resources
+    if (getMissingResources(building, resources).length !== 0) {
+        return;
+    }
+
+    // Then, actually deduct the cost
+    for (const res in building.cost) {
+        resources[res] -= building.cost[res];
+    }
+
+    // Place the tile
+    building.placed.push(position);
+    const tile = building.image.tileData;
+
+    buildingMap.place(
+        tile.position.x, tile.position.y, // source position
+        position.x, position.y, // destination position
+        0, // rotation
+        tile.size.x, tile.size.y // size (how many tiles tall/wide)
+    );
+}
 
 buildButtons['build'].click = () => {
     enterBuildMode();
@@ -84,8 +126,10 @@ export const build = {
         }
         screen.add(previewBuildSprite);
         screen.add(buildingMap);
+        screen.add(resourceCostSprite);
+        screen.add(resourceCostText);
     },
-    update: (screen) => {
+    update: (deltaTime, screen, resources) => {
         buttonHovered = false;
         const mousePos = screen.mouse.getPosition();
 
@@ -101,7 +145,7 @@ export const build = {
                 && mousePos.x < sprite.position.x + sprite.getSize().x
                 && mousePos.y < sprite.position.y + sprite.getSize().y
             ) {
-                buttonHovered = true;
+                buttonHovered = bt;
                 screen.element.style.cursor = 'pointer';
                 if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
                     if (button.click) {
@@ -117,23 +161,15 @@ export const build = {
         }
 
         if (currentlyBuilding) {
-            const mouseWorldPosition = screen.mouse.getPosition();
+            const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
             const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
         
             previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
 
             if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
                 if (!buildingMap.get(mouseMapPosition.x, mouseMapPosition.y)) {
-                    // Place the tile
-                    buildings[currentlyBuilding].placed.push(mouseMapPosition);
-                    const tile = buildings[currentlyBuilding].image.tileData;
 
-                    buildingMap.place(
-                        tile.position.x, tile.position.y, // source position
-                        mouseMapPosition.x, mouseMapPosition.y, // destination position
-                        0, // rotation
-                        tile.size.x, tile.size.y // size (how many tiles tall/wide)
-                    );
+                    placeBuilding(buildings[currentlyBuilding], mouseMapPosition, resources);
 
                 } else {
                     console.warn('Already placed at ' + mouseMapPosition);
@@ -141,8 +177,45 @@ export const build = {
             }
         }
 
+        // Draw cost if build mode is enabled,
+        // AND if the player is either building something,
+        // or just hovering a button
+        if (buildModeActive && (currentlyBuilding || buttonHovered)) {
+            let building = buildings[buttonHovered];
+            let buildingName = buttonHovered;
+            if (!building) {
+                building = buildings[currentlyBuilding];
+                buildingName = currentlyBuilding;
+            }
+            if (building) {
+                const opacity = Math.min(1, resourceCostText.style.opacity + deltaTime / 200);
+                resourceCostText.style.opacity = opacity;
+                resourceCostSprite.image.opacity = opacity;
+
+                const missing = getMissingResources(building, resources);
+                const cost = building.cost;
+// Indentation matters for text strings
+                resourceCostText.string = `Cost of ${buildingName}:
+    ${cost.wood  || 0} wood  ${missing.includes('wood') ? '(missing)' : ''}
+    ${cost.stone || 0} stone ${missing.includes('stone') ? '(missing)' : ''}
+    ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}`;
+            }
+        } else {
+            // fade the box out
+            const opacity = Math.max(0.01, resourceCostText.style.opacity - deltaTime / 200);
+            resourceCostText.style.opacity = opacity;
+            resourceCostSprite.image.opacity = opacity;
+        }
+
     },
     draw: () => {
+        buildingMap.draw();
+        if (currentlyBuilding && !buttonHovered) {
+            previewBuildSprite.image.opacity = 0.5;
+            previewBuildSprite.draw();
+            // reset the opacity, since the image is used for other things
+            previewBuildSprite.image.opacity = 1;
+        }
 
     },
     drawUI: (screen) => {
@@ -151,11 +224,8 @@ export const build = {
             if (!button.active) continue;
             button.sprite.draw();
         }
-        buildingMap.draw();
-        if (currentlyBuilding && !buttonHovered) {
-            screen.context.globalAlpha = 0.5;
-            previewBuildSprite.draw();
-            screen.context.globalAlpha = 1;
-        }
+
+        resourceCostSprite.draw();
+        resourceCostText.draw();
     }
 }
