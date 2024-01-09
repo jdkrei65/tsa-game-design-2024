@@ -37,17 +37,8 @@ screen.add(mainChar);
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
-    
-    const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
-    const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
-
-    previewPlaceSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
-
-    previewPlaceSprite.update(deltaTime);
 
     screen.camera.focus(new gameify.Vector2d(200, 200), new gameify.Vector2d(24, 24));
-
-    //dialogue.setText(`x: ${mouseMapPosition.x}, y: ${mouseMapPosition.y}`);
 
     build.update(screen);
     dialogue.updateBox();
@@ -55,9 +46,6 @@ plainsWorldScene.onUpdate((deltaTime) => {
 });
 plainsWorldScene.onDraw(() => {
     screen.clear('#efe');
-    //screen.context.globalAlpha = 0.5;
-    //previewPlaceSprite.draw();
-    //screen.context.globalAlpha = 1;
     
     build.draw();
 
