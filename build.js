@@ -11,6 +11,23 @@ const buildButtonImages = {
     buildWaterTank: buildingTileset.getTile(1, 1),
 }
 
+const buildings = {
+    house:      {
+        image: buildingTileset.getTile(2, 1),
+        placed: []
+    },
+    waterTank:  {
+        image: buildingTileset.getTile(0, 2),
+        placed: []
+    },
+    gatherHut:  {
+        image: buildingTileset.getTile(1, 2),
+        placed: []
+    }
+}
+
+const previewBuildSprite = new gameify.Sprite(0, 0, buildings.house.image);
+
 const buildButtons = [];
 let curBtnPosition = 10;
 for (const bt in buildButtonImages) {
@@ -18,7 +35,7 @@ for (const bt in buildButtonImages) {
     const img = buildButtonImages[bt]
     buildButtons[bt] = {
         sprite: new gameify.Sprite(pos.x, pos.y, img),
-        active: (bt === 'build'),
+        active: (bt === 'build'), // Only set the 'build' (enter build mode) button as active by default
     }
     buildButtons[bt].sprite.scale = 1.5;
 
@@ -46,26 +63,10 @@ const exitBuildMode = () => {
 }
 
 buildButtons['build'].click = () => {
-    console.log('entering build mode');
     enterBuildMode();
 }
 buildButtons['buildActive'].click = () => {
     exitBuildMode();
-}
-
-const buildings = {
-    house:      {
-        image: buildingTileset.getTile(2, 1),
-        placed: []
-    },
-    waterTank:  {
-        image: buildingTileset.getTile(0, 2),
-        placed: []
-    },
-    gatherHut:  {
-        image: buildingTileset.getTile(1, 2),
-        placed: []
-    }
 }
 
 export const build = {
@@ -74,6 +75,7 @@ export const build = {
             const button = buildButtons[bt];
             screen.add(button.sprite);
         }
+        screen.add(previewBuildSprite);
     },
     update: (screen) => {
         const mousePos = screen.mouse.getPosition();
@@ -94,6 +96,9 @@ export const build = {
                 if (screen.mouse.eventJustHappened('left', true)) {
                     if (button.click) {
                         button.click();
+                    } else {
+                        // It's a building, preview it
+                        
                     }
                 }
             }

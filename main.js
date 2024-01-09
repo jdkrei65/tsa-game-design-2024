@@ -30,15 +30,6 @@ dialogue.setScreen(screen);
 dialogue.setScene('tutorial');
 build.setScreen(screen);
 
-// Temp buildings
-const buildingTileset = new gameify.Tileset("images/placeholder4.png", 32, 32);
-const buildingMap = new gameify.Tilemap(32, 32);
-buildingMap.setTileset(buildingTileset);
-screen.add(buildingMap);
-// Temp build preview
-const image = buildingTileset.getTile(0, 0, 2, 1);
-const previewPlaceSprite = new gameify.Sprite(0, 0, image);
-screen.add(previewPlaceSprite);
 //Main Character
 const characterSprite = new gameify.Image("images/temporaryChar.png")
 let mainChar = new gameify.Sprite(0,0, characterSprite);
