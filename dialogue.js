@@ -60,7 +60,7 @@ export const dialogue = {
         tutorial: [
             '*Heavy Panting* Finally we are safe!',
             'We have made it to where I will build my kingdom, "(something something)"',
-            'come on guys lets chop some trees to get wood!(insert some instructions here on mechanics)',
+            'come on guys lets chop some trees to get wood! \n(insert some instructions here on mechanics)',
             'great! Now we can build some small huts!',
             'Press on the hammer to build!',
             'Great Job!',
