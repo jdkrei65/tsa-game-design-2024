@@ -34,6 +34,9 @@ build.setScreen(screen);
 const characterSprite = new gameify.Image("images/temporaryChar.png")
 let mainChar = new gameify.Sprite(0,0, characterSprite);
 screen.add(mainChar);
+if (myScreen.keyboard.keyWasJustPressed("Right_Arrow")) {
+   
+}
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
