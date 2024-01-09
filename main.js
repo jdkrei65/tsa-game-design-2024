@@ -1,7 +1,10 @@
 import { gameify } from './gameify/gameify.js';
 import { dialogue } from './dialogue.js';
 import { build } from './build.js';
-import { sprites } from './gameify/sprite.js';
+
+import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
+import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
+import oceanTilemapData  from './mapdata/oceanlayer.tilemapdata.js';
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
@@ -43,6 +46,22 @@ const player = {
 };
 screen.add(player.sprite);
 
+// create map layers
+const worldMapTileset = new gameify.Tileset('images/worldmapalex1-9-24.png', 32, 32);
+const mapLayers = {
+    grass: new gameify.Tilemap(64, 64),
+    nature: new gameify.Tilemap(64, 64),
+    ocean: new gameify.Tilemap(64, 64),
+};
+for (const layerName in mapLayers) {
+    const layer = mapLayers[layerName];
+    layer.setTileset(worldMapTileset);
+    screen.add(layer);
+}
+mapLayers.grass.loadMapData(grassTilemapData);
+mapLayers.nature.loadMapData(natureTilemapData);
+mapLayers.ocean.loadMapData(oceanTilemapData);
+
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 32, 32);
 const resourceIndicators = {}
 const resourceIndicatorTextStyle = new gameify.TextStyle('Arial', 18, 'black');
@@ -79,6 +98,10 @@ plainsWorldScene.onUpdate((deltaTime) => {
 });
 plainsWorldScene.onDraw(() => {
     screen.clear('#efe');
+
+    for (const layerName in mapLayers) {
+        mapLayers[layerName].draw();
+    }
     
     player.sprite.draw();
     
