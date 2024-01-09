@@ -1,6 +1,7 @@
 import { gameify } from './gameify/gameify.js';
 import { dialogue } from './dialogue.js';
 import { build } from './build.js';
+import { sprites } from './gameify/sprite.js';
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
@@ -32,17 +33,14 @@ build.setScreen(screen);
 
 //Main Character
 const characterSprite = new gameify.Image("images/temporaryChar.png")
-let mainChar = new gameify.Sprite(0,0, characterSprite);
-screen.add(mainChar);
-if (myScreen.keyboard.keyWasJustPressed("Right_Arrow")) {
-   
-}
-
+const player = {};
+player.Sprite = new gameify.Sprite(0,0, characterSprite);
+screen.add(player.Sprite);
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
 
     screen.camera.focus(new gameify.Vector2d(200, 200), new gameify.Vector2d(24, 24));
-
+    player.Sprite.draw();
     build.update(screen);
     dialogue.updateBox();
 
