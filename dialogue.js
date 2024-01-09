@@ -58,11 +58,13 @@ export const dialogue = {
     },
     lines: {
         tutorial: [
-            'Welcome to (game name)! Where you build a city or something!',
-            'You and friend have been traveling to blah blah fantasy something',
-            'Go to tree and chop down, now you have wood!',
-            'First, build houses! Select the "hammer" button in the screen',
-            'Build two houses for you, a gather hut, and a water tower.'
+            '*Heavy Panting* Finally we are safe!',
+            'We have made it to where I will build my kingdom, "(something something)"',
+            'come on guys lets chop some trees to get wood!(insert some instructions here on mechanics)',
+            'great! Now we can build some small huts!',
+            'Press on the hammer to build!',
+            'Great Job!',
+            'select the hut and select its position!'
         ]
     }
 }
