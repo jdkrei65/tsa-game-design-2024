@@ -30,6 +30,9 @@ screen.add(buildingMap);
 const image = buildingTileset.getTile(0, 0, 2, 1);
 const previewPlaceSprite = new gameify.Sprite(0, 0, image);
 screen.add(previewPlaceSprite);
+//Main Character
+let mainChar=new Sprite(0,0,"images/temporaryChar.png");
+screen.add(mainChar);
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
@@ -61,6 +64,5 @@ plainsWorldScene.onDraw(() => {
     dialogue.drawBox();
     build.drawUI();
 });
-
 screen.setScene(plainsWorldScene);
 screen.startGame();
