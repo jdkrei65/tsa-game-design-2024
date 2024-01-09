@@ -40,13 +40,14 @@ const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
 
     screen.camera.focus(new gameify.Vector2d(200, 200), new gameify.Vector2d(24, 24));
-    player.Sprite.draw();
     build.update(screen);
     dialogue.updateBox();
 
 });
 plainsWorldScene.onDraw(() => {
     screen.clear('#efe');
+    
+    player.Sprite.draw();
     
     build.draw();
 
