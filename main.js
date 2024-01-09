@@ -31,7 +31,7 @@ const image = buildingTileset.getTile(0, 0, 2, 1);
 const previewPlaceSprite = new gameify.Sprite(0, 0, image);
 screen.add(previewPlaceSprite);
 //Main Character
-let mainChar=new gameify.Sprite(0,0,"images/temporaryChar.png");
+let mainChar = new gameify.Sprite(0,0, images/temporaryChar.png);
 screen.add(mainChar);
 
 const plainsWorldScene = new gameify.Scene(screen);
