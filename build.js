@@ -1,14 +1,17 @@
 import { gameify } from './gameify/gameify.js';
 
 let buildModeActive = false;
+let currentlyBuilding = false;
 
 const buildingTileset = new gameify.Tileset("images/placeholder5.png", 32, 32);
+const buildingMap = new gameify.Tilemap(64, 64);
+buildingMap.setTileset(buildingTileset);
 const buildButtonImages = {
     build:          buildingTileset.getTile(0, 0),
     buildActive:    buildingTileset.getTile(1, 0),
-    buildHouse:     buildingTileset.getTile(2, 0),
-    buildHut:       buildingTileset.getTile(0, 1),
-    buildWaterTank: buildingTileset.getTile(1, 1),
+    house:          buildingTileset.getTile(2, 0),
+    gatherHut:      buildingTileset.getTile(0, 1),
+    waterTank:      buildingTileset.getTile(1, 1),
 }
 
 const buildings = {
@@ -16,17 +19,18 @@ const buildings = {
         image: buildingTileset.getTile(2, 1),
         placed: []
     },
-    waterTank:  {
+    gatherHut:  {
         image: buildingTileset.getTile(0, 2),
         placed: []
     },
-    gatherHut:  {
+    waterTank:  {
         image: buildingTileset.getTile(1, 2),
         placed: []
     }
 }
 
 const previewBuildSprite = new gameify.Sprite(0, 0, buildings.house.image);
+previewBuildSprite.scale = 2;
 
 const buildButtons = [];
 let curBtnPosition = 10;
@@ -59,6 +63,7 @@ const exitBuildMode = () => {
         button.active = false;
     }
     buildModeActive = false;
+    currentlyBuilding = false;
     buildButtons['build'].active = true;
 }
 
@@ -69,6 +74,8 @@ buildButtons['buildActive'].click = () => {
     exitBuildMode();
 }
 
+let buttonHovered = false;
+
 export const build = {
     setScreen: (screen) => {
         for (const bt in buildButtons) {
@@ -76,8 +83,10 @@ export const build = {
             screen.add(button.sprite);
         }
         screen.add(previewBuildSprite);
+        screen.add(buildingMap);
     },
     update: (screen) => {
+        buttonHovered = false;
         const mousePos = screen.mouse.getPosition();
 
         screen.element.style.cursor = '';
@@ -92,14 +101,42 @@ export const build = {
                 && mousePos.x < sprite.position.x + sprite.getSize().x
                 && mousePos.y < sprite.position.y + sprite.getSize().y
             ) {
+                buttonHovered = true;
                 screen.element.style.cursor = 'pointer';
-                if (screen.mouse.eventJustHappened('left', true)) {
+                if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
                     if (button.click) {
+                        // It's a different button
                         button.click();
                     } else {
-                        // It's a building, preview it
-                        
+                        // Start building
+                        previewBuildSprite.image = buildings[bt].image;
+                        currentlyBuilding = bt;
                     }
+                }
+            }
+        }
+
+        if (currentlyBuilding) {
+            const mouseWorldPosition = screen.mouse.getPosition();
+            const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
+        
+            previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
+
+            if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
+                if (!buildingMap.get(mouseMapPosition.x, mouseMapPosition.y)) {
+                    // Place the tile
+                    buildings[currentlyBuilding].placed.push(mouseMapPosition);
+                    const tile = buildings[currentlyBuilding].image.tileData;
+
+                    buildingMap.place(
+                        tile.position.x, tile.position.y, // source position
+                        mouseMapPosition.x, mouseMapPosition.y, // destination position
+                        0, // rotation
+                        tile.size.x, tile.size.y // size (how many tiles tall/wide)
+                    );
+
+                } else {
+                    console.warn('Already placed at ' + mouseMapPosition);
                 }
             }
         }
@@ -108,11 +145,17 @@ export const build = {
     draw: () => {
 
     },
-    drawUI: () => {
+    drawUI: (screen) => {
         for (const bt in buildButtons) {
             const button = buildButtons[bt];
             if (!button.active) continue;
             button.sprite.draw();
+        }
+        buildingMap.draw();
+        if (currentlyBuilding && !buttonHovered) {
+            screen.context.globalAlpha = 0.5;
+            previewBuildSprite.draw();
+            screen.context.globalAlpha = 1;
         }
     }
 }

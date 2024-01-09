@@ -54,7 +54,7 @@ plainsWorldScene.onDraw(() => {
 
     screen.camera.setDrawMode('ui');
     dialogue.drawBox();
-    build.drawUI();
+    build.drawUI(screen);
 });
 screen.setScene(plainsWorldScene);
 screen.startGame();
