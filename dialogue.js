@@ -1,13 +1,14 @@
 import { gameify } from './gameify/gameify.js';
 
-const dlBoxImage = new gameify.Image("images/dialoguebox.png");
+const dlBoxImage = new gameify.Image("images/scroll.png");
 const dlBox = new gameify.Sprite(0, 0, dlBoxImage);
 dlBox.position = new gameify.Vector2d(10, 400);
-dlBox.scale = 6
+dlBox.scale = 2
 
 const dlTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
-const dlText = new gameify.Text("...", 40, 435, dlTextStyle);
-const dlContinueText = new gameify.Text("[SPACE to continue]", 40, 545, dlTextStyle);
+const dlText = new gameify.Text("...", 80, 435, dlTextStyle);
+dlText.style.lineHeight = 1.3;
+const dlContinueText = new gameify.Text("[SPACE to continue]", 80, 545, dlTextStyle);
 
 let screen = undefined;
 let currentScene = undefined;
@@ -58,13 +59,28 @@ export const dialogue = {
     },
     lines: {
         tutorial: [
-            '*Heavy Panting* Finally we are safe!',
-            'We have made it to where I will build my kingdom, "(something something)"',
-            'come on guys lets chop some trees to get wood! \n(insert some instructions here on mechanics)',
-            'great! Now we can build some small huts!',
-            'Press on the hammer to build!',
-            'Great Job!',
-            'select the hut and select its position!'
+'*Heavy Panting* Finally we are safe!\n\n - Use the W A S & D keys to move around',
+/* ---- */
+`Eventually we will build a great city here,
+but first, we must get resources to survive by ourselves.
+
+ - Walk near a tree or rock, then left click to chop/mine it`,
+/* ---- */
+`Now we must build ourselves a place to live.
+
+ - Open the build menu by clicking the hammer (top left)
+ - Build a house and forager's hut for your villagers to live in`,
+/* ---- */
+`We must also have food and water. We don't want to starve, of course!
+
+ - Build a water tank to store water
+ - The forager's hut you built will provide food
+ - As your village expands, you'll need to build more
+`,
+/* ---- */
+'Great Job!',
+/* ---- */
+'select the hut and select its position!',
         ]
     }
 }

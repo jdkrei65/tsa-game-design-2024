@@ -41,9 +41,10 @@ const characterSprite = new gameify.Image("images/temporaryChar.png")
 const player = {
     sprite: new gameify.Sprite(0,0, characterSprite),
     resources: {
-        wood: 50,  // Start with some resources for testing,
-        stone: 50, // set this to zero later
-        gold: 50
+        wood: 5,  // Start with some resources for testing,
+        stone: 0, // set this to zero later
+        apples: 3,
+        gold: 10
     }
 };
 screen.add(player.sprite);
@@ -68,20 +69,20 @@ mapLayers.ocean.loadMapData(oceanTilemapData);
 build.collideWithMap(mapLayers.ocean);
 build.collideWithMap(mapLayers.nature);
 
-const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 32, 32);
+const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
 const resourceIndicators = {}
 const resourceIndicatorTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 let rBtnPos = 0;
 for (const r in player.resources) {
     const sprite = new gameify.Sprite(0, 0, resourceUITileset.getTile(0, rBtnPos, 3, 1));
+    sprite.scale = 2;
     const text = new gameify.Text(player.resources[r], 0, 0, resourceIndicatorTextStyle);
     resourceIndicators[r] = {
         sprite: sprite,
         text: text,
         active: false
     }
-    sprite.scale = 1;
-    sprite.position.y = 10 + (40*rBtnPos);
+    sprite.position.y = 10 + (38*rBtnPos);
     sprite.position.x = 800 - sprite.getSize().x - 10;
     text.position = sprite.position.add(new gameify.Vector2d(30, 10));
     screen.add(sprite);

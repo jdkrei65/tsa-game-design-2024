@@ -3,13 +3,13 @@ import { gameify } from './gameify/gameify.js';
 const warnMessageImage = new gameify.Image("images/problemdialog.png");
 warnMessageImage.opacity = 0;
 const warnMessageSprite = new gameify.Sprite(256, 68, warnMessageImage);
-warnMessageSprite.scale = 1.5;
+warnMessageSprite.scale = 2;
 const messageTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 messageTextStyle.opacity = 0;
 messageTextStyle.lineHeight = 1.5;
 const messageText = new gameify.Text('Message here',
     warnMessageSprite.position.x + 15,
-    warnMessageSprite.position.y + 15,
+    warnMessageSprite.position.y + 19,
     messageTextStyle
 );
 
