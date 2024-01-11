@@ -64,7 +64,8 @@ export const dialogue = {
 `Eventually we will build a great city here,
 but first, we must get resources to survive by ourselves.
 
- - Walk near a tree or rock, then left click to chop/mine it`,
+ - Enter gathering mode by clicking the pickaxe button (top left)
+ - Walk near a tree or rock, then left click to gather it`,
 /* ---- */
 `Now we must build ourselves a place to live.
 

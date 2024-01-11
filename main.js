@@ -2,6 +2,7 @@ import { gameify } from './gameify/gameify.js';
 import { dialogue } from './dialogue.js';
 import { build } from './build.js';
 import { message } from './message.js';
+import { gather } from './gather.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
 import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
@@ -35,6 +36,7 @@ dialogue.setScreen(screen);
 dialogue.setScene('tutorial');
 build.setScreen(screen);
 message.setScreen(screen);
+gather.setScreen(screen);
 
 //Main Character
 const characterSprite = new gameify.Image("images/temporaryChar.png")
@@ -43,7 +45,7 @@ const player = {
     resources: {
         wood: 5,  // Start with some resources for testing,
         stone: 0, // set this to zero later
-        apples: 3,
+        apples: 5,
         gold: 10
     }
 };
@@ -52,9 +54,9 @@ screen.add(player.sprite);
 // create map layers
 const worldMapTileset = new gameify.Tileset('images/worldmapalex1-9-24.png', 32, 32);
 const mapLayers = {
+    ocean: new gameify.Tilemap(64, 64),
     grass: new gameify.Tilemap(64, 64),
     nature: new gameify.Tilemap(64, 64),
-    ocean: new gameify.Tilemap(64, 64),
 };
 for (const layerName in mapLayers) {
     const layer = mapLayers[layerName];
@@ -64,6 +66,7 @@ for (const layerName in mapLayers) {
 mapLayers.grass.loadMapData(grassTilemapData);
 mapLayers.nature.loadMapData(natureTilemapData);
 mapLayers.ocean.loadMapData(oceanTilemapData);
+gather.setMap(mapLayers.nature);
 
 // Don't build on the ocean or the trees
 build.collideWithMap(mapLayers.ocean);
@@ -92,8 +95,12 @@ for (const r in player.resources) {
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
+    // Reset the mouse cursor to default
+    // (not 'pointer', when buttons are hovered)
+    screen.element.style.cursor = '';
 
     screen.camera.focus(new gameify.Vector2d(200, 200), new gameify.Vector2d(24, 24));
+    gather.update(deltaTime, screen, player.resources);
     build.update(deltaTime, screen, player.resources);
     dialogue.updateBox();
 
@@ -114,6 +121,7 @@ plainsWorldScene.onDraw(() => {
     
     player.sprite.draw();
     
+    gather.draw();
     build.draw();
 
     screen.camera.setDrawMode('ui');
@@ -125,7 +133,8 @@ plainsWorldScene.onDraw(() => {
     }
 
     dialogue.drawBox();
-    build.drawUI(screen);
+    gather.drawUI();
+    build.drawUI();
     message.draw();
 });
 screen.setScene(plainsWorldScene);

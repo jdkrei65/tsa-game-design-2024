@@ -1,5 +1,6 @@
 import { gameify } from './gameify/gameify.js';
 import { message } from './message.js';
+import { manageModes } from './manageModes.js';
 
 let buildModeActive = false;
 let currentlyBuilding = false;
@@ -8,11 +9,11 @@ const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 3
 const buildingMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingTileset);
 const buildButtonImages = {
-    build:          buildingTileset.getTile(0, 0),
-    buildActive:    buildingTileset.getTile(1, 0),
+    build:            buildingTileset.getTile(0, 0),
+    buildActive:      buildingTileset.getTile(1, 0),
     "house":          buildingTileset.getTile(2, 0),
-    "forager's hut":      buildingTileset.getTile(0, 1),
-    "water tank":      buildingTileset.getTile(1, 1),
+    "forager's hut":  buildingTileset.getTile(0, 1),
+    "water tank":     buildingTileset.getTile(1, 1),
     demolishBuilding: buildingTileset.getTile(1, 3),
 }
 
@@ -42,11 +43,11 @@ const buildings = {
 // Resource cost display
 const resourceCostImage = new gameify.Image("images/bulidCostBox.png");
 resourceCostImage.opacity = 0;
-const resourceCostSprite = new gameify.Sprite(10, 68, resourceCostImage);
+const resourceCostSprite = new gameify.Sprite(68, 68, resourceCostImage);
 const resourceCostTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 resourceCostTextStyle.opacity = 0;
 resourceCostTextStyle.lineHeight = 1.25;
-const resourceCostText = new gameify.Text('Resource Cost', 24, 78, resourceCostTextStyle);
+const resourceCostText = new gameify.Text('Resource Cost', 58+24, 78, resourceCostTextStyle);
 resourceCostSprite.scale = 1.5;
 const previewBuildSprite = new gameify.Sprite(0, 0, buildings["house"].image);
 previewBuildSprite.scale = 2;
@@ -85,6 +86,8 @@ const exitBuildMode = () => {
     currentlyBuilding = false;
     buildButtons['build'].active = true;
 }
+manageModes.addMode('build', enterBuildMode, exitBuildMode);
+
 const getMissingResources = (building, resources) => {
     const missing = [];
     for (const res in building.cost) {
@@ -150,7 +153,7 @@ const placeBuilding = (building, position, resources) => {
 }
 
 buildButtons['build'].click = () => {
-    enterBuildMode();
+    manageModes.enterMode('build');
 }
 buildButtons['buildActive'].click = () => {
     exitBuildMode();
@@ -175,8 +178,6 @@ export const build = {
     update: (deltaTime, screen, resources) => {
         buttonHovered = false;
         const mousePos = screen.mouse.getPosition();
-
-        screen.element.style.cursor = '';
 
         for (const bt in buildButtons) {
             const button = buildButtons[bt];
@@ -261,7 +262,7 @@ export const build = {
         }
 
     },
-    drawUI: (screen) => {
+    drawUI: () => {
         for (const bt in buildButtons) {
             const button = buildButtons[bt];
             if (!button.active) continue;
