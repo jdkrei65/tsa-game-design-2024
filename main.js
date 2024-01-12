@@ -41,7 +41,8 @@ gather.setScreen(screen);
 //Main Character
 const characterSprite = new gameify.Image("images/temporaryChar.png")
 const player = {
-    sprite: new gameify.Sprite(0,0, characterSprite),
+    sprite: new gameify.Sprite(300, 200, characterSprite),
+    speed: 80, // px per s
     resources: {
         wood: 5,  // Start with some resources for testing,
         stone: 0, // set this to zero later
@@ -49,7 +50,12 @@ const player = {
         gold: 10
     }
 };
+player.sprite.scale = .2;
 screen.add(player.sprite);
+
+screen.camera.setSpeed(0.002);
+screen.camera.maxDistance = 55;
+screen.camera.minDistance = 30;
 
 // create map layers
 const worldMapTileset = new gameify.Tileset('images/worldmapalex1-9-24.png', 32, 32);
@@ -99,10 +105,35 @@ plainsWorldScene.onUpdate((deltaTime) => {
     // (not 'pointer', when buttons are hovered)
     screen.element.style.cursor = '';
 
-    screen.camera.focus(new gameify.Vector2d(200, 200), new gameify.Vector2d(24, 24));
-    gather.update(deltaTime, screen, player.resources);
-    build.update(deltaTime, screen, player.resources);
+    screen.camera.focus(player.sprite.position, new gameify.Vector2d(32, 80));
+    gather.update(deltaTime, screen, player);
+    build.update(deltaTime, screen, player);
     dialogue.updateBox();
+
+    // reset each frame so we don't go super fast
+    player.sprite.velocity.x = 0;
+    player.sprite.velocity.y = 0;
+
+    if (screen.keyboard.keyIsPressed("W")) {
+        player.sprite.velocity.y -= 1;
+    }
+    if (screen.keyboard.keyIsPressed("S")) {
+        player.sprite.velocity.y += 1;
+    }
+    if (screen.keyboard.keyIsPressed("A")) {
+        player.sprite.velocity.x -= 1;
+    }
+    if (screen.keyboard.keyIsPressed("D")) {
+        player.sprite.velocity.x += 1;
+    }
+
+    // normalize and multiply, so we don't go faster when moving diagonally
+    player.sprite.velocity.normalize();
+    player.sprite.velocity = player.sprite.velocity.multiply(player.speed);
+
+    // moves according to velocity
+    // does deltaTime for you
+    player.sprite.update(deltaTime);
 
     for (const res in resourceIndicators) {
         const text = resourceIndicators[res].text;

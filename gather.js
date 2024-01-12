@@ -89,6 +89,40 @@ const gatherables = {
     },
 }
 
+const gatherItem = (position, player) => {
+    if (previewGatherSprite.position.distanceTo(player.sprite.position) > 270) {
+        message.showText(`Too far away!\nYour arms aren't THAT long.`);
+        return;
+    }
+
+    const tile = resourceMap.get(position.x, position.y);
+    let gatheredItem = false;
+    // check each gatherable item
+    gatherableLoop:
+    for (const type in gatherables) {
+        const item = gatherables[type];
+        // Check each possible position
+        for (const source of item.sources) {
+            if (source[0] === tile.source.x && source[1] === tile.source.y) {
+                // Gather this item
+                // Add resources
+                for (const res in item.resources) {
+                    player.resources[res] += item.resources[res];
+                }
+                // Remove from map
+                resourceMap.remove(position.x, position.y);
+
+                gatheredItem = true;
+                break gatherableLoop;
+            }
+        }
+    }
+
+    if (!gatheredItem) {
+        message.showText(`You can't gather this item!`);
+    }
+}
+
 let resourceMap;
 
 export const gather = {
@@ -99,7 +133,7 @@ export const gather = {
     setMap: (map) => {
         resourceMap = map;
     },
-    update: (deltaTime, screen, resources) => {
+    update: (deltaTime, screen, player) => {
         const mousePos = screen.mouse.getPosition();
 
         if (mousePos.x > gatherButton.position.x
@@ -123,32 +157,7 @@ export const gather = {
             if (screen.mouse.eventJustHappened('left')
                 && resourceMap.get(mouseMapPosition.x, mouseMapPosition.y)
             ) {
-                const tile = resourceMap.get(mouseMapPosition.x, mouseMapPosition.y);
-                let gatheredItem = false;
-                // check each gatherable item
-                gatherableLoop:
-                for (const type in gatherables) {
-                    const item = gatherables[type];
-                    // Check each possible position
-                    for (const source of item.sources) {
-                        if (source[0] === tile.source.x && source[1] === tile.source.y) {
-                            // Gather this item
-                            // Add resources
-                            for (const res in item.resources) {
-                                resources[res] += item.resources[res];
-                            }
-                            // Remove from map
-                            resourceMap.remove(mouseMapPosition.x, mouseMapPosition.y);
-
-                            gatheredItem = true;
-                            break gatherableLoop;
-                        }
-                    }
-                }
-
-                if (!gatheredItem) {
-                    message.showText(`You can't gather this item!`);
-                }
+                gatherItem(mouseMapPosition, player);
             }
         }
     },

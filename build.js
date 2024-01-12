@@ -175,7 +175,7 @@ export const build = {
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
     },
-    update: (deltaTime, screen, resources) => {
+    update: (deltaTime, screen, player) => {
         buttonHovered = false;
         const mousePos = screen.mouse.getPosition();
 
@@ -211,7 +211,7 @@ export const build = {
             previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
 
             if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
-                placeBuilding(buildings[currentlyBuilding], mouseMapPosition, resources);
+                placeBuilding(buildings[currentlyBuilding], mouseMapPosition, player.resources);
             }
         }
 
@@ -231,7 +231,7 @@ export const build = {
                 resourceCostText.style.opacity = opacity;
                 resourceCostSprite.image.opacity = opacity;
 
-                const missing = getMissingResources(currentBuilding, resources);
+                const missing = getMissingResources(currentBuilding, player.resources);
                 const cost = currentBuilding.cost;
 // Indentation matters for text strings
                 resourceCostText.string = `Build ${buildingName}:
