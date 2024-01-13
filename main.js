@@ -3,6 +3,7 @@ import { dialogue } from './dialogue.js';
 import { build } from './build.js';
 import { message } from './message.js';
 import { gather } from './gather.js';
+import { clipboard } from './clipboard.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
 import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
@@ -37,6 +38,7 @@ dialogue.setScene('tutorial');
 build.setScreen(screen);
 message.setScreen(screen);
 gather.setScreen(screen);
+clipboard.setScreen(screen);
 
 //Main Character
 const characterSprite = new gameify.Image("images/temporaryChar.png")
@@ -111,6 +113,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
     // Update UI's (buttons) first, so clicks are handled properly
     gather.updateUI(deltaTime, screen, player);
     build.updateUI(deltaTime, screen, player);
+    clipboard.updateUI(deltaTime, screen, player);
     // ... then update the rest
     gather.update(deltaTime, screen, player);
     build.update(deltaTime, screen, player);
@@ -176,6 +179,7 @@ plainsWorldScene.onDraw(() => {
     dialogue.drawBox();
     gather.drawUI();
     build.drawUI();
+    clipboard.drawUI();
     message.draw();
 });
 screen.setScene(plainsWorldScene);
