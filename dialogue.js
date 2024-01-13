@@ -85,7 +85,7 @@ but first, we must get resources to survive by ourselves.
  - As your settlement expands, you'll advance through levels
    and explore more places!`,
 /* ---- */
-'select the hut and select its position!',
+'...',
         ]
     }
 }

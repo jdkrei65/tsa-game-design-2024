@@ -1,6 +1,7 @@
 import { gameify } from './gameify/gameify.js';
 import { message } from './message.js';
 import { manageModes } from './manageModes.js';
+import { levelProgress } from './levelProgress.js';
 
 let buildModeActive = false;
 let currentlyBuilding = false;
@@ -97,7 +98,7 @@ const getMissingResources = (building, resources) => {
     }
     return missing;
 }
-const placeBuilding = (building, position, resources) => {
+const placeBuilding = (buildingName, building, position, resources) => {
 
     if (building === buildings.demolishBuilding) {
         if (!placedBuildings[position.y] || !placedBuildings[position.y][position.x]) {
@@ -150,6 +151,9 @@ const placeBuilding = (building, position, resources) => {
         0, // rotation
         tile.size.x, tile.size.y // size (how many tiles tall/wide)
     );
+
+    // Mark goals as completed
+    levelProgress.completeGoal('build', buildingName);
 }
 
 buildButtons['build'].click = () => {
@@ -249,7 +253,7 @@ export const build = {
         previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
 
         if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
-            placeBuilding(buildings[currentlyBuilding], mouseMapPosition, player.resources);
+            placeBuilding(currentlyBuilding, buildings[currentlyBuilding], mouseMapPosition, player.resources);
         }
     },
     draw: () => {
