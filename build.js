@@ -175,7 +175,7 @@ export const build = {
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
     },
-    update: (deltaTime, screen, player) => {
+    updateUI: (deltaTime, screen, player) => {
         buttonHovered = false;
         const mousePos = screen.mouse.getPosition();
 
@@ -201,17 +201,6 @@ export const build = {
                         currentlyBuilding = bt;
                     }
                 }
-            }
-        }
-
-        if (currentlyBuilding) {
-            const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
-            const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
-        
-            previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
-
-            if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
-                placeBuilding(buildings[currentlyBuilding], mouseMapPosition, player.resources);
             }
         }
 
@@ -250,7 +239,18 @@ export const build = {
             resourceCostText.style.opacity = opacity;
             resourceCostSprite.image.opacity = opacity;
         }
+    },
+    update: (deltaTime, screen, player) => {
+        if (!currentlyBuilding) return;
 
+        const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
+        const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
+    
+        previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
+
+        if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
+            placeBuilding(buildings[currentlyBuilding], mouseMapPosition, player.resources);
+        }
     },
     draw: () => {
         buildingMap.draw();

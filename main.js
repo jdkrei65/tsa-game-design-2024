@@ -42,6 +42,7 @@ gather.setScreen(screen);
 const characterSprite = new gameify.Image("images/temporaryChar.png")
 const player = {
     sprite: new gameify.Sprite(300, 200, characterSprite),
+    direction: new gameify.Vector2d(1, 0),
     speed: 80, // px per s
     resources: {
         wood: 5,  // Start with some resources for testing,
@@ -106,6 +107,11 @@ plainsWorldScene.onUpdate((deltaTime) => {
     screen.element.style.cursor = '';
 
     screen.camera.focus(player.sprite.position, new gameify.Vector2d(32, 80));
+
+    // Update UI's (buttons) first, so clicks are handled properly
+    gather.updateUI(deltaTime, screen, player);
+    build.updateUI(deltaTime, screen, player);
+    // ... then update the rest
     gather.update(deltaTime, screen, player);
     build.update(deltaTime, screen, player);
     dialogue.updateBox();
@@ -125,6 +131,10 @@ plainsWorldScene.onUpdate((deltaTime) => {
     }
     if (screen.keyboard.keyIsPressed("D")) {
         player.sprite.velocity.x += 1;
+    }
+
+    if (player.sprite.velocity.x !== 0 || player.sprite.velocity.y !== 0) {
+        player.direction = player.sprite.velocity.copy();
     }
 
     // normalize and multiply, so we don't go faster when moving diagonally

@@ -90,11 +90,6 @@ const gatherables = {
 }
 
 const gatherItem = (position, player) => {
-    if (previewGatherSprite.position.distanceTo(player.sprite.position) > 270) {
-        message.showText(`Too far away!\nYour arms aren't THAT long.`);
-        return;
-    }
-
     const tile = resourceMap.get(position.x, position.y);
     let gatheredItem = false;
     // check each gatherable item
@@ -133,9 +128,8 @@ export const gather = {
     setMap: (map) => {
         resourceMap = map;
     },
-    update: (deltaTime, screen, player) => {
+    updateUI: (deltaTime, screen, player) => {
         const mousePos = screen.mouse.getPosition();
-
         if (mousePos.x > gatherButton.position.x
             && mousePos.y > gatherButton.position.y
             && mousePos.x < gatherButton.position.x + gatherButton.getSize().x
@@ -148,17 +142,42 @@ export const gather = {
                 else manageModes.enterMode('gather');
             }
 
-        } else if (gatherModeActive) {
-            const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
-            const mouseMapPosition = resourceMap.screenToMap(mouseWorldPosition);
+        }
+    },
+    update: (deltaTime, screen, player) => {
+        if (!gatherModeActive) return;
 
-            previewGatherSprite.position = mouseMapPosition.multiply(resourceMap.twidth);
+        const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
+        const playerCenterPosition = player.sprite.position.add(
+            player.sprite.getSize().multiply(.5)
+        );
+        const playerMapPosition = resourceMap.screenToMap(playerCenterPosition);
+        const targetMapPosition = resourceMap.screenToMap(mouseWorldPosition);
 
-            if (screen.mouse.eventJustHappened('left')
-                && resourceMap.get(mouseMapPosition.x, mouseMapPosition.y)
-            ) {
-                gatherItem(mouseMapPosition, player);
-            }
+        // Change this variable to set how far away the
+        // player can gather from
+        const maxReachDistance = 1;
+
+
+        // Snap to nearest gatherable tile
+        if (playerMapPosition.y - targetMapPosition.y > maxReachDistance) {
+            targetMapPosition.y = playerMapPosition.y - maxReachDistance;
+        } else if (playerMapPosition.y - targetMapPosition.y < -maxReachDistance) {
+            targetMapPosition.y = playerMapPosition.y + maxReachDistance;
+        }
+        
+        if (playerMapPosition.x - targetMapPosition.x > maxReachDistance) {
+            targetMapPosition.x = playerMapPosition.x - maxReachDistance;
+        } else if (playerMapPosition.x - targetMapPosition.x < -maxReachDistance) {
+            targetMapPosition.x = playerMapPosition.x + maxReachDistance;
+        }
+
+        previewGatherSprite.position = targetMapPosition.multiply(resourceMap.twidth);
+
+        if (screen.mouse.eventJustHappened('left', /*capture=*/true)
+            && resourceMap.get(targetMapPosition.x, targetMapPosition.y)
+        ) {
+            gatherItem(targetMapPosition, player);
         }
     },
     draw: () => {
