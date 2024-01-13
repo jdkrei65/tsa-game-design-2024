@@ -79,7 +79,11 @@ but first, we must get resources to survive by ourselves.
  - As your village expands, you'll need to build more
 `,
 /* ---- */
-'Great Job!',
+`Yay! Now we have a small settlement built!
+
+ - Select the clipboard to view your progress.
+ - As your settlement expands, you'll advance through levels
+   and explore more places!`,
 /* ---- */
 'select the hut and select its position!',
         ]
