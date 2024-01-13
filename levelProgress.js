@@ -34,7 +34,7 @@ levelUpTextStyle.lineHeight = 1.5;
 // {x} 'x' if the goal is completed
 const goals = {
     build: {
-        text: '{c}/{n} {g}{s} built',
+        text: '{c}/{n} {g}s built',
         "house": {
             completed: 0,
         },
