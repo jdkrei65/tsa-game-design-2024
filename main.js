@@ -45,7 +45,7 @@ const characterSprite = new gameify.Image("images/temporaryChar.png")
 const player = {
     sprite: new gameify.Sprite(300, 200, characterSprite),
     direction: new gameify.Vector2d(1, 0),
-    speed: 80, // px per s
+    speed: 90, // px per s
     resources: {
         wood: 5,  // Start with some resources for testing,
         stone: 0, // set this to zero later

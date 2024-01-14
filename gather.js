@@ -156,7 +156,7 @@ export const gather = {
 
         // Change this variable to set how far away the
         // player can gather from
-        const maxReachDistance = 1;
+        const maxReachDistance = 2;
 
 
         // Snap to nearest gatherable tile
