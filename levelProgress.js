@@ -32,35 +32,45 @@ levelUpTextStyle.lineHeight = 1.5;
 // {g} the name of the goal
 // {s} 's' if {n} !== 1
 // {x} 'x' if the goal is completed
+
+// goals also have name, type, and completed
+// properties (added by code) which give the goal's name
+// the goal's type, and how many times the goal was
+// completed this level (see below for more info)
 const goals = {
     build: {
         text: '{c}/{n} {g}s built',
-        "house": {
-            completed: 0,
-        },
-        "forager's hut": {
-            completed: 0,
-        },
-        "water tank": {
-            completed: 0,
+        "house": { },
+        "forager's hut": { },
+        "water tank": { }
+    },
+    dialogue: {
+        text: '[{x}] Read {g}',
+        "tutorial": {
+            text: "[{x}] Read the tutorial"
         }
     }
 };
 
-// Make it so goal.type gives it's parent type:
+// Add additional properties to goals
 // goals.build["house"].type === goals.build
-// and goals.build["house"].name === "house"
+// goals.build["house"].name === "house"
+// goals.build["house"].completed === 0
 for (const type in goals) {
     for (const goal in goals[type]) {
         if (typeof goals[type][goal] !== 'object') continue;
         goals[type][goal].type = goals[type];
         goals[type][goal].name = goal;
+        goals[type][goal].completed = goals[type][goal].completed || 0;
     }
 }
 
 const levels = [{
     name: 'tutorial',
     requirements: [{
+        goal: goals.dialogue["tutorial"],
+        num: 1
+    },{
         goal: goals.build["house"],
         num: 1
     },{
@@ -161,10 +171,11 @@ to become a ${level.name.toUpperCase()}!
 }
 const exitLevelUpMode = () => {
     levelUpModeActive = false;
+    manageModes.enterMode('clipboard');
 }
 
 manageModes.addMode('clipboard', enterClipboardMode, exitClipboardMode);
-manageModes.addMode('levelup', ()=>false, ()=>false);
+manageModes.addMode('levelup', ()=>false, ()=>levelUpModeActive=false);
 
 export const levelProgress = {
     setScreen: (screen) => {

@@ -1,4 +1,5 @@
 import { gameify } from './gameify/gameify.js';
+import { levelProgress } from './levelProgress.js';
 
 const dlBoxImage = new gameify.Image("images/scroll.png");
 const dlBox = new gameify.Sprite(0, 0, dlBoxImage);
@@ -36,6 +37,7 @@ export const dialogue = {
         if (currentScene && screen.keyboard.keyWasJustPressed('Space')) {
             curScenePos++;
             if (!dialogue.lines[currentScene][curScenePos]) {
+                levelProgress.completeGoal('dialogue', currentScene);
                 dlIsOpen = false;
             }
         }
@@ -70,7 +72,8 @@ but first, we must get resources to survive by ourselves.
 `Now we must build ourselves a place to live.
 
  - Open the build menu by clicking the hammer (top left)
- - Build a house and forager's hut for your villagers to live in`,
+ - Use the resources you've gathered to build a house and forager's hut
+    for your villagers to live in`,
 /* ---- */
 `We must also have food and water. We don't want to starve, of course!
 
@@ -84,8 +87,6 @@ but first, we must get resources to survive by ourselves.
  - Select the clipboard to view your progress.
  - As your settlement expands, you'll advance through levels
    and explore more places!`,
-/* ---- */
-'...',
         ]
     }
 }
