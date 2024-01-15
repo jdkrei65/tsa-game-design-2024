@@ -84,7 +84,7 @@ but first, we must get resources to survive by ourselves.
 /* ---- */
 `Yay! Now we have a small settlement built!
 
- - Select the clipboard to view your progress.
+ - Select the clipboard (near the top left) to view your progress.
  - As your settlement expands, you'll advance through levels
    and explore more places!`,
         ]

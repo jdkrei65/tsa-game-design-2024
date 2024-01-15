@@ -455,7 +455,7 @@ export let gameify = {
 
             this.keyboard = new gameify.KeyboardEventManager(this.element.parentElement);
             this.keyboard.setup();
-            this.mouse = new gameify.MouseEventManager(this.element.parentElement, this.element);
+            this.mouse = new gameify.MouseEventManager(this.element, this.element);
             this.mouse.setup();
             this.audio = new gameify.audio.AudioManager();
             this.audio.setVolume(0.5);

@@ -42,7 +42,9 @@ const goals = {
         text: '{c}/{n} {g}s built',
         "house": { },
         "forager's hut": { },
-        "water tank": { }
+        "water tank": { },
+        "witch hut": { },
+        "farm": { }
     },
     dialogue: {
         text: '[{x}] Read {g}',
@@ -82,15 +84,34 @@ const levels = [{
     }]
 }, {
     name: 'small settlement',
+    villagers: 4,
+    buildings: ["farm", "barn", "witch hut"],
+    mapAreas: ["outer plains"],
     requirements: [{
         goal: goals.build["house"],
         num: 4
     },{
-        goal: goals.build["forager's hut"],
-        num: 2
-    },{
         goal: goals.build["water tank"],
         num: 2
+    },{
+        goal: goals.build["farm"],
+        num: 1
+    },{
+        goal: goals.build["witch hut"],
+        num: 1
+    }]
+}, {
+    name: 'placeholder',
+    villagers: 99999,
+    requirements: [{
+        goal: goals.build["house"],
+        num: 9999
+    },{
+        goal: goals.build["forager's hut"],
+        num: 99
+    },{
+        goal: goals.build["water tank"],
+        num: 999
     }]
 }];
 
@@ -159,10 +180,10 @@ const levelUp = () => {
     levelUpText.string = `Congratulations! You've built enough
 to become a ${level.name.toUpperCase()}!
 
-- 4 new villagers have arrived!
+- ${level.villagers} new villagers have arrived!
 - You've unlocked new buildings:
-    large house, farm, barn, witch hut
-- You can travel to the outer plains
+    ${level.buildings.map(a=>a.toUpperCase()).join(", ")}
+- You can travel to the ${level.mapAreas.map(a=>a.toUpperCase()).join(" and ")}
 
 
 `;
@@ -207,8 +228,10 @@ export const levelProgress = {
             }
         }
 
-        if (mousePos.x > 290 && mousePos.y > 420 && 
-            mousePos.x < 473 && mousePos.y < 481
+        // Yay! button on level up screen
+        if (levelUpModeActive
+            && mousePos.x > 290 && mousePos.y > 420
+            && mousePos.x < 473 && mousePos.y < 481
         ) {
             screen.element.style.cursor = 'pointer';
 
