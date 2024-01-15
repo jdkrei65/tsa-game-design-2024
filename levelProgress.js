@@ -45,6 +45,7 @@ const goals = {
         "forager's hut": { },
         "water tank": { },
         "witch hut": { },
+        "barn": { },
         "farm": { }
     },
     dialogue: {
@@ -121,7 +122,8 @@ const levels = [{
 let currentLevel = 0;
 
 const getGoalText = (goal, num) => {
-    let text = goal.text || goal.type.text;
+    let text = goal?.text || goal?.type?.text || '???';
+    if (text === '???') console.warn('Goal not found! Make sure it\'s in the goals = {...} list!');
 
     return text.replaceAll('{n}', num)
                .replaceAll('{g}', goal.name)
@@ -202,6 +204,8 @@ const exitLevelUpMode = () => {
     levelUpModeActive = false;
     manageModes.enterMode('clipboard');
 }
+
+console.log(levelUp);
 
 manageModes.addMode('clipboard', enterClipboardMode, exitClipboardMode);
 manageModes.addMode('levelup', ()=>false, ()=>levelUpModeActive=false);
