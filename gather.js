@@ -70,7 +70,7 @@ const gatherables = {
             [4, 3]
         ],
         resources: {
-            stone: 5
+            stone: 7
         }
     },
     largeRock: {
@@ -78,7 +78,8 @@ const gatherables = {
             [5, 3]
         ],
         resources: {
-            stone: 10
+            stone: 14,
+            gold: 1
         }
     },
     grass: {
