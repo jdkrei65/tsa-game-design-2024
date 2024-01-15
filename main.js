@@ -62,10 +62,11 @@ screen.camera.minDistance = 30;
 
 // create map layers
 const worldMapTileset = new gameify.Tileset('images/worldmapalex1-9-24.png', 32, 32);
+const tilemapSize = 64;
 const mapLayers = {
-    ocean: new gameify.Tilemap(64, 64),
-    grass: new gameify.Tilemap(64, 64),
-    nature: new gameify.Tilemap(64, 64),
+    ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
+    grass: new gameify.Tilemap(tilemapSize, tilemapSize),
+    nature: new gameify.Tilemap(tilemapSize, tilemapSize),
 };
 for (const layerName in mapLayers) {
     const layer = mapLayers[layerName];
