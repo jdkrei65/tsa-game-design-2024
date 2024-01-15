@@ -1,6 +1,7 @@
-import { dialogue } from './dialogue.js';
+
 import { gameify } from './gameify/gameify.js';
 import { manageModes } from './manageModes.js';
+import { build } from './build.js';
 
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const clipboardButtonImage = buildingTileset.getTile(1, 4);
@@ -103,6 +104,8 @@ const levels = [{
 }, {
     name: 'placeholder',
     villagers: 99999,
+    buildings: [],
+    mapAreas: [],
     requirements: [{
         goal: goals.build["house"],
         num: 9999
@@ -110,7 +113,7 @@ const levels = [{
         goal: goals.build["forager's hut"],
         num: 99
     },{
-        goal: goals.build["water tank"],
+        goal: goals.build["barn"],
         num: 999
     }]
 }];
@@ -176,6 +179,11 @@ const levelUp = () => {
     }
 
     const level = levels[currentLevel];
+
+    for (const building of level.buildings) {
+        // unlock new buildings
+        build.buildings[building].unlocked = true;
+    }
 
     levelUpText.string = `Congratulations! You've built enough
 to become a ${level.name.toUpperCase()}!

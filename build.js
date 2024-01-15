@@ -10,12 +10,16 @@ const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 3
 const buildingMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingTileset);
 const buildButtonImages = {
-    build:            buildingTileset.getTile(0, 0),
-    buildActive:      buildingTileset.getTile(1, 0),
-    "house":          buildingTileset.getTile(2, 0),
-    "forager's hut":  buildingTileset.getTile(0, 1),
-    "water tank":     buildingTileset.getTile(1, 1),
-    demolishBuilding: buildingTileset.getTile(1, 3),
+    build:              buildingTileset.getTile(0, 0),
+    buildActive:        buildingTileset.getTile(1, 0),
+    "house":            buildingTileset.getTile(2, 0),
+    "forager's hut":    buildingTileset.getTile(0, 1),
+    "water tank":       buildingTileset.getTile(1, 1),
+    "witch hut":        buildingTileset.getTile(0, 6),
+    "farm":             buildingTileset.getTile(1, 7),
+    "barn":             buildingTileset.getTile(1, 6),
+    "__":               buildingTileset.getTile(0, 0),
+    demolishBuilding:   buildingTileset.getTile(1, 3),
 }
 
 // 2d array [x][y]
@@ -25,19 +29,44 @@ const collisionTileMaps = [];
 const buildings = {
     "house":      {
         image: buildingTileset.getTile(2, 1),
-        cost: { wood: 10, stone: 10 }
+        cost: { wood: 10, stone: 5 },
+        unlocked: true,
     },
     "forager's hut":  {
         image: buildingTileset.getTile(0, 2),
-        cost: { wood: 15 }
+        cost: { wood: 15 },
+        unlocked: true,
     },
     "water tank":  {
         image: buildingTileset.getTile(1, 2),
-        cost: { wood: 5, stone: 5 }
+        cost: { wood: 5, stone: 5 },
+        unlocked: true,
+    },
+    "farm":  {
+        image: buildingTileset.getTile(1, 5, 2, 1),
+        cost: { wood: 5, stone: 15, gold: 5 },
+        unlocked: false,
+    },
+    "witch hut":  {
+        image: buildingTileset.getTile(0, 7),
+        cost: { wood: 15, stone: 5 },
+        unlocked: false,
+    },
+    "barn":  {
+        image: buildingTileset.getTile(2, 6),
+        cost: { wood: 20, stone: 5 },
+        unlocked: false,
+    },
+    "__": {
+        // dummy building, never unlocked
+        image: buildingTileset.getTile(0, 0),
+        cost: {},
+        unlocked: false,
     },
     demolishBuilding: {
         image: buildingTileset.getTile(1, 3),
-        cost: {}
+        cost: {},
+        unlocked: true,
     }
 }
 
@@ -166,6 +195,7 @@ buildButtons['buildActive'].click = () => {
 let buttonHovered = false;
 
 export const build = {
+    buildings,
     collideWithMap: (tileMap) => {
         collisionTileMaps.push(tileMap);
     },
@@ -181,11 +211,21 @@ export const build = {
     },
     updateUI: (deltaTime, screen, player) => {
         buttonHovered = false;
+        buildButtons.demolishBuilding.moved = false;
         const mousePos = screen.mouse.getPosition();
 
         for (const bt in buildButtons) {
             const button = buildButtons[bt];
+
             if (!button.active) continue;
+            if (buildings[bt]?.unlocked === false) {
+                if (!buildButtons.demolishBuilding.moved) {
+                    buildButtons.demolishBuilding.moved = true;
+                    buildButtons.demolishBuilding.sprite.position.x = buildButtons[bt].sprite.position.x;
+                }
+                continue;
+            }
+
             const sprite = button.sprite;
             
             if (mousePos.x > sprite.position.x
@@ -270,6 +310,7 @@ export const build = {
         for (const bt in buildButtons) {
             const button = buildButtons[bt];
             if (!button.active) continue;
+            if (buildings[bt]?.unlocked === false) continue;
             button.sprite.draw();
         }
 
