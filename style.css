@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: 'DefaultFont';
-    src: url('/fonts/London.ttf');
+    src: url('./fonts/London.ttf');
 }
 
 html, body {
