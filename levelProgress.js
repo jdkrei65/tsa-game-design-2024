@@ -40,6 +40,7 @@ levelUpTextStyle.lineHeight = 1.5;
 // completed this level (see below for more info)
 const goals = {
     build: {
+        reset: false,
         text: '{c}/{n} {g}s built',
         "house": { },
         "forager's hut": { },
@@ -49,6 +50,7 @@ const goals = {
         "farm": { }
     },
     dialogue: {
+        reset: false,
         text: '[{x}] Read {g}',
         "tutorial": {
             text: "[{x}] Read the tutorial"
@@ -58,6 +60,7 @@ const goals = {
         }
     },
     map: {
+        reset: false,
         text: '[{x}] Visit the {g}',
         "desert": { }
     }
@@ -98,10 +101,10 @@ const levels = [{
     mapAreas: ["outer plains"],
     requirements: [{
         goal: goals.build["house"],
-        num: 4
+        num: 6
     },{
         goal: goals.build["water tank"],
-        num: 2
+        num: 3
     },{
         goal: goals.build["farm"],
         num: 1
@@ -187,9 +190,10 @@ const levelUp = () => {
     for (const type in goals) {
         for (const goal in goals[type]) {
             if (typeof goals[type][goal] !== 'object') continue;
-
-            // reset goal counters
-            goals[type][goal].completed = 0;
+            if (typeof goals[type].reset === true) {
+                // reset goal counters
+                goals[type][goal].completed = 0;
+            }
         }
     }
 
