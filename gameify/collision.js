@@ -166,14 +166,37 @@ export let shapes = {
          */
         this.collidesWith = (obj, recursion) => {
             if (obj.type === "Rectangle") {
-                if (this.x < obj.x + obj.size.x && this.x + this.size.x > obj.x
-                    && this.y < obj.y + obj.size.y && this.y + this.size.y > obj.y
-                ) {
-                    return true;
+                // top left corner inside (or on) obj
+                /*if (this.position.x <= obj.position.x + obj.size.x
+                    && this.position.y <= obj.position.y + obj.size.y
+                    && this.position.x >= obj.position.x
+                    && this.position.y >= obj.position.y
+                ) return true;
+                // top right
+                else if (this.position.x + this.size.x <= obj.position.x + obj.size.x
+                    && this.position.y <= obj.position.y + obj.size.y
+                    && this.position.x + this.size.x >= obj.position.x
+                    && this.position.y >= obj.position.y
+                ) return true;
+                // bottom left
+                if (this.position.x <= obj.position.x + obj.size.x
+                    && this.position.y + this.size.y <= obj.position.y + obj.size.y
+                    && this.position.x >= obj.position.x
+                    && this.position.y + this.size.y >= obj.position.y
+                ) return true;
+                // bottom right
+                else if (this.position.x + this.size.x <= obj.position.x + obj.size.x
+                    && this.position.y + this.size.y <= obj.position.y + obj.size.y
+                    && this.position.x + this.size.x >= obj.position.x
+                    && this.position.y + this.size.y >= obj.position.y
+                ) return true;
 
-                } else {
-                    return false;
-                }
+                else*/ if (this.position.x < obj.position.x + obj.size.x && this.position.x + this.size.x > obj.position.x
+                    && this.position.y < obj.position.y + obj.size.y && this.position.y + this.size.y > obj.position.y
+                ) return true;
+
+                // else no collision
+                return false;
 
             } else if (obj.type === "Circle") {
                 const topRight = new vectors.Vector2d(this.position);
