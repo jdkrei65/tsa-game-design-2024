@@ -9,7 +9,19 @@
 <body>
 
     <div id="links">
-        <a target="_blank" href="./gameify/out/">Docs</a>
+        Make sure you press CTRL+SHIFT+R to force reload<br>
+        <a target="_blank" href="./gameify/out/">Library Docs</a>
+
+        <label>
+            <input type="checkbox" onchange="window.DRAW_SHAPES = this.checked;"> Show collision shapes
+        </label>
+        <label>
+            <input type="checkbox" onchange="window.DISPLAY_FRAME_TIME = this.checked;"> Show frame stats
+        </label>
+        <label>
+            <input type="checkbox" onchange="window.COLLISIONS_ENABLED = this.checked;" checked> Enable collisions
+        </label>
+
         <div><code id="err"></code></div>
     </div>
     
