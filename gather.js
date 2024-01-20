@@ -1,6 +1,7 @@
 import { gameify } from './gameify/gameify.js';
 import { manageModes } from './manageModes.js';
 import { message } from './message.js';
+import { StaticSpacialHashArray } from './spacialHash.js';
 
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 
@@ -27,6 +28,8 @@ manageModes.addMode('gather', enterGatherMode, exitGatherMode);
 
 const gatherables = {
     tree: {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [15, 40, 34, 25],
         sources: [
             [3, 4],
             [5, 4],
@@ -37,6 +40,8 @@ const gatherables = {
         }
     },
     appleTree: {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [15, 40, 34, 25],
         sources: [
             [4, 4]
         ],
@@ -46,6 +51,8 @@ const gatherables = {
         }
     },
     bush: {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [10, 40, 44, 25],
         sources: [
             [1, 4],
             [2, 4]
@@ -65,6 +72,8 @@ const gatherables = {
         }
     },
     rock: {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [8, 42, 48, 20],
         sources: [
             [3, 3],
             [4, 3]
@@ -74,6 +83,10 @@ const gatherables = {
         }
     },
     largeRock: {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [10, 40, 44, 25],
+        //collisionShape: gameify.shapes.Circle,
+        //collisionArgs: [32, 41, 25],
         sources: [
             [5, 3]
         ],
@@ -89,6 +102,7 @@ const gatherables = {
         resources: { /* Nothing */ }
     },
 }
+let collisionShapes = undefined; // defined in setScreen (b/c that's after window.OPTION variables are set)
 
 const gatherItem = (position, player) => {
     const tile = resourceMap.get(position.x, position.y);
@@ -125,9 +139,35 @@ export const gather = {
     setScreen: (screen) => {
         screen.add(gatherButton);
         screen.add(previewGatherSprite);
+        collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
     setMap: (map) => {
         resourceMap = map;
+        map.listTiles().forEach(tile => {
+            for (const type in gatherables) {
+                const item = gatherables[type];
+                if (!item.collisionShape) continue;
+                // Check each possible position
+                for (const source of item.sources) {
+                    if (source[0] === tile.source.x && source[1] === tile.source.y) {
+                        const newShape = new item.collisionShape(...item.collisionArgs)
+                        newShape.position.x += tile.position.x * map.twidth;
+                        newShape.position.y += tile.position.y * map.twidth;
+                        collisionShapes.addItem(newShape.position, newShape);
+                    }
+                }
+            }
+        });
+    },
+    collidesWithMap: (shape) => {
+        shape.fillColor = '#00f3';
+        return collisionShapes.forEachNearby(shape.position, (colShape) => {
+            if (shape.collidesWith(colShape)) {
+                shape.fillColor = '#f008';
+                colShape.fillColor = '#ff08';
+                return true;
+            }
+        }, true);
     },
     updateUI: (deltaTime, screen, player) => {
         const mousePos = screen.mouse.getPosition();
@@ -181,10 +221,14 @@ export const gather = {
             gatherItem(targetMapPosition, player);
         }
     },
-    draw: () => {
+    draw: (screen, player) => {
         if (gatherModeActive) {
             previewGatherSprite.draw();
         }
+
+        if (window.DRAW_SHAPES) collisionShapes.forEachNearby(player.sprite.shape.position, (shape) => {
+            shape.draw(screen.context);
+        });
     },
     drawUI: () => {
         gatherButton.draw();

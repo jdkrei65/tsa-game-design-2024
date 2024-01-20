@@ -5,10 +5,22 @@ import { message } from './message.js';
 import { gather } from './gather.js';
 import { levelProgress } from './levelProgress.js';
 import { signs } from './signs.js';
+import { StaticSpacialHashArray } from './spacialHash.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
 import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
 import oceanTilemapData  from './mapdata/oceanlayer.tilemapdata.js';
+
+// debug options
+window.DRAW_SHAPES          = false;    // default false
+window.DISPLAY_FRAME_TIME   = false;    // default false
+// other options
+window.COLLISIONS_ENABLED   = true;     // default true
+window.SPACIAL_HASH_SIZE    = 96;       // default 128 (2x2 tiles)
+
+// NOTE TO SELF:
+// draw trees above player before the player, and ones below after the player
+// draw paths on separate(?) map or with the "above trees"
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
@@ -54,6 +66,8 @@ const player = {
         gold: 10
     }
 };
+player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
+//player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
 player.sprite.scale = .2;
 screen.add(player.sprite);
 
@@ -67,8 +81,28 @@ const tilemapSize = 64;
 const mapLayers = {
     ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
     grass: new gameify.Tilemap(tilemapSize, tilemapSize),
-    nature: new gameify.Tilemap(tilemapSize, tilemapSize),
+    nature: new gameify.Tilemap(tilemapSize, tilemapSize)
 };
+const mapData = {
+    ocean: {
+        collisionShapes: new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE), // 1.5x1.5 tile chunks
+        collidesWithMap: (shape) => {
+            shape.fillColor = '#00f3';
+            return mapData.ocean.collisionShapes.forEachNearby(shape.position, (oceanShape) => {
+                if (shape.collidesWith(oceanShape)) {
+                    shape.fillColor = '#f008';
+                    oceanShape.fillColor = '#ff08';
+                    return true;
+                }
+            }, true);
+        },
+        drawShapes: () => {
+            mapData.ocean.collisionShapes.forEachNearby(player.sprite.shape.position, (shape) => {
+                shape.draw(screen.context);
+            });
+        }
+    }
+}
 for (const layerName in mapLayers) {
     const layer = mapLayers[layerName];
     layer.setTileset(worldMapTileset);
@@ -78,6 +112,13 @@ mapLayers.grass.loadMapData(grassTilemapData);
 mapLayers.nature.loadMapData(natureTilemapData);
 mapLayers.ocean.loadMapData(oceanTilemapData);
 gather.setMap(mapLayers.nature);
+mapLayers.ocean.listTiles().forEach(tile => {
+    //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
+    const newShape = new gameify.shapes.Rectangle(0, 0, 64, 64);
+    newShape.position.x += tile.position.x * mapLayers.ocean.twidth;
+    newShape.position.y += tile.position.y * mapLayers.ocean.twidth;
+    mapData.ocean.collisionShapes.addItem(newShape.position, newShape);
+});
 
 // Don't build on the ocean or the trees
 build.collideWithMap(mapLayers.ocean);
@@ -109,6 +150,9 @@ signs.addSign(6*64, 1*64, 'Welcome to your village!\n\n\n\n[SPACE to rename the 
     if (name) sign.text = `Welcome to ${name}!\n\n\n\n[SPACE to rename ${name}]`;
 });
 
+
+const lastDeltaTimes = [];
+let greatestDeltaTimeSpike = 0;
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
@@ -153,13 +197,56 @@ plainsWorldScene.onUpdate((deltaTime) => {
     player.sprite.velocity.normalize();
     player.sprite.velocity = player.sprite.velocity.multiply(player.speed);
 
-    // moves according to velocity
-    // does deltaTime for you
-    player.sprite.update(deltaTime);
+    // collision nonsense is copied from one of my sample projects
+    // it works "good enough(TM)"
+    const lastPosition = player.sprite.position.copy();
+    const lastVelocity = player.sprite.velocity.copy();
+    const directions = [0,
+                        45, -45,
+                        65, -65];
+    for (const dir of directions) {
+        // Try to move at 0deg to target, but also rotated a bit to slide along walls
+        player.sprite.velocity = lastVelocity.rotatedDegrees(dir);
+        // The update function takes the velocity and moves the player
+        player.sprite.update(deltaTime);
+        
+        // Check if the player collides with any of the map objects
+        if (!window.COLLISIONS_ENABLED) break;
+        else if (gather.collidesWithMap(player.sprite.shape)
+            || mapData.ocean.collidesWithMap(player.sprite.shape)
+        ) {
+            // revert to before collision
+            player.sprite.position = lastPosition;
+            
+        } else break; // no collision? we're done here.
+    }
 
     for (const res in resourceIndicators) {
         const text = resourceIndicators[res].text;
         text.string = player.resources[res];
+    }
+
+    if (window.DISPLAY_FRAME_TIME) {
+        lastDeltaTimes.push(deltaTime);
+        const niceDT = Math.floor(deltaTime)
+        const averageTime = Math.floor(lastDeltaTimes.reduce((a, b) => a + b) / lastDeltaTimes.length);
+
+        const numFrames = 120;
+        const lastNFrames = lastDeltaTimes.slice(Math.max(lastDeltaTimes.length - numFrames, 0));
+        const averageTimeLastN = Math.floor(lastNFrames.reduce((a, b) => a + b) / lastNFrames.length);
+
+        if (deltaTime > greatestDeltaTimeSpike) {
+            greatestDeltaTimeSpike = Math.floor(deltaTime);
+        }
+
+        const maxLastNFrames = Math.floor(Math.max(...lastNFrames));
+
+        dialogue.setText(`deltaTime: ${niceDT} (${Math.floor(1000/niceDT)}fps)  Average: ${averageTime} (${
+            Math.floor(1000/averageTime)}fps)
+Average last ${numFrames} frames: ${averageTimeLastN} (${Math.floor(1000/averageTimeLastN)}fps)
+Spike: ${greatestDeltaTimeSpike} (${Math.floor(1000/greatestDeltaTimeSpike)}fps)    Spike last ${
+    numFrames} frames: ${maxLastNFrames} (${Math.floor(1000/maxLastNFrames)}fps)
+`, true);
     }
 
     message.updateMessage(deltaTime);
@@ -168,15 +255,21 @@ plainsWorldScene.onUpdate((deltaTime) => {
 plainsWorldScene.onDraw(() => {
     screen.clear('#efe');
 
-    for (const layerName in mapLayers) {
-        mapLayers[layerName].draw();
-    }
+    mapLayers.ocean.draw();
+    mapLayers.grass.draw();
     
     signs.draw();
     player.sprite.draw();
+
+    mapLayers.nature.draw();
     
-    gather.draw();
+    gather.draw(screen, player);
     build.draw();
+
+    if (window.DRAW_SHAPES) {
+        player.sprite.shape.draw(screen.context);
+        mapData.ocean.drawShapes();
+    }
 
     screen.camera.setDrawMode('ui');
     
