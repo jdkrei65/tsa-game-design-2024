@@ -23,10 +23,32 @@ export const dialogue = {
         screen.add(dlText);
         screen.add(dlContinueText);
     },
-    setText: (text) => {
+    /** Set the dialogue text
+     * @param {string} text - the text
+     * @param {boolean|string} [overwrite=false] - force the text even if a scene is active
+     * (if it's a string, only overwrite if currentScene.startsWith(overwrite))
+     * @param {string} [identifier=undefined] - treat the dialogue like a scene, and use this name
+     */
+    setText: (text, overwrite = false, identifier = undefined) => {
+        if ((!overwrite || !currentScene?.startsWith(overwrite)) && currentScene) return;
         dlIsOpen = true;
-        currentScene = undefined;
+        currentScene = identifier;
         dlText.string = text;
+
+        if (identifier.startsWith('Sign_')) {
+            dlContinueText.string = '';
+        } else {
+            dlContinueText.string = '[SPACE to continue]';
+        }
+    },
+    closeIfActive: (identifier) => {
+        if (currentScene === identifier) {
+            dialogue.forceClose()
+        }
+    },
+    forceClose: () => {
+        currentScene = undefined;
+        dlIsOpen = false;
     },
     setScene: (line, num = 0) => {
         dlIsOpen = true;
@@ -34,12 +56,15 @@ export const dialogue = {
         curScenePos = num;
     },
     updateBox: () => {
-        if (currentScene && screen.keyboard.keyWasJustPressed('Space')) {
+        const spacePressed = screen.keyboard.keyWasJustPressed('Space');
+        if (dialogue.lines[currentScene] && spacePressed) {
             curScenePos++;
             if (!dialogue.lines[currentScene][curScenePos]) {
                 levelProgress.completeGoal('dialogue', currentScene);
-                dlIsOpen = false;
+                dialogue.forceClose();
             }
+        } else if (dlIsOpen && spacePressed && !currentScene.startsWith('Sign_')) {
+            dialogue.forceClose();
         }
     },
     getCurPos: () => curScenePos,
@@ -50,9 +75,6 @@ export const dialogue = {
 
         if (dialogue.lines[currentScene]) {
             dlText.string = dialogue.lines[currentScene][curScenePos];
-        } else if (currentScene) {
-            console.warn('No dialogue for scene: ' + currentScene);
-            currentScene = undefined;
         }
 
         dlBox.draw();

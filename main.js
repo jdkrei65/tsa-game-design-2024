@@ -4,6 +4,7 @@ import { build } from './build.js';
 import { message } from './message.js';
 import { gather } from './gather.js';
 import { levelProgress } from './levelProgress.js';
+import { signs } from './signs.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
 import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
@@ -103,6 +104,12 @@ for (const r in player.resources) {
     rBtnPos += 1;
 }
 
+signs.addSign(6*64, 1*64, 'Welcome to your village!\n\n\n\n[SPACE to rename the village]', screen, (sign)=>{
+    const name = prompt('Enter a name for your village');
+    if (name) sign.text = `Welcome to the village of ${name}!\n\n\n\n[SPACE to rename ${name}]`;
+});
+
+
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onUpdate((deltaTime) => {
     // Reset the mouse cursor to default
@@ -118,6 +125,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
     // ... then update the rest
     gather.update(deltaTime, screen, player);
     build.update(deltaTime, screen, player);
+    signs.update(deltaTime, screen, player);
     dialogue.updateBox();
 
     // reset each frame so we don't go super fast
@@ -164,6 +172,7 @@ plainsWorldScene.onDraw(() => {
         mapLayers[layerName].draw();
     }
     
+    signs.draw();
     player.sprite.draw();
     
     gather.draw();
