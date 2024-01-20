@@ -31,12 +31,12 @@ export const dialogue = {
      * @return true if text is displayed, false if not
      */
     setText: (text, overwrite = false, identifier = undefined) => {
-        if ((!overwrite || !currentScene?.startsWith(overwrite)) && currentScene) return false;
+        if (!overwrite === true && !currentScene?.startsWith(overwrite) && currentScene) return false;
         dlIsOpen = true;
         currentScene = identifier;
         dlText.string = text;
 
-        if (identifier.startsWith('Sign_')) {
+        if (identifier?.startsWith('Sign_')) {
             dlContinueText.string = '';
         } else {
             dlContinueText.string = '[SPACE to continue]';
@@ -66,7 +66,7 @@ export const dialogue = {
                 levelProgress.completeGoal('dialogue', currentScene);
                 dialogue.forceClose();
             }
-        } else if (dlIsOpen && spacePressed && !currentScene.startsWith('Sign_')) {
+        } else if (dlIsOpen && spacePressed && !currentScene?.startsWith('Sign_')) {
             dialogue.forceClose();
         }
     },
