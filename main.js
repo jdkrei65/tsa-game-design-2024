@@ -106,7 +106,7 @@ for (const r in player.resources) {
 
 signs.addSign(6*64, 1*64, 'Welcome to your village!\n\n\n\n[SPACE to rename the village]', screen, (sign)=>{
     const name = prompt('Enter a name for your village');
-    if (name) sign.text = `Welcome to the village of ${name}!\n\n\n\n[SPACE to rename ${name}]`;
+    if (name) sign.text = `Welcome to ${name}!\n\n\n\n[SPACE to rename ${name}]`;
 });
 
 
