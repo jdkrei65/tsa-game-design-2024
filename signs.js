@@ -22,8 +22,8 @@ export const signs = {
     update: (deltaTime, screen, player) => {
         for (const sign of signSprites) {
             if (player.sprite.position.distanceTo(sign.sprite.position) < 50) {
-                dialogue.setText('A nearby sign says:\n' + sign.text, 'Sign_', sign.id);
-                if (screen.keyboard.keyWasJustPressed('Space') && sign.action) {
+                const visible = dialogue.setText('A nearby sign says:\n' + sign.text, 'Sign_', sign.id);
+                if (visible && screen.keyboard.keyWasJustPressed('Space') && sign.action) {
                     sign.action(sign);
                 }
             } else {

@@ -28,9 +28,10 @@ export const dialogue = {
      * @param {boolean|string} [overwrite=false] - force the text even if a scene is active
      * (if it's a string, only overwrite if currentScene.startsWith(overwrite))
      * @param {string} [identifier=undefined] - treat the dialogue like a scene, and use this name
+     * @return true if text is displayed, false if not
      */
     setText: (text, overwrite = false, identifier = undefined) => {
-        if ((!overwrite || !currentScene?.startsWith(overwrite)) && currentScene) return;
+        if ((!overwrite || !currentScene?.startsWith(overwrite)) && currentScene) return false;
         dlIsOpen = true;
         currentScene = identifier;
         dlText.string = text;
@@ -40,6 +41,8 @@ export const dialogue = {
         } else {
             dlContinueText.string = '[SPACE to continue]';
         }
+
+        return true;
     },
     closeIfActive: (identifier) => {
         if (currentScene === identifier) {
