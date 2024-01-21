@@ -31,7 +31,7 @@ export const dialogue = {
      * @return true if text is displayed, false if not
      */
     setText: (text, overwrite = false, identifier = undefined) => {
-        if (!overwrite === true && !currentScene?.startsWith(overwrite) && currentScene) return false;
+        if (overwrite !== true && !currentScene?.startsWith(overwrite) && currentScene) return false;
         dlIsOpen = true;
         currentScene = identifier;
         dlText.string = text;
