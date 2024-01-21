@@ -15,12 +15,14 @@ import oceanTilemapData  from './mapdata/oceanlayer.tilemapdata.js';
 window.DRAW_SHAPES          = false;    // default false
 window.DISPLAY_FRAME_TIME   = false;    // default false
 // other options
+window.RESIZE_CANVAS        = 'always'; // 'always', 'stepped', or 'never'
 window.COLLISIONS_ENABLED   = true;     // default true
 window.SPACIAL_HASH_SIZE    = 96;       // default 128 (2x2 tiles)
 
 // NOTE TO SELF:
 // draw trees above player before the player, and ones below after the player
 // draw paths on separate(?) map or with the "above trees"
+// remove collisions after gathering
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
@@ -40,10 +42,41 @@ window.onerror = onerror = (event, source, lineno, colno, error) => {
     }
 })(console.log)
 
-
+// don't change these
+const SCREEN_WIDTH = 800;
+const SCREEN_HEIGHT = 600;
 const canvasElement = document.querySelector('#game-canvas');
-const screen = new gameify.Screen(canvasElement, 800, 600);
+const screen = new gameify.Screen(canvasElement, SCREEN_WIDTH, SCREEN_HEIGHT);
 screen.setAntialiasing(false);
+
+const rs = (evt) => {
+    const margin = 32;
+
+    let height = window.innerHeight - margin //Math.floor((window.innerHeight-margin)/300)*300;
+    let width = window.innerWidth - margin //Math.floor((window.innerWidth-margin)/400)*400;
+
+    if (window.RESIZE_CANVAS === 'stepped') {
+        height = Math.floor((window.innerHeight-margin)/300)*300;
+        width = Math.floor((window.innerWidth-margin)/400)*400;
+    }
+    if (window.RESIZE_CANVAS === 'never' || window.innerHeight < 300+margin || window.innerWidth < 400+margin) {
+        canvasElement.style.height = 'unset';
+        canvasElement.style.width = 'unset';
+        return;
+    }
+    
+    const windowRatio = window.innerWidth/window.innerHeight;
+    const screenRatio = screen.width/screen.height
+
+    if (windowRatio > screenRatio) {
+        width = (height*screenRatio);
+    } else {
+        height = (width/screenRatio);
+    }
+    canvasElement.style.height = height + 'px';
+    canvasElement.style.width = width + 'px';
+}
+window.onresize = rs; rs();
 
 // Init imported things
 dialogue.setScreen(screen);

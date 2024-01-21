@@ -21,6 +21,13 @@
         <label>
             <input type="checkbox" onchange="window.COLLISIONS_ENABLED = this.checked;" checked> Enable collisions
         </label>
+        <label>
+            <select onchange="window.RESIZE_CANVAS = this.value; window.onresize()">
+                <option>always</option>
+                <option>stepped</option>
+                <option>never</option>
+            </select> Resize game canvas
+        </label>
 
         <div><code id="err"></code></div>
     </div>

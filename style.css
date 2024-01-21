@@ -6,7 +6,7 @@
 }
 
 html, body {
-    background: #ddd;
+    background: #448;
     height: 100%;
     margin: 0;
 }
@@ -31,6 +31,7 @@ canvas {
 }
 
 #links {
+    color: white;
     position: fixed;
     z-index: 1;
     top: 0px;
@@ -42,5 +43,11 @@ canvas {
     height: 100%;
 
     font-family: monospace;
-    border: 1px dashed black;
+    background: #337;
+}
+#links a {
+    color: #88f;
+}
+#links:hover {
+    z-index: 9;
 }
