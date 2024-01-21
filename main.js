@@ -121,7 +121,8 @@ const mapData = {
         collisionShapes: new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE), // 1.5x1.5 tile chunks
         collidesWithMap: (shape) => {
             shape.fillColor = '#00f3';
-            return mapData.ocean.collisionShapes.forEachNearby(shape.position, (oceanShape) => {
+            return mapData.ocean.collisionShapes.forEachNearby(shape.position, (result) => {
+                const oceanShape = result.item;
                 if (shape.collidesWith(oceanShape)) {
                     shape.fillColor = '#f008';
                     oceanShape.fillColor = '#ff08';
@@ -130,8 +131,8 @@ const mapData = {
             }, true);
         },
         drawShapes: () => {
-            mapData.ocean.collisionShapes.forEachNearby(player.sprite.shape.position, (shape) => {
-                shape.draw(screen.context);
+            mapData.ocean.collisionShapes.forEachNearby(player.sprite.shape.position, (result) => {
+                result.item.draw(screen.context);
             });
         }
     }

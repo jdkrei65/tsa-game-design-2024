@@ -14,7 +14,20 @@ export class StaticSpacialHashArray {
         if (!this.chunks[chunkX]) this.chunks[chunkX] = {};
         if (!this.chunks[chunkX][chunkY]) this.chunks[chunkX][chunkY] = [];
 
-        this.chunks[chunkX][chunkY].push(item);
+        this.chunks[chunkX][chunkY].push({item: item, position: position});
+    }
+
+    removeItem(position) {
+        const chunkX = Math.floor(position.x / this.chunkSize);
+        const chunkY = Math.floor(position.y / this.chunkSize);
+        for (const index in this.chunks[chunkX][chunkY]) {
+            const item = this.chunks[chunkX][chunkY][index];
+            if (item.position.x == position.x && item.position.y == position.y) {
+                this.chunks[chunkX][chunkY].splice(index, 1);
+                return true;
+            }
+        }
+        return false;
     }
 
     getAllInChunk(position) {

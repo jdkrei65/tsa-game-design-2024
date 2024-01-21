@@ -121,6 +121,7 @@ const gatherItem = (position, player) => {
                 }
                 // Remove from map
                 resourceMap.remove(position.x, position.y);
+                collisionShapes.removeItem(position.multiply(resourceMap.twidth));
 
                 gatheredItem = true;
                 break gatherableLoop;
@@ -153,7 +154,7 @@ export const gather = {
                         const newShape = new item.collisionShape(...item.collisionArgs)
                         newShape.position.x += tile.position.x * map.twidth;
                         newShape.position.y += tile.position.y * map.twidth;
-                        collisionShapes.addItem(newShape.position, newShape);
+                        collisionShapes.addItem(tile.position.multiply(map.twidth), newShape);
                     }
                 }
             }
@@ -161,7 +162,8 @@ export const gather = {
     },
     collidesWithMap: (shape) => {
         shape.fillColor = '#00f3';
-        return collisionShapes.forEachNearby(shape.position, (colShape) => {
+        return collisionShapes.forEachNearby(shape.position, (result) => {
+            const colShape = result.item;
             if (shape.collidesWith(colShape)) {
                 shape.fillColor = '#f008';
                 colShape.fillColor = '#ff08';
@@ -226,8 +228,8 @@ export const gather = {
             previewGatherSprite.draw();
         }
 
-        if (window.DRAW_SHAPES) collisionShapes.forEachNearby(player.sprite.shape.position, (shape) => {
-            shape.draw(screen.context);
+        if (window.DRAW_SHAPES) collisionShapes.forEachNearby(player.sprite.shape.position, (result) => {
+            result.item.draw(screen.context);
         });
     },
     drawUI: () => {
