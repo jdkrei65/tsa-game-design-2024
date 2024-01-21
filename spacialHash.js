@@ -20,6 +20,7 @@ export class StaticSpacialHashArray {
     removeItem(position) {
         const chunkX = Math.floor(position.x / this.chunkSize);
         const chunkY = Math.floor(position.y / this.chunkSize);
+        if (!this.chunks[chunkX] || !this.chunks[chunkX][chunkY]) return false;
         for (const index in this.chunks[chunkX][chunkY]) {
             const item = this.chunks[chunkX][chunkY][index];
             if (item.position.x == position.x && item.position.y == position.y) {

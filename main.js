@@ -99,6 +99,7 @@ const player = {
         gold: 10
     }
 };
+window.PLAYER_RESOURCES = player.resources; // for debug buttons
 player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
 //player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
 player.sprite.scale = .2;
@@ -157,9 +158,9 @@ mapLayers.ocean.listTiles().forEach(tile => {
 });
 
 // Don't build on the ocean or the trees
-build.collideWithMap(mapLayers.ocean);
-build.collideWithMap(mapLayers.nature);
-build.collideWithMap(mapLayers.path);
+build.addBuildObstacleMap(mapLayers.ocean);
+build.addBuildObstacleMap(mapLayers.nature);
+build.addBuildObstacleMap(mapLayers.path);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
 const resourceIndicators = {}
@@ -250,6 +251,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
         // Check if the player collides with any of the map objects
         if (!window.COLLISIONS_ENABLED) break;
         else if (gather.collidesWithMap(player.sprite.shape)
+            || build.collidesWithMap(player.sprite.shape)
             || mapData.ocean.collidesWithMap(player.sprite.shape)
         ) {
             // revert to before collision
@@ -302,8 +304,10 @@ plainsWorldScene.onDraw(() => {
         }
         return tile.__tsa_already_drawn = false;
     });
-    
+
+    build.draw(screen, player);
     signs.draw();
+    
     player.sprite.draw();
 
 
@@ -312,7 +316,6 @@ plainsWorldScene.onDraw(() => {
     });
     
     gather.draw(screen, player);
-    build.draw();
 
     if (window.DRAW_SHAPES) {
         player.sprite.shape.draw(screen.context);

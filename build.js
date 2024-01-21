@@ -2,6 +2,7 @@ import { gameify } from './gameify/gameify.js';
 import { message } from './message.js';
 import { manageModes } from './manageModes.js';
 import { levelProgress } from './levelProgress.js';
+import { StaticSpacialHashArray } from './spacialHash.js';
 
 let buildModeActive = false;
 let currentlyBuilding = false;
@@ -28,16 +29,22 @@ const collisionTileMaps = [];
 
 const buildings = {
     "house":      {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [12, 12, 40, 46],
         image: buildingTileset.getTile(2, 1),
         cost: { wood: 10, stone: 5 },
         unlocked: true,
     },
     "forager's hut":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [10, 8, 46, 46],
         image: buildingTileset.getTile(0, 2),
         cost: { wood: 15 },
         unlocked: true,
     },
     "water tank":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [14, 16, 36, 38],
         image: buildingTileset.getTile(1, 2),
         cost: { wood: 5, stone: 5 },
         unlocked: true,
@@ -48,11 +55,15 @@ const buildings = {
         unlocked: false,
     },
     "witch hut":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [9, 16, 46, 40],
         image: buildingTileset.getTile(0, 7),
         cost: { wood: 15, stone: 5 },
         unlocked: false,
     },
     "barn":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [6, 18, 54, 40],
         image: buildingTileset.getTile(2, 6),
         cost: { wood: 20, stone: 5 },
         unlocked: false,
@@ -142,6 +153,7 @@ const placeBuilding = (buildingName, building, position, resources) => {
 
         placedBuildings[position.y][position.x] = undefined;
         buildingMap.remove(position.x, position.y);
+        collisionShapes.removeItem(position.multiply(buildingMap.twidth));
         return;
     }
 
@@ -181,6 +193,13 @@ const placeBuilding = (buildingName, building, position, resources) => {
         tile.size.x, tile.size.y // size (how many tiles tall/wide)
     );
 
+    if (building.collisionShape) {
+        const newShape = new building.collisionShape(...building.collisionArgs)
+        newShape.position.x += position.x * buildingMap.twidth;
+        newShape.position.y += position.y * buildingMap.twidth;
+        collisionShapes.addItem(position.multiply(buildingMap.twidth), newShape);
+    }
+
     // Mark goals as completed
     levelProgress.completeGoal('build', buildingName);
 }
@@ -193,11 +212,23 @@ buildButtons['buildActive'].click = () => {
 }
 
 let buttonHovered = false;
+let collisionShapes = undefined; // defined in setScreen (b/c that's after window.OPTION variables are set)
 
 export const build = {
     buildings,
-    collideWithMap: (tileMap) => {
+    addBuildObstacleMap: (tileMap) => {
         collisionTileMaps.push(tileMap);
+    },
+    collidesWithMap: (shape) => {
+        shape.fillColor = '#00f3';
+        return collisionShapes.forEachNearby(shape.position, (result) => {
+            const colShape = result.item;
+            if (shape.collidesWith(colShape)) {
+                shape.fillColor = '#f008';
+                colShape.fillColor = '#ff08';
+                return true;
+            }
+        }, true);
     },
     setScreen: (screen) => {
         for (const bt in buildButtons) {
@@ -208,6 +239,7 @@ export const build = {
         screen.add(buildingMap);
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
+        collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
     updateUI: (deltaTime, screen, player) => {
         buttonHovered = false;
@@ -296,7 +328,7 @@ export const build = {
             placeBuilding(currentlyBuilding, buildings[currentlyBuilding], mouseMapPosition, player.resources);
         }
     },
-    draw: () => {
+    draw: (screen, player) => {
         buildingMap.draw();
         if (currentlyBuilding && !buttonHovered) {
             previewBuildSprite.image.opacity = 0.5;
@@ -305,6 +337,9 @@ export const build = {
             previewBuildSprite.image.opacity = 1;
         }
 
+        if (window.DRAW_SHAPES) collisionShapes.forEachNearby(player.sprite.shape.position, (result) => {
+            result.item.draw(screen.context);
+        });
     },
     drawUI: () => {
         for (const bt in buildButtons) {
