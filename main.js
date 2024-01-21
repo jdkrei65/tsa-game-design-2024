@@ -10,6 +10,7 @@ import { StaticSpacialHashArray } from './spacialHash.js';
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
 import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
 import oceanTilemapData  from './mapdata/oceanlayer.tilemapdata.js';
+import pathTilemapData  from './mapdata/pathlayer.tilemapdata.js';
 
 // debug options
 window.DRAW_SHAPES          = false;    // default false
@@ -22,7 +23,6 @@ window.SPACIAL_HASH_SIZE    = 96;       // default 128 (2x2 tiles)
 // NOTE TO SELF:
 // draw trees above player before the player, and ones below after the player
 // draw paths on separate(?) map or with the "above trees"
-// remove collisions after gathering
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
@@ -114,7 +114,8 @@ const tilemapSize = 64;
 const mapLayers = {
     ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
     grass: new gameify.Tilemap(tilemapSize, tilemapSize),
-    nature: new gameify.Tilemap(tilemapSize, tilemapSize)
+    nature: new gameify.Tilemap(tilemapSize, tilemapSize),
+    path: new gameify.Tilemap(tilemapSize, tilemapSize)
 };
 const mapData = {
     ocean: {
@@ -145,6 +146,7 @@ for (const layerName in mapLayers) {
 mapLayers.grass.loadMapData(grassTilemapData);
 mapLayers.nature.loadMapData(natureTilemapData);
 mapLayers.ocean.loadMapData(oceanTilemapData);
+mapLayers.path.loadMapData(pathTilemapData);
 gather.setMap(mapLayers.nature);
 mapLayers.ocean.listTiles().forEach(tile => {
     //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
@@ -157,6 +159,7 @@ mapLayers.ocean.listTiles().forEach(tile => {
 // Don't build on the ocean or the trees
 build.collideWithMap(mapLayers.ocean);
 build.collideWithMap(mapLayers.nature);
+build.collideWithMap(mapLayers.path);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
 const resourceIndicators = {}
@@ -291,11 +294,22 @@ plainsWorldScene.onDraw(() => {
 
     mapLayers.ocean.draw();
     mapLayers.grass.draw();
+    mapLayers.path.draw();
+    mapLayers.nature.draw((tile, x, y) => {
+        // tile is above the player, draw it first
+        if (y*mapLayers.nature.theight < player.sprite.position.y) {
+            return tile.__tsa_already_drawn = true; // yes, assignment on purpose
+        }
+        return tile.__tsa_already_drawn = false;
+    });
     
     signs.draw();
     player.sprite.draw();
 
-    mapLayers.nature.draw();
+
+    mapLayers.nature.draw((tile, x, y) => {
+        return !tile.__tsa_already_drawn;
+    });
     
     gather.draw(screen, player);
     build.draw();
