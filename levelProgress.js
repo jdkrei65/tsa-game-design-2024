@@ -221,8 +221,7 @@ const exitLevelUpMode = () => {
     levelUpModeActive = false;
     manageModes.enterMode('clipboard');
 }
-
-console.log(levelUp);
+window.LEVEL_UP_FUNC = levelUp;
 
 manageModes.addMode('clipboard', enterClipboardMode, exitClipboardMode);
 manageModes.addMode('levelup', ()=>false, ()=>levelUpModeActive=false);
