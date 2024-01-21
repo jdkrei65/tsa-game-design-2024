@@ -19,6 +19,7 @@ window.DISPLAY_FRAME_TIME   = false;    // default false
 window.RESIZE_CANVAS        = 'always'; // 'always', 'stepped', or 'never'
 window.COLLISIONS_ENABLED   = true;     // default true
 window.SPACIAL_HASH_SIZE    = 96;       // default 128 (2x2 tiles)
+window.TEST_OPTIMIZATION_ENABLED = false; // default false
 
 // NOTE TO SELF:
 // draw trees above player before the player, and ones below after the player
@@ -291,13 +292,26 @@ Spike: ${greatestDeltaTimeSpike} (${Math.floor(1000/greatestDeltaTimeSpike)}fps)
     message.updateMessage(deltaTime);
 
 });
+
+const onlyDrawIfNear = (t, x, y) => {
+    if (!window.TEST_OPTIMIZATION_ENABLED) return true;
+    // all the maps are the same size, so
+    // we'll arbitrarily use the nature map for reference
+    if (x*mapLayers.nature.twidth + 550 < player.sprite.position.x
+        || x*mapLayers.nature.twidth - 550 > player.sprite.position.x
+        || y*mapLayers.nature.theight + 450 < player.sprite.position.y
+        || y*mapLayers.nature.theight - 450 > player.sprite.position.y) return false;
+    return true;
+}
+
 plainsWorldScene.onDraw(() => {
     screen.clear('#efe');
 
-    mapLayers.ocean.draw();
-    mapLayers.grass.draw();
-    mapLayers.path.draw();
+    mapLayers.ocean.draw(onlyDrawIfNear);
+    mapLayers.grass.draw(onlyDrawIfNear);
+    mapLayers.path.draw(onlyDrawIfNear);
     mapLayers.nature.draw((tile, x, y) => {
+        if (!onlyDrawIfNear(tile, x, y)) return false;
         // tile is above the player, draw it first
         if (y*mapLayers.nature.theight < player.sprite.position.y) {
             return tile.__tsa_already_drawn = true; // yes, assignment on purpose
@@ -307,12 +321,12 @@ plainsWorldScene.onDraw(() => {
 
     build.draw(screen, player);
     signs.draw();
-    
+
     player.sprite.draw();
 
 
     mapLayers.nature.draw((tile, x, y) => {
-        return !tile.__tsa_already_drawn;
+        return onlyDrawIfNear(tile, x, y) && !tile.__tsa_already_drawn;
     });
     
     gather.draw(screen, player);
