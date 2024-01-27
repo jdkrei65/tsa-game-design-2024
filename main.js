@@ -5,6 +5,7 @@ import { message } from './message.js';
 import { gather } from './gather.js';
 import { levelProgress } from './levelProgress.js';
 import { signs } from './signs.js';
+import { inputbox } from './inputbox.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
@@ -85,6 +86,7 @@ dialogue.setScene('tutorial');
 build.setScreen(screen);
 message.setScreen(screen);
 gather.setScreen(screen);
+inputbox.setScreen(screen);
 levelProgress.setScreen(screen);
 
 //Main Character
@@ -184,8 +186,9 @@ for (const r in player.resources) {
     rBtnPos += 1;
 }
 
-signs.addSign(6*64, 1*64, 'Welcome to your village!\n\n\n\n[SPACE to rename the village]', screen, (sign)=>{
-    const name = prompt('Enter a name for your village');
+signs.addSign(6*64, 1*64, 'Welcome to your village!\n\n\n\n[SPACE to rename the village]', screen, async (sign)=>{
+    const name = await inputbox.prompt('Enter a name for your village:');
+    console.log(name);
     if (name) sign.text = `Welcome to ${name}!\n\n\n\n[SPACE to rename ${name}]`;
 });
 

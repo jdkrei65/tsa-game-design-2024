@@ -113,6 +113,12 @@ export let gameify = {
             this.pressedKeys.push(this.makeKeyNicer(key));
         }
 
+        /** Force clear pressed keys
+         */
+        this.forceClearPressedKeys = () => {
+            this.pressedKeys = [];
+        }
+
         /** Called when a key is released
          * @private
          */
