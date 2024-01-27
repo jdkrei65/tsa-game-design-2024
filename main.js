@@ -297,7 +297,6 @@ Spike: ${greatestDeltaTimeSpike} (${Math.floor(1000/greatestDeltaTimeSpike)}fps)
 });
 
 const onlyDrawIfNear = (t, x, y) => {
-    if (!window.TEST_OPTIMIZATION_ENABLED) return true;
     // all the maps are the same size, so
     // we'll arbitrarily use the nature map for reference
     if (x*mapLayers.nature.twidth + 550 < player.sprite.position.x
