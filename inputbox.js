@@ -32,7 +32,6 @@ export const inputbox = {
 
         return new Promise((res, rej) => {
             const ok_click = () => {
-                console.log(input.value, '?');
                 res(allowInput ? input.value || '' : true);
                 this.close();
                 remove_events();
