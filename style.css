@@ -9,6 +9,7 @@ html, body {
     background: #448;
     height: 100%;
     margin: 0;
+    overflow: hidden;
 }
 div {
     display: flex;

@@ -9,7 +9,8 @@ dlBox.scale = 2
 const dlTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 const dlText = new gameify.Text("...", 80, 435, dlTextStyle);
 dlText.style.lineHeight = 1.3;
-const dlContinueText = new gameify.Text("[SPACE to continue]", 80, 545, dlTextStyle);
+const continueTextString = `[SPACE to continue, X to go back]`
+const dlContinueText = new gameify.Text(continueTextString, 80, 545, dlTextStyle);
 
 let screen = undefined;
 let currentScene = undefined;
@@ -39,7 +40,7 @@ export const dialogue = {
         if (identifier?.startsWith('Sign_')) {
             dlContinueText.string = '';
         } else {
-            dlContinueText.string = '[SPACE to continue]';
+            dlContinueText.string = continueTextString;
         }
 
         return true;
@@ -60,11 +61,21 @@ export const dialogue = {
     },
     updateBox: () => {
         const spacePressed = screen.keyboard.keyWasJustPressed('Space');
+        const backPressed = screen.keyboard.keyWasJustPressed('X');
         if (dialogue.lines[currentScene] && spacePressed) {
+            // go to next
             curScenePos++;
             if (!dialogue.lines[currentScene][curScenePos]) {
+                // complete the dialogue scene if there is no next
                 levelProgress.completeGoal('dialogue', currentScene);
                 dialogue.forceClose();
+            }
+        } else if (dialogue.lines[currentScene] && backPressed) {
+            // go back
+            curScenePos--;
+            if (!dialogue.lines[currentScene][curScenePos]) {
+                // undo go back if there is no back
+                curScenePos++;
             }
         } else if (dlIsOpen && spacePressed && !currentScene?.startsWith('Sign_')) {
             dialogue.forceClose();
