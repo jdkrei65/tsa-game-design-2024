@@ -6,6 +6,7 @@ import { gather } from './gather.js';
 import { levelProgress } from './levelProgress.js';
 import { signs } from './signs.js';
 import { inputbox } from './inputbox.js';
+import { villagers } from './villagers.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
@@ -83,8 +84,10 @@ window.onresize = rs; rs();
 // Init imported things
 dialogue.setScreen(screen);
 dialogue.setScene('tutorial');
+villagers.setScreen(screen);
 build.setScreen(screen);
 message.setScreen(screen);
+signs.setScreen(screen);
 gather.setScreen(screen);
 inputbox.setScreen(screen);
 levelProgress.setScreen(screen);
@@ -186,11 +189,14 @@ for (const r in player.resources) {
     rBtnPos += 1;
 }
 
-signs.addSign(6*64, 1*64, 'Welcome to your village!\n\n\n\n[SPACE to rename the village]', screen, async (sign)=>{
-    const name = await inputbox.prompt('Enter a name for your village:');
-    console.log(name);
-    if (name) sign.text = `Welcome to ${name}!\n\n\n\n[SPACE to rename ${name}]`;
-});
+let villageName = '';
+signs.addSign(6*64, 1*64, 'Welcome to your village!', screen, async (sign)=>{
+    const name = await inputbox.prompt('Enter a name for your village:', villageName);
+    if (!name) return;
+    villageName = name;
+    sign.text = `Welcome to ${name}!`;
+    sign.actionText = `rename ${name}`;
+}, 'rename the village');
 
 
 const lastDeltaTimes = [];
@@ -209,6 +215,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
     build.updateUI(deltaTime, screen, player);
     levelProgress.updateUI(deltaTime, screen, player);
     // ... then update the rest
+    villagers.update(deltaTime, screen, player);
     gather.update(deltaTime, screen, player);
     build.update(deltaTime, screen, player);
     signs.update(deltaTime, screen, player);
@@ -322,6 +329,7 @@ plainsWorldScene.onDraw(() => {
     });
 
     build.draw(screen, player);
+    villagers.draw();
     signs.draw();
 
     player.sprite.draw();

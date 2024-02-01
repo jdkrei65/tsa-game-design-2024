@@ -1,5 +1,6 @@
 import { gameify } from './gameify/gameify.js';
 import { levelProgress } from './levelProgress.js';
+import { message } from './message.js';
 
 const dlBoxImage = new gameify.Image("images/scroll.png");
 const dlBox = new gameify.Sprite(0, 0, dlBoxImage);
@@ -9,8 +10,7 @@ dlBox.scale = 2
 const dlTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 const dlText = new gameify.Text("...", 80, 435, dlTextStyle);
 dlText.style.lineHeight = 1.3;
-const continueTextString = `[SPACE to continue, X to go back]`
-const dlContinueText = new gameify.Text(continueTextString, 80, 545, dlTextStyle);
+const dlContinueText = new gameify.Text(`[SPACE to continue]`, 80, 545, dlTextStyle);
 
 let screen = undefined;
 let currentScene = undefined;
@@ -29,18 +29,19 @@ export const dialogue = {
      * @param {boolean|string} [overwrite=false] - force the text even if a scene is active
      * (if it's a string, only overwrite if currentScene.startsWith(overwrite))
      * @param {string} [identifier=undefined] - treat the dialogue like a scene, and use this name
+     * @param {string} [actionText=undefined] - display [X to (action)] text
      * @return true if text is displayed, false if not
      */
-    setText: (text, overwrite = false, identifier = undefined) => {
+    setText: (text, overwrite = false, identifier = undefined, actionText = undefined) => {
         if (overwrite !== true && !currentScene?.startsWith(overwrite) && currentScene) return false;
         dlIsOpen = true;
         currentScene = identifier;
         dlText.string = text;
 
-        if (identifier?.startsWith('Sign_')) {
-            dlContinueText.string = '';
+        if (actionText) {
+            dlContinueText.string = `[SPACE to close, X to ${actionText}]`;
         } else {
-            dlContinueText.string = continueTextString;
+            dlContinueText.string = '[SPACE to close]';
         }
 
         return true;
@@ -54,10 +55,16 @@ export const dialogue = {
         currentScene = undefined;
         dlIsOpen = false;
     },
-    setScene: (line, num = 0) => {
+    setScene: (line, num = 0, force = true) => {
+        if (!force && dlIsOpen) {
+            message.showText('Complete the current dialogue\nbefore doing this!');
+            return false;
+        }
+        dlContinueText.string = `[SPACE to continue]`;
         dlIsOpen = true;
         currentScene = line;
         curScenePos = num;
+        return true;
     },
     updateBox: () => {
         const spacePressed = screen.keyboard.keyWasJustPressed('Space');
@@ -77,8 +84,21 @@ export const dialogue = {
                 // undo go back if there is no back
                 curScenePos++;
             }
-        } else if (dlIsOpen && spacePressed && !currentScene?.startsWith('Sign_')) {
+        } else if (dlIsOpen && spacePressed) {
             dialogue.forceClose();
+        }
+
+        if (dlIsOpen && dialogue.lines[currentScene]) {
+            if (dialogue.lines[currentScene][curScenePos+1] && dialogue.lines[currentScene][curScenePos-1]) {
+                // forwards and back
+                dlContinueText.string = `[SPACE to continue, X to go back]`
+            } else if (!dialogue.lines[currentScene][curScenePos+1]) {
+                // on the last 'slide'
+                dlContinueText.string = `[SPACE to close]`
+            } else if (!!dialogue.lines[currentScene][curScenePos-1]) {
+                // on the first 'slide'
+                dlContinueText.string = `[SPACE to continue]`
+            }
         }
     },
     getCurPos: () => curScenePos,
@@ -123,6 +143,11 @@ but first, we must get resources to survive by ourselves.
  - Select the clipboard (near the top left) to view your progress.
  - As your settlement expands, you'll advance through levels
    and explore more places!`,
+        ],
+        v1_temp: [
+            'hi i am a witch, i do magic.\nI hear you want to go to desert',
+            'here have a magic water bottle.\nIt helps you not die of dehydration.',
+            '(you have gained a magic water bottle,\nit helps you not die of dehydration)'
         ]
     }
 }
