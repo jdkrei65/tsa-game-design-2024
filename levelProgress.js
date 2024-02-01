@@ -9,14 +9,23 @@ const clipboardButtonActiveImage = buildingTileset.getTile(2, 4);
 const clipboardButton = new gameify.Sprite(10, 126, clipboardButtonImage);
 clipboardButton.scale = 1.5;
 
-const clipboardImage = new gameify.Image("images/clipboard.png");
-const clipboardSprite = new gameify.Sprite(68, 10, clipboardImage);
-clipboardSprite.scale = 2;
-const clipboardTextStyle = new gameify.TextStyle('DefaultFont', 16, '#ddd');
+const clipboardImage = new gameify.Tileset("images/level_progress_scroll.png", 128, 36);
+const clipboardSprites = [
+    new gameify.Sprite(68, 0, clipboardImage.getTile(0, 0)),
+    new gameify.Sprite(68, 0, clipboardImage.getTile(0, 1)),
+    new gameify.Sprite(68, 0, clipboardImage.getTile(0, 1)),
+    new gameify.Sprite(68, 0, clipboardImage.getTile(0, 2)),
+]
+for (const s in clipboardSprites) {
+    const spr = clipboardSprites[s];
+    spr.scale = 2;
+    spr.position.y = 10+clipboardImage.theight*2*s
+}
+const clipboardTextStyle = new gameify.TextStyle('DefaultFont', 16, '#000');
 clipboardTextStyle.lineHeight = 1.25;
 const clipboardText = new gameify.Text(
-    'Level Progress:',
-    58+24, 40, clipboardTextStyle
+    '  Level Progress:',
+    62+24, 33, clipboardTextStyle
 );
 
 const levelUpImage = new gameify.Image("images/levelUpScreen.png");
@@ -155,7 +164,7 @@ const getLevelText = (levelNum) => {
 
     let allDone = true;
 
-    let text = `Level ${levelNum+1} progress:\n(${level.name})\n`;
+    let text = `  Level ${levelNum+1} progress:\n\n(${level.name})`;
     for (const req of level.requirements) {
         text += '\n' + getGoalText(req.goal, req.num);
 
@@ -229,7 +238,9 @@ manageModes.addMode('levelup', ()=>false, ()=>levelUpModeActive=false);
 export const levelProgress = {
     setScreen: (screen) => {
         screen.add(clipboardButton);
-        screen.add(clipboardSprite);
+        for (const spr of clipboardSprites) {
+            screen.add(spr);
+        }
         screen.add(clipboardText);
         screen.add(levelUpSprite);
         screen.add(levelUpText);
@@ -274,7 +285,9 @@ export const levelProgress = {
         clipboardButton.draw();
 
         if (clipboardModeActive) {
-            clipboardSprite.draw();
+            for (const spr of clipboardSprites) {
+                spr.draw();
+            }
             clipboardText.draw();
         }
 
