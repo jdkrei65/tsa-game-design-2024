@@ -43,7 +43,7 @@ export const signs = {
                 }
                 if (screen.keyboard.keyWasJustPressed('E')) {
                     // [E] to read the sign
-                    sign.visible = dialogue.setText('A nearby sign says:\n' + sign.text, true, sign.id, sign.actionText);
+                    sign.visible = dialogue.setText('A nearby sign says:\n' + sign.text, 'Sign_', sign.id, sign.actionText);
                     break;
                 }
             }
