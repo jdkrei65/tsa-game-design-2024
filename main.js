@@ -7,6 +7,7 @@ import { levelProgress } from './levelProgress.js';
 import { signs } from './signs.js';
 import { inputbox } from './inputbox.js';
 import { villagers } from './villagers.js';
+import { manageModes } from './manageModes.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
@@ -220,6 +221,14 @@ plainsWorldScene.onUpdate((deltaTime) => {
     build.update(deltaTime, screen, player);
     signs.update(deltaTime, screen, player);
     dialogue.updateBox();
+
+    if (screen.keyboard.keyWasJustPressed('1')) {
+        manageModes.toggleMode('build');
+    } else if (screen.keyboard.keyWasJustPressed('2')) {
+        manageModes.toggleMode('gather');
+    } else if (screen.keyboard.keyWasJustPressed('3')) {
+        manageModes.toggleMode('clipboard');
+    }
 
     // reset each frame so we don't go super fast
     player.sprite.velocity.x = 0;
