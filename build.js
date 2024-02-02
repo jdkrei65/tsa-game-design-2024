@@ -138,7 +138,8 @@ const getMissingResources = (building, resources) => {
     }
     return missing;
 }
-const placeBuilding = (buildingName, building, position, resources) => {
+const placeBuilding = (buildingName, building, position, player) => {
+    const resources = player.resources;
 
     if (building === buildings.demolishBuilding) {
         if (!placedBuildings[position.y] || !placedBuildings[position.y][position.x]) {
@@ -176,6 +177,21 @@ const placeBuilding = (buildingName, building, position, resources) => {
         return;
     }
 
+    let newShape;
+    if (building.collisionShape) {
+        newShape = new building.collisionShape(...building.collisionArgs)
+        newShape.position.x += position.x * buildingMap.twidth;
+        newShape.position.y += position.y * buildingMap.twidth;
+
+        if (player.sprite.shape.collidesWith(newShape)) {
+            message.showText(`Cannot place building!\nThe player is in the way!`);
+            return;
+        }
+
+        collisionShapes.addItem(position.multiply(buildingMap.twidth), newShape);
+    }
+
+
     // Then, actually deduct the cost
     for (const res in building.cost) {
         resources[res] -= building.cost[res];
@@ -192,13 +208,6 @@ const placeBuilding = (buildingName, building, position, resources) => {
         0, // rotation
         tile.size.x, tile.size.y // size (how many tiles tall/wide)
     );
-
-    if (building.collisionShape) {
-        const newShape = new building.collisionShape(...building.collisionArgs)
-        newShape.position.x += position.x * buildingMap.twidth;
-        newShape.position.y += position.y * buildingMap.twidth;
-        collisionShapes.addItem(position.multiply(buildingMap.twidth), newShape);
-    }
 
     // Mark goals as completed
     levelProgress.completeGoal('build', buildingName);
@@ -325,7 +334,7 @@ export const build = {
         previewBuildSprite.position = mouseMapPosition.multiply(buildingMap.twidth);
 
         if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
-            placeBuilding(currentlyBuilding, buildings[currentlyBuilding], mouseMapPosition, player.resources);
+            placeBuilding(currentlyBuilding, buildings[currentlyBuilding], mouseMapPosition, player);
         }
     },
     draw: (screen, player) => {
