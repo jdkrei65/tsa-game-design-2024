@@ -5,6 +5,7 @@ import { message } from './message.js';
 import { gather } from './gather.js';
 import { levelProgress } from './levelProgress.js';
 import { signs } from './signs.js';
+import { menu } from './menu.js';
 import { inputbox } from './inputbox.js';
 import { villagers } from './villagers.js';
 import { manageModes } from './manageModes.js';
@@ -379,5 +380,5 @@ plainsWorldScene.onDraw(() => {
     levelProgress.drawUI();
     message.draw();
 });
-screen.setScene(plainsWorldScene);
+screen.setScene(menu.createScene(screen, plainsWorldScene));
 screen.startGame();
