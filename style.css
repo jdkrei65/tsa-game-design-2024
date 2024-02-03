@@ -84,6 +84,14 @@ canvas {
     background: black;
     max-width: 80%;
 }
+.dialog span.range-input {
+    background: #4a2f13;
+    display: inline-block;
+    margin-block: 7px;
+}
+.dialog span.range-input input {
+    margin-bottom: 0;
+}
 .dialog input:focus {
     outline: none;
     background: #333;
@@ -108,4 +116,9 @@ canvas {
 }
 .dialog.open {
     z-index: 9;
+}
+.dialog.full {
+    width: 100vw;
+    height: 100vh;
+    max-width: unset;
 }

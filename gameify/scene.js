@@ -142,7 +142,18 @@ export let scenes = {
          * @param {gameify.Screen} parent
         */
         onLoad = (parent) => {
+            if (this.#loadFunction) this.#loadFunction();
             this.parent = parent;
+        }
+
+        #unloadFunction = undefined;
+        #loadFunction = undefined;
+
+        onSceneHidden = (func) => {
+            this.#unloadFunction = func;
+        }
+        onSceneShown = (func) => {
+            this.#loadFunction = func;
         }
 
         /** Run when the scene is set as inactive / replaced by another scene
@@ -150,6 +161,7 @@ export let scenes = {
          * @package
         */
         onUnload = () => {
+            if (this.#unloadFunction) this.#unloadFunction();
             this.parent = null;
         }
     },

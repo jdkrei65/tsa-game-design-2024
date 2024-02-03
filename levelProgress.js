@@ -2,12 +2,17 @@
 import { gameify } from './gameify/gameify.js';
 import { manageModes } from './manageModes.js';
 import { build } from './build.js';
+import { menu } from './menu.js';
 
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const clipboardButtonImage = buildingTileset.getTile(1, 4);
 const clipboardButtonActiveImage = buildingTileset.getTile(2, 4);
 const clipboardButton = new gameify.Sprite(10, 126, clipboardButtonImage);
 clipboardButton.scale = 1.5;
+
+const optionsImage = buildingTileset.getTile(0, 8);
+const optionsSprite = new gameify.Sprite(10, 184, optionsImage);
+optionsSprite.scale = 1.5;
 
 const clipboardImage = new gameify.Tileset("images/level_progress_scroll.png", 128, 36);
 const clipboardSprites = [
@@ -244,6 +249,7 @@ export const levelProgress = {
         screen.add(clipboardText);
         screen.add(levelUpSprite);
         screen.add(levelUpText);
+        screen.add(optionsSprite);
     },
     completeGoal: (type, goal) => {
         if (goals[type] && goals[type][goal]) {
@@ -264,6 +270,18 @@ export const levelProgress = {
             if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
                 if (clipboardModeActive) exitClipboardMode();
                 else manageModes.enterMode('clipboard');
+            }
+        }
+
+        if (mousePos.x > optionsSprite.position.x
+            && mousePos.y > optionsSprite.position.y
+            && mousePos.x < optionsSprite.position.x + optionsSprite.getSize().x
+            && mousePos.y < optionsSprite.position.y + optionsSprite.getSize().y
+        ) {
+            screen.element.style.cursor = 'pointer';
+
+            if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
+                menu.openOptions();
             }
         }
 
@@ -295,5 +313,7 @@ export const levelProgress = {
             levelUpSprite.draw();
             levelUpText.draw();
         }
+
+        optionsSprite.draw();
     }
 };

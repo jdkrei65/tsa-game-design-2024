@@ -56,6 +56,11 @@ const SCREEN_HEIGHT = 600;
 const canvasElement = document.querySelector('#game-canvas');
 const screen = new gameify.Screen(canvasElement, SCREEN_WIDTH, SCREEN_HEIGHT);
 screen.setAntialiasing(false);
+screen.audio.setVolume(localStorage.getItem('volume') ?? .1);
+window.CHANGE_VOLUME_FUNC = (volume) => {
+    localStorage.setItem('volume', Number(volume));
+    screen.audio.setVolume(Number(volume));
+}
 
 const rs = (evt) => {
     const margin = 32;
@@ -211,7 +216,17 @@ signs.addSign(6*64, 1*64, 'Welcome to your village!', screen, async (sign)=>{
 const lastDeltaTimes = [];
 let greatestDeltaTimeSpike = 0;
 
+const plainsAudio = new gameify.audio.Sound('audio/plains_bg.mp3');
+screen.audio.add(plainsAudio);
+
 const plainsWorldScene = new gameify.Scene(screen);
+plainsWorldScene.onSceneShown(() => {
+    plainsAudio.play();
+    plainsAudio.setLoop(true);
+})
+plainsWorldScene.onSceneHidden(() => {
+    plainsAudio.stop();
+})
 plainsWorldScene.onUpdate((deltaTime) => {
     // Reset the mouse cursor to default
     // (not 'pointer', when buttons are hovered)
