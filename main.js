@@ -8,16 +8,19 @@ import { signs } from './signs.js';
 import { inputbox } from './inputbox.js';
 import { villagers } from './villagers.js';
 import { manageModes } from './manageModes.js';
+import { worldBorder } from './worldBorder.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
 
 import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
-import natureTilemapData from './mapdata/naturelayer.tilemapdata.js';
+import natureTilemapData from './mapdata/objectlayer.tilemapdata.js';
 import oceanTilemapData  from './mapdata/oceanlayer.tilemapdata.js';
 import pathTilemapData  from './mapdata/pathlayer.tilemapdata.js';
+import borderTilemapData  from './mapdata/borderlayer.tilemapdata.js';
 
 // debug options
 window.DRAW_SHAPES          = false;    // default false
 window.DISPLAY_FRAME_TIME   = false;    // default false
+window.DRAW_WORLD_BORDER    = false;    // default false
 // other options
 window.RESIZE_CANVAS        = 'always'; // 'always', 'stepped', or 'never'
 window.COLLISIONS_ENABLED   = true;     // default true
@@ -106,7 +109,7 @@ const player = {
         gold: 10
     }
 };
-window.PLAYER_RESOURCES = player.resources; // for debug buttons
+window.PLAYER = player;
 player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
 //player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
 player.sprite.scale = .2;
@@ -117,13 +120,14 @@ screen.camera.maxDistance = 55;
 screen.camera.minDistance = 30;
 
 // create map layers
-const worldMapTileset = new gameify.Tileset('images/worldmapalex1-9-24.png', 32, 32);
+const worldMapTileset = new gameify.Tileset('images/plains_world_map.png', 32, 32);
 const tilemapSize = 64;
 const mapLayers = {
     ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
     grass: new gameify.Tilemap(tilemapSize, tilemapSize),
     nature: new gameify.Tilemap(tilemapSize, tilemapSize),
-    path: new gameify.Tilemap(tilemapSize, tilemapSize)
+    path: new gameify.Tilemap(tilemapSize, tilemapSize),
+    border: new gameify.Tilemap(tilemapSize, tilemapSize)
 };
 const mapData = {
     ocean: {
@@ -155,6 +159,8 @@ mapLayers.grass.loadMapData(grassTilemapData);
 mapLayers.nature.loadMapData(natureTilemapData);
 mapLayers.ocean.loadMapData(oceanTilemapData);
 mapLayers.path.loadMapData(pathTilemapData);
+mapLayers.border.loadMapData(borderTilemapData);
+worldBorder.setMap(mapLayers.border);
 gather.setMap(mapLayers.nature);
 mapLayers.ocean.listTiles().forEach(tile => {
     //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
@@ -168,6 +174,7 @@ mapLayers.ocean.listTiles().forEach(tile => {
 build.addBuildObstacleMap(mapLayers.ocean);
 build.addBuildObstacleMap(mapLayers.nature);
 build.addBuildObstacleMap(mapLayers.path);
+build.addBuildObstacleMap(mapLayers.border);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
 const resourceIndicators = {}
@@ -220,6 +227,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
     gather.update(deltaTime, screen, player);
     build.update(deltaTime, screen, player);
     signs.update(deltaTime, screen, player);
+    worldBorder.update(deltaTime, screen, player);
     dialogue.updateBox();
 
     if (screen.keyboard.keyWasJustPressed('1')) {
@@ -273,6 +281,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
         else if (gather.collidesWithMap(player.sprite.shape)
             || build.collidesWithMap(player.sprite.shape)
             || mapData.ocean.collidesWithMap(player.sprite.shape)
+            || worldBorder.collidesWithMap(player.sprite.shape)
         ) {
             // revert to before collision
             player.sprite.position = lastPosition;
@@ -337,6 +346,7 @@ plainsWorldScene.onDraw(() => {
         return tile.__tsa_already_drawn = false;
     });
 
+    worldBorder.draw(screen, player);
     build.draw(screen, player);
     villagers.draw();
     signs.draw();
