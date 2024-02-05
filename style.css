@@ -59,12 +59,13 @@ canvas {
     width: unset;
     height: unset;
     max-width: 270px;
-    padding: 20px;
+    padding: 23px;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: #6f4b26;
+    border: 4px solid #966738;
     font-size: 16px;
     color: white;
     font-family: 'DefaultFont';
