@@ -253,11 +253,13 @@ plainsWorldScene.onUpdate((deltaTime) => {
     dialogue.updateBox();
 
     if (screen.keyboard.keyWasJustPressed('1')) {
-        manageModes.toggleMode('build');
+        manageModes.enterMode('build');
     } else if (screen.keyboard.keyWasJustPressed('2')) {
-        manageModes.toggleMode('gather');
+        manageModes.enterMode('gather');
     } else if (screen.keyboard.keyWasJustPressed('3')) {
-        manageModes.toggleMode('clipboard');
+        manageModes.enterMode('clipboard');
+    } else if (screen.keyboard.keyWasJustPressed('4')) {
+        manageModes.enterMode('options');
     }
 
     // reset each frame so we don't go super fast

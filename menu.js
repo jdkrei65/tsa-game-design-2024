@@ -1,5 +1,6 @@
 import { gameify } from './gameify/gameify.js';
 import { inputbox } from './inputbox.js';
+import { manageModes } from './manageModes.js';
 
 let menuScene = undefined;
 const menuAudio = new gameify.audio.Sound('audio/main_menu.mp3');
@@ -63,3 +64,5 @@ export const menu = {
     },
     scene() { return menuScene }
 }
+
+manageModes.addMode('options', menu.openOptions, ()=>{});
