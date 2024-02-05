@@ -217,6 +217,8 @@ const lastDeltaTimes = [];
 let greatestDeltaTimeSpike = 0;
 
 const plainsAudio = new gameify.audio.Sound('audio/plains_bg.mp3');
+let PAVolume = .1;
+plainsAudio.setVolume(PAVolume);
 screen.audio.add(plainsAudio);
 
 const plainsWorldScene = new gameify.Scene(screen);
@@ -228,6 +230,10 @@ plainsWorldScene.onSceneHidden(() => {
     plainsAudio.stop();
 })
 plainsWorldScene.onUpdate((deltaTime) => {
+    PAVolume = Math.min(1, PAVolume + deltaTime/4000);
+    menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
+    plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
+
     // Reset the mouse cursor to default
     // (not 'pointer', when buttons are hovered)
     screen.element.style.cursor = '';

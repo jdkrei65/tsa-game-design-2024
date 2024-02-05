@@ -2,6 +2,7 @@ import { gameify } from './gameify/gameify.js';
 import { inputbox } from './inputbox.js';
 
 let menuScene = undefined;
+const menuAudio = new gameify.audio.Sound('audio/main_menu.mp3');
 let screen = undefined;
 
 export const menu = {
@@ -13,6 +14,7 @@ export const menu = {
             <button onclick="window.CHANGE_VOLUME_FUNC(0)">Mute sounds</button>
         `);
     },
+    menuAudio,
     createScene(_screen, nextScene) {
         screen = _screen;
         const bgImage = new gameify.Image('images/menuScreen.png')
@@ -23,12 +25,12 @@ export const menu = {
         const box = new gameify.shapes.Rectangle(265, 298, 240, 75);
         const optionsBox = new gameify.shapes.Rectangle(260, 385, 240, 47);
 
-        const menuAudio = new gameify.audio.Sound('audio/main_menu.mp3');
+        menuAudio.setVolume(.5);
         screen.audio.add(menuAudio);
 
         menuScene = new gameify.Scene(screen);
         menuScene.onSceneHidden(() => {
-            menuAudio.stop();
+            //menuAudio.stop();
         })
         menuScene.onUpdate((deltaTime) => {
             if (!menuAudio.isPlaying()) menuAudio.play();
