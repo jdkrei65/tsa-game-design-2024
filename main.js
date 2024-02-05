@@ -107,7 +107,9 @@ const characterSprite = new gameify.Image("images/temporaryChar.png")
 const player = {
     sprite: new gameify.Sprite(300, 200, characterSprite),
     direction: new gameify.Vector2d(1, 0),
-    speed: 90, // px per s
+    walk_speed: 90, // px per s
+    sprint_speed: 150,
+    speed: 90, // default to waking speed, this is overwritten anyway
     resources: {
         wood: 5,  // Start with some resources for testing,
         stone: 0, // set this to zero later
@@ -260,6 +262,13 @@ plainsWorldScene.onUpdate((deltaTime) => {
         manageModes.enterMode('clipboard');
     } else if (screen.keyboard.keyWasJustPressed('4')) {
         manageModes.enterMode('options');
+    }
+
+    // SPRINT
+    if (screen.keyboard.keyIsPressed("Shift")) {
+        player.speed = player.sprint_speed;
+    } else {
+        player.speed = player.walk_speed;
     }
 
     // reset each frame so we don't go super fast
