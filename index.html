@@ -32,12 +32,12 @@
             </select> Resize game canvas
         </label>
         <label>
-            <select onchange="window.PLAYER.speed = Number(this.value) || 90; console.log('player speed:', this.value)">
-                <option selected>90</option>
-                <option>180</option>
-                <option>270</option>
-                <option>360</option>
-            </select> Player Speed
+            <select onchange="window.PLAYER_SPEED_BONUS = this.value; console.log('player speed:', this.value)">
+                <option selected>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+            </select> Player Speed Bonus
         </label>
         <label>
             <button onclick="for (const res in window.PLAYER.resources) window.PLAYER.resources[res] += 100;">Give bonus resources</button>

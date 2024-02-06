@@ -27,6 +27,7 @@ window.RESIZE_CANVAS        = 'always'; // 'always', 'stepped', or 'never'
 window.COLLISIONS_ENABLED   = true;     // default true
 window.SPACIAL_HASH_SIZE    = 96;       // default 128 (2x2 tiles)
 window.TEST_OPTIMIZATION_ENABLED = false; // default false
+window.PLAYER_SPEED_BONUS   = 1;        // default 1, for no bonus
 
 // NOTE TO SELF:
 // draw trees above player before the player, and ones below after the player
@@ -266,9 +267,9 @@ plainsWorldScene.onUpdate((deltaTime) => {
 
     // SPRINT
     if (screen.keyboard.keyIsPressed("Shift")) {
-        player.speed = player.sprint_speed;
+        player.speed = player.sprint_speed * window.PLAYER_SPEED_BONUS;
     } else {
-        player.speed = player.walk_speed;
+        player.speed = player.walk_speed * window.PLAYER_SPEED_BONUS;
     }
 
     // reset each frame so we don't go super fast
