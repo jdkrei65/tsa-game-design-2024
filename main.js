@@ -222,6 +222,7 @@ signs.addSign(6*64, 1*64, `You're in the Forest!` + directionText, screen, async
     sign.text = `You're in ${name}!` + directionText;
     sign.actionText = `rename ${name}`;
 }, 'name your village');
+signs.addSign(2*64, -25*64, `^ N - Desert\n> E - Mountains\nv S - Forest`, screen);
 
 
 const lastDeltaTimes = [];
