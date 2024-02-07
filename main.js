@@ -119,6 +119,9 @@ const player = {
     }
 };
 window.PLAYER = player;
+window.LOG_PLAYER_POS_FUNC = () => {
+    console.log(player.sprite.position, mapLayers.grass.screenToMap(player.sprite.position));
+}
 player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
 //player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
 player.sprite.scale = .2;
@@ -206,14 +209,19 @@ for (const r in player.resources) {
     rBtnPos += 1;
 }
 
+const directionText = `
+^ N - Desert
+> E - Mountains
+`;
+
 let villageName = '';
-signs.addSign(6*64, 1*64, 'Welcome to your village!', screen, async (sign)=>{
+signs.addSign(6*64, 1*64, `You're in the Forest!` + directionText, screen, async (sign)=>{
     const name = await inputbox.prompt('Enter a name for your village:', villageName);
     if (!name) return;
     villageName = name;
-    sign.text = `Welcome to ${name}!`;
+    sign.text = `You're in ${name}!` + directionText;
     sign.actionText = `rename ${name}`;
-}, 'rename the village');
+}, 'name your village');
 
 
 const lastDeltaTimes = [];

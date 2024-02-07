@@ -25,6 +25,9 @@
             <input type="checkbox" onchange="window.COLLISIONS_ENABLED = this.checked;" checked> Enable collisions
         </label>
         <label>
+            <input type="checkbox" onchange="window.TEST_OPTIMIZATION_ENABLED = this.checked;" checked disabled> Enable test optimizations
+        </label>
+        <label>
             <select onchange="window.RESIZE_CANVAS = this.value; window.onresize()">
                 <option>always</option>
                 <option>stepped</option>
@@ -46,7 +49,7 @@
             <button onclick="window.LEVEL_UP_FUNC();">Level up/skip</button>
         </label>
         <label>
-            <input type="checkbox" onchange="window.TEST_OPTIMIZATION_ENABLED = this.checked;" checked disabled> Enable test optimizations
+            <button onclick="window.LOG_PLAYER_POS_FUNC();">Log player position</button>
         </label>
 
         <div><code id="err"></code></div>
