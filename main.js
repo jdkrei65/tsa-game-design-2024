@@ -12,11 +12,20 @@ import { manageModes } from './manageModes.js';
 import { worldBorder } from './worldBorder.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
 
-import grassTilemapData  from './mapdata/grasslayer.tilemapdata.js';
-import natureTilemapData from './mapdata/objectlayer.tilemapdata.js';
-import oceanTilemapData  from './mapdata/oceanlayer.tilemapdata.js';
-import pathTilemapData  from './mapdata/pathlayer.tilemapdata.js';
-import borderTilemapData  from './mapdata/borderlayer.tilemapdata.js';
+import map_PlainsGrassLayer  from './mapdata/plains/PlainsGrassLayer.tilemapdata.js';
+import map_PlainsObjectLayer from './mapdata/plains/PlainsObjectLayer.tilemapdata.js';
+import map_PlainsOceanLayer  from './mapdata/plains/PlainsOceanLayer.tilemapdata.js';
+import map_PlainsPathLayer   from './mapdata/plains/PlainsPathLayer.tilemapdata.js';
+
+// TODO WITH DESERT MAP
+// - don't allow building in the desert ( add a proper error message )
+// - make gathering work in the desert
+import map_DesertGrassLayer  from './mapdata/desert/DesertGrassLayer.tilemapdata.js';
+import map_DesertObjectLayer from './mapdata/desert/DesertObjectLayer.tilemapdata.js';
+import map_DesertOceanLayer  from './mapdata/desert/DesertOceanLayer.tilemapdata.js';
+import map_DesertPathLayer   from './mapdata/desert/DesertPathLayer.tilemapdata.js';
+
+import map_BorderLayer  from './mapdata/BorderLayer.tilemapdata.js';
 
 // debug options
 window.DRAW_SHAPES          = false;    // default false
@@ -28,10 +37,6 @@ window.COLLISIONS_ENABLED   = true;     // default true
 window.SPACIAL_HASH_SIZE    = 96;       // default 128 (2x2 tiles)
 window.TEST_OPTIMIZATION_ENABLED = false; // default false
 window.PLAYER_SPEED_BONUS   = 1;        // default 1, for no bonus
-
-// NOTE TO SELF:
-// draw trees above player before the player, and ones below after the player
-// draw paths on separate(?) map or with the "above trees"
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
@@ -120,7 +125,7 @@ const player = {
 };
 window.PLAYER = player;
 window.LOG_PLAYER_POS_FUNC = () => {
-    console.log(player.sprite.position, mapLayers.grass.screenToMap(player.sprite.position));
+    console.log(player.sprite.position, mapLayers.plains.grass.screenToMap(player.sprite.position));
 }
 player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
 //player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
@@ -132,15 +137,47 @@ screen.camera.maxDistance = 55;
 screen.camera.minDistance = 30;
 
 // create map layers
-const worldMapTileset = new gameify.Tileset('images/plains_world_map.png', 32, 32);
+const plainsMapTileset = new gameify.Tileset('images/plains_world_map.png', 32, 32);
+const desertMapTileset = new gameify.Tileset('images/desert_world_map.png', 32, 32);
 const tilemapSize = 64;
 const mapLayers = {
-    ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
-    grass: new gameify.Tilemap(tilemapSize, tilemapSize),
-    nature: new gameify.Tilemap(tilemapSize, tilemapSize),
-    path: new gameify.Tilemap(tilemapSize, tilemapSize),
-    border: new gameify.Tilemap(tilemapSize, tilemapSize)
+    plains: {
+        ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
+        grass: new gameify.Tilemap(tilemapSize, tilemapSize),
+        nature: new gameify.Tilemap(tilemapSize, tilemapSize),
+        path: new gameify.Tilemap(tilemapSize, tilemapSize),
+    },
+    desert: {
+        ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
+        grass: new gameify.Tilemap(tilemapSize, tilemapSize),
+        nature: new gameify.Tilemap(tilemapSize, tilemapSize),
+        path: new gameify.Tilemap(tilemapSize, tilemapSize),
+    },
+    border: new gameify.Tilemap(tilemapSize, tilemapSize),
+    // Do something a one layer from every area
+    forAllAreas: (layer, callback) => {
+        for (const area in mapLayers) {
+            if (mapLayers[area][layer]) {
+                callback(mapLayers[area][layer]);
+            }
+        }
+    },
+    // Do something to all layers
+    forAllLayers: (callback) => {
+        // assume all biomes have the same layers, use plains as reference
+        for (const layerName in mapLayers.plains) {
+            mapLayers.forAllAreas(layerName, (layer) => callback(layer));
+            callback(mapLayers.border);
+        }
+    },
+    // Do something to all layers in an area
+    forAllLayersInArea: (area, callback) => {
+        for (const layer in mapLayers[area]) {
+            callback(mapLayers[area][layer]);
+        }
+    }
 };
+
 const mapData = {
     ocean: {
         collisionShapes: new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE), // 1.5x1.5 tile chunks
@@ -162,30 +199,49 @@ const mapData = {
         }
     }
 }
-for (const layerName in mapLayers) {
-    const layer = mapLayers[layerName];
-    layer.setTileset(worldMapTileset);
+
+// Assign tilesets to all layers
+mapLayers.forAllLayersInArea('plains', (layer) => {
+    layer.setTileset(plainsMapTileset);
     screen.add(layer);
-}
-mapLayers.grass.loadMapData(grassTilemapData);
-mapLayers.nature.loadMapData(natureTilemapData);
-mapLayers.ocean.loadMapData(oceanTilemapData);
-mapLayers.path.loadMapData(pathTilemapData);
-mapLayers.border.loadMapData(borderTilemapData);
+});
+mapLayers.forAllLayersInArea('desert', (layer) => {
+    layer.setTileset(desertMapTileset);
+    screen.add(layer);
+});
+mapLayers.border.setTileset(desertMapTileset);
+screen.add(mapLayers.border);
+
+// plains map layers
+mapLayers.plains.grass.loadMapData(map_PlainsGrassLayer);
+mapLayers.plains.nature.loadMapData(map_PlainsObjectLayer);
+mapLayers.plains.ocean.loadMapData(map_PlainsOceanLayer);
+mapLayers.plains.path.loadMapData(map_PlainsPathLayer);
+// desert map layers
+mapLayers.desert.grass.loadMapData(map_DesertGrassLayer);
+mapLayers.desert.nature.loadMapData(map_DesertObjectLayer);
+mapLayers.desert.ocean.loadMapData(map_DesertOceanLayer);
+mapLayers.desert.path.loadMapData(map_DesertPathLayer);
+// border map layer
+mapLayers.border.loadMapData(map_BorderLayer);
 worldBorder.setMap(mapLayers.border);
-gather.setMap(mapLayers.nature);
-mapLayers.ocean.listTiles().forEach(tile => {
-    //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
-    const newShape = new gameify.shapes.Rectangle(0, 0, 64, 64);
-    newShape.position.x += tile.position.x * mapLayers.ocean.twidth;
-    newShape.position.y += tile.position.y * mapLayers.ocean.twidth;
-    mapData.ocean.collisionShapes.addItem(newShape.position, newShape);
+gather.setMap(mapLayers.plains.nature);
+
+mapLayers.forAllAreas('ocean', (layer) => {
+    layer.listTiles().forEach(tile => {
+        //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
+        const newShape = new gameify.shapes.Rectangle(0, 0, 64, 64);
+        newShape.position.x += tile.position.x * layer.twidth;
+        newShape.position.y += tile.position.y * layer.twidth;
+        mapData.ocean.collisionShapes.addItem(newShape.position, newShape);
+    })
 });
 
 // Don't build on the ocean or the trees
-build.addBuildObstacleMap(mapLayers.ocean);
-build.addBuildObstacleMap(mapLayers.nature);
-build.addBuildObstacleMap(mapLayers.path);
+build.addBuildObstacleMap(mapLayers.plains.ocean);
+build.addBuildObstacleMap(mapLayers.plains.nature);
+build.addBuildObstacleMap(mapLayers.plains.path);
+build.addBuildObstacleMap(mapLayers.desert.grass); // no building in the desert
 build.addBuildObstacleMap(mapLayers.border);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
@@ -367,27 +423,28 @@ Spike: ${greatestDeltaTimeSpike} (${Math.floor(1000/greatestDeltaTimeSpike)}fps)
 const onlyDrawIfNear = (t, x, y) => {
     // all the maps are the same size, so
     // we'll arbitrarily use the nature map for reference
-    if (x*mapLayers.nature.twidth + 550 < player.sprite.position.x
-        || x*mapLayers.nature.twidth - 550 > player.sprite.position.x
-        || y*mapLayers.nature.theight + 450 < player.sprite.position.y
-        || y*mapLayers.nature.theight - 450 > player.sprite.position.y) return false;
+    if (x*mapLayers.plains.nature.twidth + 550 < player.sprite.position.x
+        || x*mapLayers.plains.nature.twidth - 550 > player.sprite.position.x
+        || y*mapLayers.plains.nature.theight + 450 < player.sprite.position.y
+        || y*mapLayers.plains.nature.theight - 450 > player.sprite.position.y) return false;
     return true;
 }
 
 plainsWorldScene.onDraw(() => {
     screen.clear('#efe');
 
-    mapLayers.ocean.draw(onlyDrawIfNear);
-    mapLayers.grass.draw(onlyDrawIfNear);
-    mapLayers.path.draw(onlyDrawIfNear);
-    mapLayers.nature.draw((tile, x, y) => {
+    mapLayers.forAllAreas('ocean', (layer) => layer.draw(onlyDrawIfNear));
+    mapLayers.forAllAreas('grass', (layer) => layer.draw(onlyDrawIfNear));
+    mapLayers.forAllAreas('path', (layer) => layer.draw(onlyDrawIfNear));
+    mapLayers.forAllAreas('nature', (layer) => layer.draw((tile, x, y) => {
         if (!onlyDrawIfNear(tile, x, y)) return false;
         // tile is above the player, draw it first
-        if (y*mapLayers.nature.theight < player.sprite.position.y) {
+        // arbitrarily use the plains map as reference for theight
+        if (y*mapLayers.plains.nature.theight < player.sprite.position.y) {
             return tile.__tsa_already_drawn = true; // yes, assignment on purpose
         }
         return tile.__tsa_already_drawn = false;
-    });
+    }));
 
     worldBorder.draw(screen, player);
     build.draw(screen, player);
@@ -397,9 +454,9 @@ plainsWorldScene.onDraw(() => {
     player.sprite.draw();
 
 
-    mapLayers.nature.draw((tile, x, y) => {
+    mapLayers.forAllAreas('nature', (layer) => layer.draw((tile, x, y) => {
         return onlyDrawIfNear(tile, x, y) && !tile.__tsa_already_drawn;
-    });
+    }));
     
     gather.draw(screen, player);
 
