@@ -211,7 +211,7 @@ mapLayers.forAllLayersInArea('desert', (layer) => {
     layer.setTileset(desertMapTileset);
     screen.add(layer);
 });
-mapLayers.border.setTileset(desertMapTileset);
+mapLayers.border.setTileset(plainsMapTileset);
 screen.add(mapLayers.border);
 
 // plains map layers
@@ -223,6 +223,7 @@ mapLayers.plains.path.loadMapData(map_PlainsPathLayer);
 mapLayers.desert.grass.loadMapData(map_DesertGrassLayer);
 mapLayers.desert.nature.loadMapData(map_DesertObjectLayer);
 mapLayers.desert.ocean.loadMapData(map_DesertOceanLayer);
+
 mapLayers.desert.path.loadMapData(map_DesertPathLayer);
 // border map layer
 mapLayers.border.loadMapData(map_BorderLayer);
