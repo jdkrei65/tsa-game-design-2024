@@ -20,6 +20,8 @@ import map_PlainsPathLayer   from './mapdata/plains/PlainsPathLayer.tilemapdata.
 // TODO WITH DESERT MAP
 // - don't allow building in the desert ( add a proper error message )
 // - make gathering work in the desert
+// - dehydration
+// - desert music
 import map_DesertGrassLayer  from './mapdata/desert/DesertGrassLayer.tilemapdata.js';
 import map_DesertObjectLayer from './mapdata/desert/DesertObjectLayer.tilemapdata.js';
 import map_DesertOceanLayer  from './mapdata/desert/DesertOceanLayer.tilemapdata.js';
