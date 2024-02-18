@@ -139,8 +139,10 @@ screen.camera.maxDistance = 55;
 screen.camera.minDistance = 30;
 
 // create map layers
-const plainsMapTileset = new gameify.Tileset('images/plains_world_map.png', 32, 32);
-const desertMapTileset = new gameify.Tileset('images/desert_world_map.png', 32, 32);
+const plainsMapTileset = new gameify.Tileset('images/plains_tileset.png', 32, 32);
+const desertMapTileset = new gameify.Tileset('images/desert_tileset.png', 32, 32);
+const tundraMapTileset = new gameify.Tileset('images/tundra_tileset.png', 32, 32);
+const borderMapTileset = new gameify.Tileset('images/border_tileset.png', 32, 32);
 const tilemapSize = 64;
 const mapLayers = {
     plains: {
@@ -211,7 +213,7 @@ mapLayers.forAllLayersInArea('desert', (layer) => {
     layer.setTileset(desertMapTileset);
     screen.add(layer);
 });
-mapLayers.border.setTileset(plainsMapTileset);
+mapLayers.border.setTileset(borderMapTileset);
 screen.add(mapLayers.border);
 
 // plains map layers
