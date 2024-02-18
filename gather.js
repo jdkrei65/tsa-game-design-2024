@@ -27,90 +27,165 @@ const exitGatherMode = () => {
 manageModes.addMode('gather', enterGatherMode, exitGatherMode);
 
 const gatherables = {
-    tree: {
-        collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [15, 40, 34, 25],
-        sources: [
-            [3, 4],
-            [5, 4],
-            [0, 5],
-        ], // position on tilemap
-        resources: {
-            wood: 6
+    plains: {
+        tree: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [15, 40, 34, 25],
+            sources: [
+                [3, 4],
+                [5, 4],
+                [0, 5],
+            ], // position on tilemap
+            resources: {
+                wood: 6
+            }
+        },
+        appleTree: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [15, 40, 34, 25],
+            sources: [
+                [4, 4]
+            ],
+            resources: {
+                wood: 6,
+                apples: 3
+            }
+        },
+        bush: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [10, 40, 44, 25],
+            sources: [
+                [1, 4],
+                [2, 4]
+            ], // position on tilemap
+            resources: {
+                wood: 3,
+                apples: 2
+            }
+        },
+        flower: {
+            sources: [
+                [1, 3],
+                [2, 3]
+            ], // position on tilemap
+            resources: {
+                gold: 2
+            }
+        },
+        rock: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [8, 42, 48, 20],
+            sources: [
+                [3, 3],
+                [4, 3]
+            ],
+            resources: {
+                stone: 7
+            }
+        },
+        largeRock: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [10, 40, 44, 25],
+            //collisionShape: gameify.shapes.Circle,
+            //collisionArgs: [32, 41, 25],
+            sources: [
+                [5, 3]
+            ],
+            resources: {
+                stone: 14,
+                gold: 1
+            }
+        },
+        grass: {
+            sources: [
+                [0, 4]
+            ],
+            resources: { /* Nothing */ }
         }
     },
-    appleTree: {
-        collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [15, 40, 34, 25],
-        sources: [
-            [4, 4]
-        ],
-        resources: {
-            wood: 6,
-            apples: 3
+    desert: {
+        cactus: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [21, 40, 22, 25],
+            sources: [
+                [4, 3],
+                [0, 4],
+                [0, 5]
+            ], // position on tilemap
+            resources: {
+                wood: 6,
+                gold: 2
+            }
+        },
+        tree: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [15, 40, 34, 25],
+            sources: [
+                [3, 4],
+                [4, 4],
+            ], // position on tilemap
+            resources: {
+                wood: 12
+            }
+        },
+        rock: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [10, 40, 44, 25],
+            sources: [
+                [1, 4],
+                [2, 4]
+            ], // position on tilemap
+            resources: {
+                stone: 14
+            }
+        },
+    },
+    tundra: {
+        tree: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [15, 40, 34, 25],
+            sources: [
+                [5, 0],
+                [0, 1],
+            ], // position on tilemap
+            resources: {
+                wood: 18
+            }
+        },
+        rock: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [8, 0, 48, 56],
+            static: true, // can't be gathered
+            sources: [
+                [1, 1],
+                [2, 1],
+                [3, 1],
+                [4, 1],
+                [5, 1],
+                [0, 2],
+            ], // position on tilemap
+            resources: { /* not gatherable */ }
+        },
+        grass: {
+            sources: [
+                [4, 0]
+            ],
+            resources: { gold: 1 }
         }
-    },
-    bush: {
-        collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [10, 40, 44, 25],
-        sources: [
-            [1, 4],
-            [2, 4]
-        ], // position on tilemap
-        resources: {
-            wood: 3,
-            apples: 2
-        }
-    },
-    flower: {
-        sources: [
-            [1, 3],
-            [2, 3]
-        ], // position on tilemap
-        resources: {
-            gold: 2
-        }
-    },
-    rock: {
-        collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [8, 42, 48, 20],
-        sources: [
-            [3, 3],
-            [4, 3]
-        ],
-        resources: {
-            stone: 7
-        }
-    },
-    largeRock: {
-        collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [10, 40, 44, 25],
-        //collisionShape: gameify.shapes.Circle,
-        //collisionArgs: [32, 41, 25],
-        sources: [
-            [5, 3]
-        ],
-        resources: {
-            stone: 14,
-            gold: 1
-        }
-    },
-    grass: {
-        sources: [
-            [0, 4]
-        ],
-        resources: { /* Nothing */ }
-    },
+    }
 }
 let collisionShapes = undefined; // defined in setScreen (b/c that's after window.OPTION variables are set)
 
-const gatherItem = (position, player) => {
+const gatherItem = (position, player, mapName) => {
+    const resourceMap = resourceMaps[mapName];
     const tile = resourceMap.get(position.x, position.y);
     let gatheredItem = false;
     // check each gatherable item
     gatherableLoop:
-    for (const type in gatherables) {
-        const item = gatherables[type];
+    for (const type in gatherables[mapName]) {
+        const item = gatherables[mapName][type];
+        // don't gather static items;
+        if (item.static) continue;
         // Check each possible position
         for (const source of item.sources) {
             if (source[0] === tile.source.x && source[1] === tile.source.y) {
@@ -134,7 +209,22 @@ const gatherItem = (position, player) => {
     }
 }
 
-let resourceMap;
+let resourceMaps = {};
+// do something for all res maps
+// callback(resMaps[map], map)
+const forAllResMaps = (callback) => {
+    for (const map in resourceMaps) {
+        callback(resourceMaps[map], map)
+    }
+}
+// Get the first res map
+// (for things like screenToMap that are the same for all maps)
+// DO NOT ASSUME THIS GIVES ANY SPECIFIC MAP
+const firstResMap = () => {
+    for (const map in resourceMaps) {
+        return resourceMaps[map];
+    }
+}
 
 export const gather = {
     setScreen: (screen) => {
@@ -142,11 +232,18 @@ export const gather = {
         screen.add(previewGatherSprite);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
-    setMap: (map) => {
-        resourceMap = map;
+    addMap: (name, map) => {
+        if (resourceMaps[name]){
+            console.warn('map ' + name + ' already added to gather. skipping.', name);
+            return;
+        }
+        resourceMaps[name] = map;
+        if (!gatherables[name]) {
+            console.warn('map ' + name + ' has no gather entries. not using.', name);
+        }
         map.listTiles().forEach(tile => {
-            for (const type in gatherables) {
-                const item = gatherables[type];
+            for (const type in gatherables[name]) {
+                const item = gatherables[name][type];
                 if (!item.collisionShape) continue;
                 // Check each possible position
                 for (const source of item.sources) {
@@ -194,8 +291,8 @@ export const gather = {
         const playerCenterPosition = player.sprite.position.add(
             player.sprite.getSize().multiply(.5)
         );
-        const playerMapPosition = resourceMap.screenToMap(playerCenterPosition);
-        const targetMapPosition = resourceMap.screenToMap(mouseWorldPosition);
+        const playerMapPosition = firstResMap().screenToMap(playerCenterPosition);
+        const targetMapPosition = firstResMap().screenToMap(mouseWorldPosition);
 
         // Change this variable to set how far away the
         // player can gather from
@@ -215,12 +312,14 @@ export const gather = {
             targetMapPosition.x = playerMapPosition.x + maxReachDistance;
         }
 
-        previewGatherSprite.position = targetMapPosition.multiply(resourceMap.twidth);
+        previewGatherSprite.position = targetMapPosition.multiply(firstResMap().twidth);
 
-        if (screen.mouse.eventJustHappened('left', /*capture=*/true)
-            && resourceMap.get(targetMapPosition.x, targetMapPosition.y)
-        ) {
-            gatherItem(targetMapPosition, player);
+        if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
+            forAllResMaps((map, name) => {
+                if (map.get(targetMapPosition.x, targetMapPosition.y)) {
+                    gatherItem(targetMapPosition, player, name);
+                }
+            });
         }
     },
     draw: (screen, player) => {

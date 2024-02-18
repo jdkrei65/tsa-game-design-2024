@@ -22,6 +22,7 @@ import map_PlainsPathLayer   from './mapdata/plains/PlainsPathLayer.tilemapdata.
 // - make gathering work in the desert
 // - dehydration
 // - desert music
+// - COLLISIONS
 import map_DesertGrassLayer  from './mapdata/desert/DesertGrassLayer.tilemapdata.js';
 import map_DesertObjectLayer from './mapdata/desert/DesertObjectLayer.tilemapdata.js';
 import map_DesertOceanLayer  from './mapdata/desert/DesertOceanLayer.tilemapdata.js';
@@ -133,6 +134,10 @@ const player = {
 window.PLAYER = player;
 window.LOG_PLAYER_POS_FUNC = () => {
     console.log(player.sprite.position, mapLayers.plains.grass.screenToMap(player.sprite.position));
+}
+window.TP_TO = (x, y) => {
+    player.sprite.position.x = x;
+    player.sprite.position.y = y;
 }
 player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
 //player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
@@ -251,7 +256,9 @@ mapLayers.tundra.path.loadMapData(map_TundraPathLayer);
 // border map layer
 mapLayers.border.loadMapData(map_BorderLayer);
 worldBorder.setMap(mapLayers.border);
-gather.setMap(mapLayers.plains.nature);
+gather.addMap('plains', mapLayers.plains.nature);
+gather.addMap('desert', mapLayers.desert.nature);
+gather.addMap('tundra', mapLayers.tundra.nature);
 
 mapLayers.forAllAreas('ocean', (layer) => {
     layer.listTiles().forEach(tile => {
