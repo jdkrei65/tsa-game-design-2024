@@ -27,6 +27,11 @@ import map_DesertObjectLayer from './mapdata/desert/DesertObjectLayer.tilemapdat
 import map_DesertOceanLayer  from './mapdata/desert/DesertOceanLayer.tilemapdata.js';
 import map_DesertPathLayer   from './mapdata/desert/DesertPathLayer.tilemapdata.js';
 
+import map_TundraGrassLayer  from './mapdata/tundra/TundraGrassLayer.tilemapdata.js';
+import map_TundraObjectLayer from './mapdata/tundra/TundraObjectLayer.tilemapdata.js';
+import map_TundraOceanLayer  from './mapdata/tundra/TundraOceanLayer.tilemapdata.js';
+import map_TundraPathLayer   from './mapdata/tundra/TundraPathLayer.tilemapdata.js';
+
 import map_BorderLayer  from './mapdata/BorderLayer.tilemapdata.js';
 
 // debug options
@@ -157,12 +162,19 @@ const mapLayers = {
         nature: new gameify.Tilemap(tilemapSize, tilemapSize),
         path: new gameify.Tilemap(tilemapSize, tilemapSize),
     },
+    tundra: {
+        ocean: new gameify.Tilemap(tilemapSize, tilemapSize),
+        grass: new gameify.Tilemap(tilemapSize, tilemapSize),
+        nature: new gameify.Tilemap(tilemapSize, tilemapSize),
+        path: new gameify.Tilemap(tilemapSize, tilemapSize),
+    },
     border: new gameify.Tilemap(tilemapSize, tilemapSize),
     // Do something a one layer from every area
+    // callback(mapLayers[area][layer], area)
     forAllAreas: (layer, callback) => {
         for (const area in mapLayers) {
             if (mapLayers[area][layer]) {
-                callback(mapLayers[area][layer]);
+                callback(mapLayers[area][layer], area);
             }
         }
     },
@@ -213,6 +225,10 @@ mapLayers.forAllLayersInArea('desert', (layer) => {
     layer.setTileset(desertMapTileset);
     screen.add(layer);
 });
+mapLayers.forAllLayersInArea('tundra', (layer) => {
+    layer.setTileset(tundraMapTileset);
+    screen.add(layer);
+});
 mapLayers.border.setTileset(borderMapTileset);
 screen.add(mapLayers.border);
 
@@ -225,8 +241,13 @@ mapLayers.plains.path.loadMapData(map_PlainsPathLayer);
 mapLayers.desert.grass.loadMapData(map_DesertGrassLayer);
 mapLayers.desert.nature.loadMapData(map_DesertObjectLayer);
 mapLayers.desert.ocean.loadMapData(map_DesertOceanLayer);
-
 mapLayers.desert.path.loadMapData(map_DesertPathLayer);
+// tundra map layers
+mapLayers.tundra.grass.loadMapData(map_TundraGrassLayer);
+mapLayers.tundra.nature.loadMapData(map_TundraObjectLayer);
+mapLayers.tundra.ocean.loadMapData(map_TundraOceanLayer);
+mapLayers.tundra.path.loadMapData(map_TundraPathLayer);
+
 // border map layer
 mapLayers.border.loadMapData(map_BorderLayer);
 worldBorder.setMap(mapLayers.border);
@@ -234,6 +255,11 @@ gather.setMap(mapLayers.plains.nature);
 
 mapLayers.forAllAreas('ocean', (layer) => {
     layer.listTiles().forEach(tile => {
+        if(tile.source.y > 0) {
+            // some "decorative" tiles are put in the ocean layer
+            // but shouldn't have hitboxes
+            return;
+        }
         //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
         const newShape = new gameify.shapes.Rectangle(0, 0, 64, 64);
         newShape.position.x += tile.position.x * layer.twidth;
@@ -247,6 +273,7 @@ build.addBuildObstacleMap(mapLayers.plains.ocean);
 build.addBuildObstacleMap(mapLayers.plains.nature);
 build.addBuildObstacleMap(mapLayers.plains.path);
 build.addBuildObstacleMap(mapLayers.desert.grass); // no building in the desert
+build.addBuildObstacleMap(mapLayers.tundra.grass); // no building in the tundra
 build.addBuildObstacleMap(mapLayers.border);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
@@ -272,7 +299,7 @@ for (const r in player.resources) {
 
 const directionText = `
 ^ N - Desert
-> E - Mountains
+> E - Tundra
 `;
 
 let villageName = '';
@@ -283,7 +310,9 @@ signs.addSign(6*64, 1*64, `You're in the Forest!` + directionText, screen, async
     sign.text = `You're in ${name}!` + directionText;
     sign.actionText = `rename ${name}`;
 }, 'name your village');
-signs.addSign(2*64, -25*64, `^ N - Desert\n> E - Mountains\nv S - Forest`, screen);
+signs.addSign(2*64, -25*64, `^ N - Desert\n> E - Tundra\nv S - Forest`, screen);
+signs.addSign(26*64, -1*64, `You're in the Forest!\nNE - Desert\n> E - Tundra\n`, screen);
+signs.addSign(56*64, 1*64, `< W - Forest\n> E - Tundra\n`, screen);
 
 
 const lastDeltaTimes = [];
@@ -441,11 +470,17 @@ plainsWorldScene.onDraw(() => {
     mapLayers.forAllAreas('ocean', (layer) => layer.draw(onlyDrawIfNear));
     mapLayers.forAllAreas('grass', (layer) => layer.draw(onlyDrawIfNear));
     mapLayers.forAllAreas('path', (layer) => layer.draw(onlyDrawIfNear));
-    mapLayers.forAllAreas('nature', (layer) => layer.draw((tile, x, y) => {
+    mapLayers.forAllAreas('nature', (layer, area) => layer.draw((tile, x, y) => {
         if (!onlyDrawIfNear(tile, x, y)) return false;
-        // tile is above the player, draw it first
-        // arbitrarily use the plains map as reference for theight
-        if (y*mapLayers.plains.nature.theight < player.sprite.position.y) {
+
+        if (area === 'tundra' && tile.source.y === 2 || tile.source.y === 3) {
+            // Hacky way of making certain tundra tiles
+            // draw properly (below the player)
+            return tile.__tsa_already_drawn = true; // yes, assignment on purpose
+
+        } else if (y*mapLayers.plains.nature.theight < player.sprite.position.y) {
+            // tile is above the player, draw it first
+            // arbitrarily use the plains map as reference for theight
             return tile.__tsa_already_drawn = true; // yes, assignment on purpose
         }
         return tile.__tsa_already_drawn = false;
