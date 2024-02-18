@@ -7,6 +7,7 @@ const signImage = buildingTileset.getTile(2, 7);
 
 const popupImage = new gameify.Image('images/e_read_popup.png');
 const popupSprite = new gameify.Sprite(0, 0, popupImage);
+popupSprite.scale = 2;
 
 const signSprites = [];
 
@@ -35,8 +36,8 @@ export const signs = {
             if (player.sprite.position.distanceTo(sign.sprite.position) < 50) {
                 nearSign = true;
                 popupSprite.position = sign.sprite.position.copy();
-                popupSprite.position.y -= 32;
-                popupSprite.position.x -= 16;
+                popupSprite.position.y -= 38;
+                popupSprite.position.x -= 32;
                 if (sign.visible && sign.action && screen.keyboard.keyWasJustPressed('X')) {
                     sign.action(sign);
                     dialogue.closeIfActive(sign.id);

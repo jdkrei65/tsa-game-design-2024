@@ -6,6 +6,7 @@ const villagerImage = buildingTileset.getTile(0, 3);
 
 const popupImage = new gameify.Image('images/e_talk_popup.png');
 const popupSprite = new gameify.Sprite(0, 0, popupImage);
+popupSprite.scale = 2;
 
 const defaultVillager = {
     onInteract: ()=>{
@@ -30,8 +31,8 @@ export const villagers = {
         if (villager.canInteract && player.sprite.position.distanceTo(villager.sprite.position) < 64) {
             villager.closeToPlayer = true;
             popupSprite.position = villager.sprite.position.copy();
-            popupSprite.position.y -= 32;
-            popupSprite.position.x -= 16;
+            popupSprite.position.y -= 38;
+            popupSprite.position.x -= 32;
 
             if (screen.keyboard.keyWasJustPressed('E')) {
                 villager.onInteract();
