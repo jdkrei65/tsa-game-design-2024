@@ -166,6 +166,29 @@ const gatherables = {
             ], // position on tilemap
             resources: { /* not gatherable */ }
         },
+        cliffLeft: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [8, 8, 4, 48],
+            static: true, // can't be gathered
+            sources: [
+                [4, 2],
+                [5, 2],
+                [0, 3],
+                [2, 3],
+            ], // position on tilemap
+            resources: { /* not gatherable */ }
+        },
+        cliffRight: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [52, 8, 4, 48],
+            static: true, // can't be gathered
+            sources: [
+                [5, 3],
+                [4, 3],
+                [3, 3],
+            ], // position on tilemap
+            resources: { /* not gatherable */ }
+        },
         grass: {
             sources: [
                 [4, 0]
