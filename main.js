@@ -260,11 +260,14 @@ gather.addMap('plains', mapLayers.plains.nature);
 gather.addMap('desert', mapLayers.desert.nature);
 gather.addMap('tundra', mapLayers.tundra.nature);
 
-mapLayers.forAllAreas('ocean', (layer) => {
+mapLayers.forAllAreas('ocean', (layer, area) => {
     layer.listTiles().forEach(tile => {
         if(tile.source.y > 0) {
             // some "decorative" tiles are put in the ocean layer
             // but shouldn't have hitboxes
+            return;
+        } else if (mapLayers.plains.path.get(tile.position.x, tile.position.y)){ //tile.position.x === 23 && tile.position.y === 16) {
+            // don't add collision shapes over paths
             return;
         }
         //const newShape = new gameify.shapes.Rectangle(15, 10, 39, 44);
