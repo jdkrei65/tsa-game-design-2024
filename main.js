@@ -125,9 +125,10 @@ const player = {
     sprint_speed: 150,
     speed: 90, // default to waking speed, this is overwritten anyway
     resources: {
-        wood: 5,  // Start with some resources for testing,
-        stone: 0, // set this to zero later
-        apples: 5,
+        wood: 0,
+        stone: 0,
+        apples: 0,
+        berries: 0,
         gold: 10
     }
 };

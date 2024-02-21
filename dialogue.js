@@ -164,6 +164,40 @@ as an "endless flask". It holds an infinite amount of water, and with it
 you will never be thirsty.`,
 '(You can now explore the desert without limitation)'
         ],
+        witch_desert_2: [
+`Have you visited the desert yet?`,
+`Exploring the desert will help you immensely in your quest.
+Resources in the desert are plentiful, and gold is everywhere.
+Some even claim it's so magic you can get twice the wood from chopping
+the same sized tree.`,
+        ],
+        witch_tundra_1: [
+`What do you mean you want to visit the tundra?
+You just got equipment to travel to the desert!`,
+/* ---- */
+`Well, you can go there, but you'll have to go back to the desert first.
+The cactus in the desert grow a berry that I can use to make a temperature-
+resistant coat for you.`,
+/* ---- */
+`Bring me back 10 gold, and 10 berries, and I'll make you the coat.
+
+(Gather cactus from the desert to obtain gold and berries,
+then bring them back to the witch)`
+        ],
+        witch_tundra_cost: [
+`Bring me back 10 gold and 10 berries, and I'll make you the coat so
+that you can explore the tundra.`,
+`(Gather cactus from the desert to obtain gold and berries,
+then bring them back to the witch)`
+        ],
+        witch_tundra_coat: [
+`Ah! you're back!
+Just give me one second to craft your coat.`,
+'...',
+`Here is your coat!
+The berries give it magical thermal power, so you will never be cold.`,
+'(You can now explore the tundra without limitation)'
+        ],
         dehydration: [
             `Phew! It's hot and dry here.\nI wouldn't want to be out here for long without proper supplies!`,
             `I better turn back before I die of thirst.\nI'll come back once I have a way to stay hydrated.\n

@@ -72,7 +72,7 @@ const goals = {
         "witch_desert": {
             text: "[{x}] Talk to the witch"
         },
-        "witch_tundra": {
+        "witch_tundra_1": {
             text: "[{x}] Talk to the witch"
         }
     },
@@ -164,7 +164,7 @@ const levels = [{
         goal: goals.map["desert"],
         num: 1
     },{
-        goal: goals.dialogue["witch_tundra"],
+        goal: goals.dialogue["witch_tundra_1"],
         num: 1
     },{
         goal: goals.items["fur coat"],
