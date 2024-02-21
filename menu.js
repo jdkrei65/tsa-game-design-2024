@@ -85,13 +85,27 @@ export const menu = {
             }
         });
 
-        const bgImage = new gameify.Image('images/menuScreen.png')
+        const bgImage = new gameify.Image('images/title_screen.jpg')
         const bgSprite = new gameify.Sprite(0, 0, bgImage);
-        bgSprite.scale = 2;
+        bgSprite.scale = 0.3;
         screen.add(bgSprite);
 
-        const box = new gameify.shapes.Rectangle(265, 298, 240, 75);
-        const optionsBox = new gameify.shapes.Rectangle(260, 385, 240, 47);
+        const menuTextStyle = new gameify.TextStyle('DefaultFont', 32, '#fff');
+        const menuTextHoverStyle = new gameify.TextStyle('DefaultFont', 32, '#e3c576');
+        menuTextStyle.lineHeight = 1.25;
+        const playText = new gameify.Text(
+            'Play',
+            430, 470, menuTextStyle
+        );
+        screen.add(playText);
+        const optionsText = new gameify.Text(
+            'Options',
+            430, 530, menuTextStyle
+        );
+        screen.add(optionsText);
+
+        const box = new gameify.shapes.Rectangle(420, 460, 120, 45);
+        const optionsBox = new gameify.shapes.Rectangle(420, 520, 140, 45);
 
         menuAudio.setVolume(.5);
         screen.audio.add(menuAudio);
@@ -100,14 +114,22 @@ export const menu = {
         menuScene.onUpdate((deltaTime) => {
             if (!menuAudio.isPlaying()) menuAudio.play();
 
+            playText.style = menuTextStyle;
+            optionsText.style = menuTextStyle;
+
             screen.element.style.cursor = 'pointer';
+            if (screen.mouse.eventJustHappened('left')) {
+                console.log(screen.mouse.getPosition());
+            }
 
             if (box.contains(screen.mouse.getPosition())) {
+                playText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     screen.setScene(charSelectScene);
                 }
 
             } else if (optionsBox.contains(screen.mouse.getPosition())) {
+                optionsText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     console.log(screen.audio.getVolume());
                     menu.openOptions();
@@ -120,6 +142,8 @@ export const menu = {
         menuScene.onDraw(() => {
             screen.clear('#efe');
             bgSprite.draw();
+            playText.draw();
+            optionsText.draw();
             if (window.DRAW_SHAPES) {
                 box.draw(screen.context);
                 optionsBox.draw(screen.context);
