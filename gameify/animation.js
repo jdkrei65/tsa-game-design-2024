@@ -143,11 +143,11 @@ export let animation = {
             if (!this.animations[name]) {
                 throw new Error(`Animation '${name}' not found or was not added to this animator.`);
             }
-            if (!this.currentAnimation) {
+            if (this.currentAnimation !== this.animations[name]) {
                 this.currentAnimation = this.animations[name];
                 this.animationProgress = 0;
+                this.playing = true;
             }
-            this.playing = true;
         }
 
         /** Stop & reset the animation

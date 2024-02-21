@@ -120,7 +120,7 @@ export const dialogue = {
     },
     lines: {
         tutorial: [
-'*Heavy Panting* Finally we are safe!\n\n - Use the W A S & D keys to move around',
+'*Heavy Panting* Finally we are safe!\n\n - Use the W A S & D keys to move around\n - Hold SHIFT while moving to run',
 /* ---- */
 `Eventually we will build a great city here,
 but first, we must get resources to survive by ourselves.

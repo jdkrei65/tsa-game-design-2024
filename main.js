@@ -117,9 +117,9 @@ inputbox.setScreen(screen);
 levelProgress.setScreen(screen);
 
 //Main Character
-const characterSprite = new gameify.Image("images/temporaryChar.png")
+const womanVillagerTilesheet = new gameify.Tileset('images/woman_animated_sprite_full.png', 32, 48);
 const player = {
-    sprite: new gameify.Sprite(300, 200, characterSprite),
+    sprite: new gameify.Sprite(300, 200, womanVillagerTilesheet.getTile(0, 3)),
     direction: new gameify.Vector2d(1, 0),
     walk_speed: 90, // px per s
     sprint_speed: 150,
@@ -139,9 +139,9 @@ window.TP_TO = (x, y) => {
     player.sprite.position.x = x;
     player.sprite.position.y = y;
 }
-player.sprite.setShape(new gameify.shapes.Circle(0, 0, 14), 28, 34);
+player.sprite.setShape(new gameify.shapes.Circle(0, 0, 10), 16, 32);
 //player.sprite.setShape(new gameify.shapes.Rectangle(0, 0, 28, 22), 14, 28);
-player.sprite.scale = .2;
+player.sprite.scale = 1;
 screen.add(player.sprite);
 
 screen.camera.setSpeed(0.002);
@@ -398,10 +398,6 @@ plainsWorldScene.onUpdate((deltaTime) => {
         player.sprite.velocity.x += 1;
     }
 
-    if (player.sprite.velocity.x !== 0 || player.sprite.velocity.y !== 0) {
-        player.direction = player.sprite.velocity.copy();
-    }
-
     // normalize and multiply, so we don't go faster when moving diagonally
     player.sprite.velocity.normalize();
     player.sprite.velocity = player.sprite.velocity.multiply(player.speed);
@@ -413,6 +409,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
     const directions = [0,
                         45, -45,
                         65, -65];
+    let can_move = false;
     for (const dir of directions) {
         // Try to move at 0deg to target, but also rotated a bit to slide along walls
         player.sprite.velocity = lastVelocity.rotatedDegrees(dir);
@@ -429,7 +426,24 @@ plainsWorldScene.onUpdate((deltaTime) => {
             // revert to before collision
             player.sprite.position = lastPosition;
             
-        } else break; // no collision? we're done here.
+        } else {
+            can_move = true;
+            break; // no collision? we're done here.
+        }
+    }
+
+    // Stuck on an obstacle, or not moving
+    if (!can_move || Math.max(Math.abs(player.sprite.velocity.y), Math.abs(player.sprite.velocity.x)) < 10) {
+        player.sprite.animator.play('idle');
+
+    } else if (player.sprite.velocity.x > 10) {
+        player.sprite.animator.play('walk_east');
+    } else if (player.sprite.velocity.x < -10){
+        player.sprite.animator.play('walk_west');
+    } else if (player.sprite.velocity.y > 10) {
+        player.sprite.animator.play('walk_south');
+    } else {
+        player.sprite.animator.play('walk_north');
     }
 
     for (const res in resourceIndicators) {
@@ -529,5 +543,5 @@ plainsWorldScene.onDraw(() => {
     levelProgress.drawUI();
     message.draw();
 });
-screen.setScene(menu.createScene(screen, plainsWorldScene));
+screen.setScene(menu.createScene(screen, plainsWorldScene, player));
 screen.startGame();
