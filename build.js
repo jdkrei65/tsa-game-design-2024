@@ -200,7 +200,7 @@ const placeBuilding = (buildingName, building, position, player) => {
         collisionShapes.addItem(position.multiply(buildingMap.twidth), newShape);
     }
     // call the onPlace function
-    building.onPlace(position);
+    if (building.onPlace) building.onPlace(position);
 
     // Then, actually deduct the cost
     for (const res in building.cost) {
