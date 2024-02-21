@@ -76,7 +76,14 @@ const goals = {
     map: {
         reset: false,
         text: '[{x}] Visit the {g}',
-        "desert": { }
+        "plains": { },
+        "desert": { },
+        "tundra": { }
+    },
+    items: {
+        text: '[{x}] Obtain {g}',
+        "endless flask": { },
+        "fur coat": { }
     }
 };
 
@@ -204,7 +211,7 @@ const levelUp = () => {
     for (const type in goals) {
         for (const goal in goals[type]) {
             if (typeof goals[type][goal] !== 'object') continue;
-            if (typeof goals[type].reset === true) {
+            if (goals[type].reset === true) {
                 // reset goal counters
                 goals[type][goal].completed = 0;
             }
@@ -250,6 +257,13 @@ export const levelProgress = {
         screen.add(levelUpSprite);
         screen.add(levelUpText);
         screen.add(optionsSprite);
+    },
+    isCompleted: (type, goal) => {
+        if (goals[type] && goals[type][goal]) {
+            return goals[type][goal].completed;
+        } else {
+            console.warn('Goal not found: ', type, goal);
+        }
     },
     completeGoal: (type, goal) => {
         if (goals[type] && goals[type][goal]) {

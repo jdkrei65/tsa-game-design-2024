@@ -341,10 +341,37 @@ plainsWorldScene.onSceneShown(() => {
 plainsWorldScene.onSceneHidden(() => {
     plainsAudio.stop();
 })
+
+let currentLocation = 'plains';
+let lastLocation = 'plains';
+
 plainsWorldScene.onUpdate((deltaTime) => {
     PAVolume = Math.min(1, PAVolume + deltaTime/4000);
     menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
     plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
+
+    lastLocation = currentLocation;
+    if (player.sprite.position.y < -1900) {
+        currentLocation = 'desert';
+
+        if (!levelProgress.isCompleted('items', 'endless flask')) {
+            player.sprite.position.y = -1900;
+            dialogue.setScene('dehydration', 0, false);
+        }
+    } else if (player.sprite.position.x > 3850) {
+        currentLocation = 'tundra';
+
+        if (!levelProgress.isCompleted('items', 'fur coat')) {
+            player.sprite.position.x = 3850;
+            dialogue.setScene('hypothermia', 0, false);
+        }
+    } else {
+        currentLocation = 'plains';
+    }
+
+    if (lastLocation !== currentLocation) {
+        levelProgress.completeGoal('map', currentLocation)
+    }
 
     // Reset the mouse cursor to default
     // (not 'pointer', when buttons are hovered)

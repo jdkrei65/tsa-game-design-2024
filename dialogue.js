@@ -60,7 +60,9 @@ export const dialogue = {
     },
     setScene: (line, num = 0, force = true) => {
         if (!force && dlIsOpen) {
-            message.showText('Complete the current dialogue\nbefore doing this!');
+            if (currentScene !== line) {
+                message.showText('Complete the current dialogue\nbefore doing this!');
+            }
             return false;
         }
         dlContinueText.string = `[SPACE to continue]`;
@@ -151,6 +153,16 @@ but first, we must get resources to survive by ourselves.
             'hi i am a witch, i do magic.\nI hear you want to go to desert',
             'here have a magic water bottle.\nIt helps you not die of dehydration.',
             '(you have gained a magic water bottle,\nit helps you not die of dehydration)'
+        ],
+        dehydration: [
+            `Phew! It's hot and dry here.\nI wouldn't want to be out here for long without proper supplies!`,
+            `I better turn back before I die of thirst.\nI'll come back once I have a way to stay hydrated.\n
+(Complete the goals in the progress menu to advance in the game)`
+        ],
+        hypothermia: [
+            `Ah! It's colder than I thought here.\nI'd freeze to death in a matter of minutes!`,
+            `Of course, it looks interesting out here, so I'll come back\nonce I have a good coat, of course.\n
+(Complete the goals in the progress menu to advance in the game)`
         ]
     }
 }
