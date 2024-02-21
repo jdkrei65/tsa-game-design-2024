@@ -71,6 +71,9 @@ const goals = {
         },
         "witch_desert": {
             text: "[{x}] Talk to the witch"
+        },
+        "witch_tundra": {
+            text: "[{x}] Talk to the witch"
         }
     },
     map: {
@@ -82,8 +85,12 @@ const goals = {
     },
     items: {
         text: '[{x}] Obtain {g}',
-        "endless flask": { },
-        "fur coat": { }
+        "endless flask": {
+            text: '[{x}] Obtain a flask'
+        },
+        "fur coat": {
+            text: '[{x}] Obtain a coat'
+        }
     }
 };
 
@@ -101,7 +108,7 @@ for (const type in goals) {
 }
 
 const levels = [{
-    name: 'tutorial',
+    name: 'Tutorial',
     requirements: [{
         goal: goals.dialogue["tutorial"],
         num: 1
@@ -116,16 +123,16 @@ const levels = [{
         num: 1
     }]
 }, {
-    name: 'small settlement',
+    name: 'Small settlement',
     villagers: 4,
-    buildings: ["farm", "barn", "witch hut"],
-    mapAreas: ["outer plains"],
+    buildings: ["farm", "witch hut"],
+    mapAreas: [],
     requirements: [{
         goal: goals.build["house"],
-        num: 6
+        num: 5
     },{
         goal: goals.build["water tank"],
-        num: 3
+        num: 2
     },{
         goal: goals.build["farm"],
         num: 1
@@ -136,23 +143,50 @@ const levels = [{
         goal: goals.dialogue["witch_desert"],
         num: 1
     },{
-        goal: goals.map["desert"],
+        goal: goals.items["endless flask"],
         num: 1
     }]
 }, {
-    name: 'placeholder',
-    villagers: 99999,
-    buildings: [],
-    mapAreas: [],
+    name: 'Growing village',
+    villagers: 4,
+    buildings: ["barn"],
+    mapAreas: ["desert"],
     requirements: [{
         goal: goals.build["house"],
-        num: 9999
+        num: 6
     },{
         goal: goals.build["forager's hut"],
-        num: 99
+        num: 2
     },{
         goal: goals.build["barn"],
-        num: 999
+        num: 1
+    },{
+        goal: goals.map["desert"],
+        num: 1
+    },{
+        goal: goals.dialogue["witch_tundra"],
+        num: 1
+    },{
+        goal: goals.items["fur coat"],
+        num: 1
+    }]
+}, {
+    name: 'small town',
+    villagers: 4,
+    buildings: ["bakery", "stable", "tailor"],
+    mapAreas: ["tundra"],
+    requirements: [{
+        goal: goals.build["house"],
+        num: 6
+    },{
+        goal: goals.build["forager's hut"],
+        num: 2
+    },{
+        goal: goals.build["barn"],
+        num: 1
+    },{
+        goal: goals.map["tundra"],
+        num: 1
     }]
 }];
 
@@ -231,9 +265,9 @@ to become a ${level.name.toUpperCase()}!
 - ${level.villagers} new villagers have arrived!
 - You've unlocked new buildings:
     ${level.buildings.map(a=>a.toUpperCase()).join(", ")}
-- You can travel to the ${level.mapAreas.map(a=>a.toUpperCase()).join(" and ")}
-
-
+${level.mapAreas.length>0?
+    `- You can travel to the ${level.mapAreas.map(a=>a.toUpperCase()).join(" and ")}`:''
+}
 `;
 
     levelUpModeActive = true;
