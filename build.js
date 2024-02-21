@@ -163,9 +163,10 @@ const placeBuilding = (buildingName, building, position, player) => {
         return;
     }
 
-    for (const map of collisionTileMaps) {
+    for (const entry of collisionTileMaps) {
+        const map = entry.map
         if (map.get(position.x, position.y)) {
-            message.showText(`Cannot place building!\nThere is an obstacle here.`);
+            message.showText(entry.message || `Cannot place building!\nThere is an obstacle here.`);
             return;
         }
     }
@@ -225,8 +226,8 @@ let collisionShapes = undefined; // defined in setScreen (b/c that's after windo
 
 export const build = {
     buildings,
-    addBuildObstacleMap: (tileMap) => {
-        collisionTileMaps.push(tileMap);
+    addBuildObstacleMap: (tileMap, message) => {
+        collisionTileMaps.push({map: tileMap, message: message});
     },
     collidesWithMap: (shape) => {
         shape.fillColor = '#00f3';

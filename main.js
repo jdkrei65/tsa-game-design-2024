@@ -282,8 +282,8 @@ mapLayers.forAllAreas('ocean', (layer, area) => {
 build.addBuildObstacleMap(mapLayers.plains.ocean);
 build.addBuildObstacleMap(mapLayers.plains.nature);
 build.addBuildObstacleMap(mapLayers.plains.path);
-build.addBuildObstacleMap(mapLayers.desert.grass); // no building in the desert
-build.addBuildObstacleMap(mapLayers.tundra.grass); // no building in the tundra
+build.addBuildObstacleMap(mapLayers.desert.grass, 'You cannot build in the\ndesert!'); // no building in the desert
+build.addBuildObstacleMap(mapLayers.tundra.grass, 'You cannot build in the\ntundra!'); // no building in the tundra
 build.addBuildObstacleMap(mapLayers.border);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
