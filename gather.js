@@ -114,7 +114,7 @@ const gatherables = {
             ], // position on tilemap
             resources: {
                 wood: 6,
-                gold: 2
+                gold: 3
             }
         },
         tree: {
@@ -125,7 +125,8 @@ const gatherables = {
                 [4, 4],
             ], // position on tilemap
             resources: {
-                wood: 12
+                wood: 12,
+                gold: 2
             }
         },
         rock: {
@@ -136,7 +137,8 @@ const gatherables = {
                 [2, 4]
             ], // position on tilemap
             resources: {
-                stone: 14
+                stone: 14,
+                gold: 7,
             }
         },
     },

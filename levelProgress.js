@@ -69,7 +69,7 @@ const goals = {
         "tutorial": {
             text: "[{x}] Read the tutorial"
         },
-        "witch: desert": {
+        "witch_desert": {
             text: "[{x}] Talk to the witch"
         }
     },
@@ -133,7 +133,7 @@ const levels = [{
         goal: goals.build["witch hut"],
         num: 1
     },{
-        goal: goals.dialogue["witch: desert"],
+        goal: goals.dialogue["witch_desert"],
         num: 1
     },{
         goal: goals.map["desert"],

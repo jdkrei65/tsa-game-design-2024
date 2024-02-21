@@ -285,6 +285,11 @@ build.addBuildObstacleMap(mapLayers.plains.path);
 build.addBuildObstacleMap(mapLayers.desert.grass, 'You cannot build in the\ndesert!'); // no building in the desert
 build.addBuildObstacleMap(mapLayers.tundra.grass, 'You cannot build in the\ntundra!'); // no building in the tundra
 build.addBuildObstacleMap(mapLayers.border);
+// Places villagers can't walk
+villagers.addNavObstacleMap(mapLayers.desert.grass);
+villagers.addNavObstacleMap(mapLayers.tundra.grass);
+villagers.addNavObstacleMap(mapLayers.plains.ocean);
+villagers.addNavObstacleMap(mapLayers.plains.nature);
 
 const resourceUITileset = new gameify.Tileset('images/resource_ui_placeholder.png', 16, 16);
 const resourceIndicators = {}

@@ -149,10 +149,20 @@ but first, we must get resources to survive by ourselves.
  - As your settlement expands, you'll advance through levels
    and explore more places!`,
         ],
-        v1_temp: [
-            'hi i am a witch, i do magic.\nI hear you want to go to desert',
-            'here have a magic water bottle.\nIt helps you not die of dehydration.',
-            '(you have gained a magic water bottle,\nit helps you not die of dehydration)'
+        witch_desert: [
+`Hello! I am Hazel, the magical witch from the north.
+I happen to have overheard that you would like to travel to the desert.`,
+/* ---- */
+`Exploring the desert will help you immensely in your quest.
+Resources in the desert are plentiful, and gold is everywhere.
+Some even claim it's so magic you can get twice the wood from chopping
+the same sized tree.`,
+/* ---- */
+`Lucky for you, I am very experienced in the ways of water and the
+desert. I have crafted a magical container, known to the people of the desert
+as an "endless flask". It holds an infinite amount of water, and with it
+you will never be thirsty.`,
+'(You can now explore the desert without limitation)'
         ],
         dehydration: [
             `Phew! It's hot and dry here.\nI wouldn't want to be out here for long without proper supplies!`,

@@ -1,5 +1,6 @@
 import { gameify } from './gameify/gameify.js';
 import { message } from './message.js';
+import { villagers } from './villagers.js';
 import { manageModes } from './manageModes.js';
 import { levelProgress } from './levelProgress.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
@@ -10,6 +11,7 @@ let currentlyBuilding = false;
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const buildingMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingTileset);
+villagers.addNavObstacleMap(buildingMap);
 const buildButtonImages = {
     build:              buildingTileset.getTile(0, 0),
     buildActive:        buildingTileset.getTile(1, 0),
@@ -60,6 +62,12 @@ const buildings = {
         image: buildingTileset.getTile(0, 7),
         cost: { wood: 15, stone: 5 },
         unlocked: false,
+        onPlace: (position) => {
+            const witch = villagers.getVillager('witch');
+            witch.active = true;
+            witch.sprite.position = position.multiply(buildingMap.twidth).add({x: 16, y: 24});
+            witch.homeLocation = position.multiply(buildingMap.twidth);
+        }
     },
     "barn":  {
         collisionShape: gameify.shapes.Rectangle,
@@ -191,7 +199,8 @@ const placeBuilding = (buildingName, building, position, player) => {
 
         collisionShapes.addItem(position.multiply(buildingMap.twidth), newShape);
     }
-
+    // call the onPlace function
+    building.onPlace(position);
 
     // Then, actually deduct the cost
     for (const res in building.cost) {
