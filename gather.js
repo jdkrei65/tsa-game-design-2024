@@ -113,7 +113,6 @@ const gatherables = {
                 [0, 5]
             ], // position on tilemap
             resources: {
-                wood: 6,
                 gold: 3,
                 berries: 4,
             }

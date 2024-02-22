@@ -165,7 +165,8 @@ you will never be thirsty.`,
 '(You can now explore the desert without limitation)'
         ],
         witch_desert_2: [
-`Have you visited the desert yet?`,
+`Have you visited the desert yet?
+Read the signs and follow the path to the north to find it!`,
 `Exploring the desert will help you immensely in your quest.
 Resources in the desert are plentiful, and gold is everywhere.
 Some even claim it's so magic you can get twice the wood from chopping

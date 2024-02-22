@@ -545,7 +545,7 @@ plainsWorldScene.onDraw(() => {
 
     worldBorder.draw(screen, player);
     build.draw(screen, player);
-    villagers.draw();
+    villagers.draw(screen);
     signs.draw();
 
     player.sprite.draw();

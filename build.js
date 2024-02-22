@@ -63,10 +63,7 @@ const buildings = {
         cost: { wood: 15, stone: 5 },
         unlocked: false,
         onPlace: (position) => {
-            const witch = villagers.getVillager('witch');
-            witch.active = true;
-            witch.sprite.position = position.multiply(buildingMap.twidth).add({x: 16, y: 24});
-            witch.homeLocation = position.multiply(buildingMap.twidth);
+            villagers.addWitchVillager(position.multiply(buildingMap.twidth));
         }
     },
     "barn":  {

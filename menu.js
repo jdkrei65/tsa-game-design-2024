@@ -44,6 +44,25 @@ export const menu = {
         player = _player
         screen = _screen;
 
+        const menuTextStyle = new gameify.TextStyle('DefaultFont', 32, '#fff');
+        const menuTextHoverStyle = new gameify.TextStyle('DefaultFont', 32, '#e3c576');
+
+        const charSelectText = new gameify.Text(
+            'Select Character',
+            250, 50, menuTextStyle
+        );
+        screen.add(charSelectText);
+        const manSelText = new gameify.Text(
+            '^',
+            305, 535, menuTextStyle
+        );
+        screen.add(manSelText);
+        const womanSelText = new gameify.Text(
+            '^',
+            510, 535, menuTextStyle
+        );
+        screen.add(womanSelText);
+
         const charSelectImage = new gameify.Image('images/char_select_screen.png');
         const charSelectSprite = new gameify.Sprite(135, 75, charSelectImage);
         const charSelectBgImage = new gameify.Image('images/char_select_screen_bg.png');
@@ -54,18 +73,26 @@ export const menu = {
         screen.add(charSelectBgSprite);
         const charSelectScene = new gameify.Scene(screen);
 
-        const manBox = new gameify.shapes.Rectangle(215, 115, 175, 410);
-        const womanBox = new gameify.shapes.Rectangle(425, 115, 175, 410);
+        const manBox = new gameify.shapes.Rectangle(215, 115, 175, 450);
+        const womanBox = new gameify.shapes.Rectangle(425, 115, 175, 450);
         charSelectScene.onUpdate(() => {
 
+            manSelText.style = menuTextStyle;
+            womanSelText.style = menuTextStyle;
+
+            if (screen.mouse.eventJustHappened('left')) {
+                console.log(screen.mouse.getPosition());
+            }
             if (manBox.contains(screen.mouse.getPosition())) {
                 screen.element.style.cursor = 'pointer';
+                manSelText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     set_player_animations(manVillagerTilesheet);
                     screen.setScene(nextScene);
                 }
             } else if (womanBox.contains(screen.mouse.getPosition())) {
                 screen.element.style.cursor = 'pointer';
+                womanSelText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     set_player_animations(womanVillagerTilesheet);
                     screen.setScene(nextScene);
@@ -79,6 +106,9 @@ export const menu = {
             screen.clear('#efe');
             charSelectBgSprite.draw();
             charSelectSprite.draw();
+            charSelectText.draw();
+            manSelText.draw();
+            womanSelText.draw();
             if (window.DRAW_SHAPES) {
                 manBox.draw(screen.context);
                 womanBox.draw(screen.context);
@@ -90,9 +120,6 @@ export const menu = {
         bgSprite.scale = 0.3;
         screen.add(bgSprite);
 
-        const menuTextStyle = new gameify.TextStyle('DefaultFont', 32, '#fff');
-        const menuTextHoverStyle = new gameify.TextStyle('DefaultFont', 32, '#e3c576');
-        menuTextStyle.lineHeight = 1.25;
         const playText = new gameify.Text(
             'Play',
             430, 470, menuTextStyle

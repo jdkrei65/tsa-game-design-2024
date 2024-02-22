@@ -74,6 +74,9 @@ const goals = {
         },
         "witch_tundra_1": {
             text: "[{x}] Talk to the witch"
+        },
+        "witch_tundra_coat": {
+            text: "  "
         }
     },
     map: {
@@ -153,10 +156,10 @@ const levels = [{
     mapAreas: ["desert"],
     requirements: [{
         goal: goals.build["house"],
-        num: 6
+        num: 7
     },{
         goal: goals.build["forager's hut"],
-        num: 2
+        num: 3
     },{
         goal: goals.build["barn"],
         num: 1
@@ -169,11 +172,14 @@ const levels = [{
     },{
         goal: goals.items["fur coat"],
         num: 1
+    },{
+        goal: goals.dialogue["witch_tundra_coat"],
+        num: 1
     }]
 }, {
     name: 'small town',
     villagers: 4,
-    buildings: ["bakery", "stable", "tailor"],
+    buildings: [/*"bakery", "stable", "tailor"*/],
     mapAreas: ["tundra"],
     requirements: [{
         goal: goals.build["house"],
