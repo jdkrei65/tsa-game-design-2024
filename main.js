@@ -342,19 +342,30 @@ screen.audio.add(plainsAudio);
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onSceneShown(() => {
     plainsAudio.play();
-    plainsAudio.setLoop(true);
+    plainsAudio.setLoop(false);
 })
 plainsWorldScene.onSceneHidden(() => {
     plainsAudio.stop();
 })
+let musicTimer = 30000;
 
 let currentLocation = 'plains';
 let lastLocation = 'plains';
+
+console.log(plainsAudio);
 
 plainsWorldScene.onUpdate((deltaTime) => {
     PAVolume = Math.min(1, PAVolume + deltaTime/4000);
     menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
     plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
+
+    if (!plainsAudio.isPlaying() && musicTimer < 0) {
+        plainsAudio.play();
+        musicTimer = (Math.random() * 30000) + 15000 // 15-30 s of delay
+        console.log(musicTimer);
+    } else if (!plainsAudio.isPlaying()) {
+        musicTimer -= deltaTime;
+    }
 
     lastLocation = currentLocation;
     if (player.sprite.position.y < -1900) {
