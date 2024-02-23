@@ -184,12 +184,13 @@ const placeBuilding = (buildingName, building, position, player) => {
     const resources = player.resources;
 
     if (building === buildings.demolishBuilding) {
-        const delBuilding = placedBuildings[position.y][position.x];
 
-        if (!placedBuildings[position.y] || !delBuilding) {
+        if (!placedBuildings[position.y] || !placedBuildings[position.y][position.x]) {
             console.warn('Nothing to demolish at ' + position);
             return;
         }
+        
+        const delBuilding = placedBuildings[position.y][position.x];
 
         const bType = buildings[delBuilding.name]
         if (bType.beforeDelete) {
