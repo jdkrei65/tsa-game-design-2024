@@ -177,7 +177,7 @@ const levels = [{
         num: 1
     }]
 }, {
-    name: 'small town',
+    name: 'Busy village',
     villagers: 4,
     buildings: ["stable", "tailor"],
     mapAreas: ["tundra"],
@@ -212,7 +212,7 @@ const getGoalText = (goal, num) => {
 const getLevelText = (levelNum) => {
     const level = levels[levelNum];
 
-    if (!level) return 'No more goals!\n\nJust explore and build\nhowever you want!';
+    if (!level) return '  No more goals!\n\nExplore the world,\nand build a city\nhowever you want!\n\nEven in the desert\nor tundra!';
 
     let allDone = true;
 
@@ -260,6 +260,18 @@ const levelUp = () => {
 
     const level = levels[currentLevel];
 
+    if (!level) {
+        levelUpText.string = `Congratulations! You've completed
+all 4 levels, and have become a
+THRIVING TOWN!
+
+Now unbound by goals, you can keep
+exploring, and building your town as
+much as you'd like!
+`
+        return;
+    }
+
     for (const building of level.buildings) {
         // unlock new buildings
         build.buildings[building].unlocked = true;
@@ -297,6 +309,9 @@ export const levelProgress = {
         screen.add(levelUpSprite);
         screen.add(levelUpText);
         screen.add(optionsSprite);
+    },
+    isGameComplete: () => {
+        return (levels[currentLevel] === undefined);
     },
     isCompleted: (type, goal) => {
         if (goals[type] && goals[type][goal]) {
