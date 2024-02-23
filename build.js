@@ -21,6 +21,9 @@ const buildButtonImages = {
     "witch hut":        buildingTileset.getTile(0, 6),
     "farm":             buildingTileset.getTile(1, 7),
     "barn":             buildingTileset.getTile(1, 6),
+    "bakery":           buildingTileset.getTile(1, 8),
+    "stable":           buildingTileset.getTile(2, 8),
+    "tailor":           buildingTileset.getTile(0, 9),
     "__":               buildingTileset.getTile(0, 0),
     demolishBuilding:   buildingTileset.getTile(1, 3),
 }
@@ -71,6 +74,27 @@ const buildings = {
         collisionArgs: [6, 18, 54, 40],
         image: buildingTileset.getTile(2, 6),
         cost: { wood: 20, stone: 5 },
+        unlocked: false,
+    },
+    "bakery":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [6, 18, 54, 40],
+        image: buildingTileset.getTile(1, 8),
+        cost: { wood: 15, stone: 25 },
+        unlocked: false,
+    },
+    "stable":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [6, 18, 54, 40],
+        image: buildingTileset.getTile(2, 8),
+        cost: { wood: 40, stone: 5, gold: 2 },
+        unlocked: false,
+    },
+    "tailor":  {
+        collisionShape: gameify.shapes.Rectangle,
+        collisionArgs: [6, 18, 54, 40],
+        image: buildingTileset.getTile(0, 9),
+        cost: { wood: 10, stone: 10, gold: 10 },
         unlocked: false,
     },
     "__": {

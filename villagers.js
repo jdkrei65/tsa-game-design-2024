@@ -2,7 +2,7 @@ import { dialogue } from './dialogue.js';
 import { gameify } from './gameify/gameify.js';
 import { levelProgress } from './levelProgress.js';
 
-const villagerTileset = new gameify.Tileset("images/villagers.png", 32, 32);
+const villagerTileset = new gameify.Tileset("images/villagers.png", 32, 48);
 const witchImage = villagerTileset.getTile(0, 0);
 
 const popupImage = new gameify.Image('images/e_talk_popup.png');

@@ -152,7 +152,7 @@ const levels = [{
 }, {
     name: 'Growing village',
     villagers: 4,
-    buildings: ["barn"],
+    buildings: ["barn", "bakery"],
     mapAreas: ["desert"],
     requirements: [{
         goal: goals.build["house"],
@@ -179,7 +179,7 @@ const levels = [{
 }, {
     name: 'small town',
     villagers: 4,
-    buildings: [/*"bakery", "stable", "tailor"*/],
+    buildings: ["stable", "tailor"],
     mapAreas: ["tundra"],
     requirements: [{
         goal: goals.build["house"],
