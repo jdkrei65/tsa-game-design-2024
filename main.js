@@ -115,6 +115,7 @@ signs.setScreen(screen);
 gather.setScreen(screen);
 inputbox.setScreen(screen);
 levelProgress.setScreen(screen);
+manageModes.setScreen(screen);
 
 //Main Character
 const womanVillagerTilesheet = new gameify.Tileset('images/woman_animated_sprite_full.png', 32, 48);

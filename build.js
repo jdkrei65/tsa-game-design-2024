@@ -8,6 +8,9 @@ import { StaticSpacialHashArray } from './spacialHash.js';
 let buildModeActive = false;
 let currentlyBuilding = false;
 
+const clickAudio = new gameify.audio.Sound('audio/sfx/hit_2.2.mp3');
+const placeBulidingAudio = new gameify.audio.Sound('audio/sfx/building.mp3');
+
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const buildingMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingTileset);
@@ -201,6 +204,8 @@ const placeBuilding = (buildingName, building, position, player) => {
             resources[res] += delBuilding.cost[res];
         }
 
+        placeBulidingAudio.play();
+
         // remove it from levelProgress
         levelProgress.completeGoal('build', delBuilding.name, -1);
 
@@ -258,6 +263,8 @@ const placeBuilding = (buildingName, building, position, player) => {
         resources[res] -= building.cost[res];
     }
 
+    placeBulidingAudio.play();
+
     // Place the tile
     placedBuildings[position.y] = placedBuildings[position.y] || [];
     placedBuildings[position.y][position.x] = building;
@@ -313,6 +320,8 @@ export const build = {
         screen.add(buildingMap);
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
+        screen.audio.add(clickAudio);
+        screen.audio.add(placeBulidingAudio);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
     updateUI: (deltaTime, screen, player) => {
@@ -346,6 +355,7 @@ export const build = {
                         // It's a different button
                         button.click();
                     } else {
+                        clickAudio.play();
                         // Start building
                         previewBuildSprite.image = buildings[bt].image;
                         currentlyBuilding = bt;

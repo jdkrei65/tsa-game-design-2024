@@ -44,6 +44,9 @@ export const menu = {
         player = _player
         screen = _screen;
 
+        const clickAudio = new gameify.audio.Sound('audio/sfx/hit_2.2.mp3');
+        screen.audio.add(clickAudio);
+
         const menuTextStyle = new gameify.TextStyle('DefaultFont', 32, '#fff');
         const menuTextHoverStyle = new gameify.TextStyle('DefaultFont', 32, '#e3c576');
 
@@ -89,6 +92,7 @@ export const menu = {
                 if (screen.mouse.eventJustHappened('left')) {
                     set_player_animations(manVillagerTilesheet);
                     screen.setScene(nextScene);
+                    clickAudio.play();
                 }
             } else if (womanBox.contains(screen.mouse.getPosition())) {
                 screen.element.style.cursor = 'pointer';
@@ -96,6 +100,7 @@ export const menu = {
                 if (screen.mouse.eventJustHappened('left')) {
                     set_player_animations(womanVillagerTilesheet);
                     screen.setScene(nextScene);
+                    clickAudio.play();
                 }
             } else {
                 screen.element.style.cursor = '';
@@ -153,6 +158,7 @@ export const menu = {
                 playText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     screen.setScene(charSelectScene);
+                    clickAudio.play();
                 }
 
             } else if (optionsBox.contains(screen.mouse.getPosition())) {
@@ -160,6 +166,7 @@ export const menu = {
                 if (screen.mouse.eventJustHappened('left')) {
                     console.log(screen.audio.getVolume());
                     menu.openOptions();
+                    clickAudio.play();
                 }
 
             } else {

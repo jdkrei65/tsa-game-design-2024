@@ -4,6 +4,8 @@ import { manageModes } from './manageModes.js';
 import { build } from './build.js';
 import { menu } from './menu.js';
 
+const levelUpAudio = new gameify.audio.Sound('audio/sfx/level_up.mp3');
+
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const clipboardButtonImage = buildingTileset.getTile(1, 4);
 const clipboardButtonActiveImage = buildingTileset.getTile(2, 4);
@@ -248,6 +250,8 @@ const exitClipboardMode = () => {
 const levelUp = () => {
     currentLevel += 1;
 
+    levelUpAudio.play();
+
     for (const type in goals) {
         for (const goal in goals[type]) {
             if (typeof goals[type][goal] !== 'object') continue;
@@ -309,6 +313,7 @@ export const levelProgress = {
         screen.add(levelUpSprite);
         screen.add(levelUpText);
         screen.add(optionsSprite);
+        screen.audio.add(levelUpAudio);
     },
     isGameComplete: () => {
         return (levels[currentLevel] === undefined);

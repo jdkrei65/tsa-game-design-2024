@@ -1,5 +1,7 @@
 import { gameify } from './gameify/gameify.js';
 
+const messageAudio = new gameify.audio.Sound('audio/sfx/status_bad.mp3');
+
 const warnMessageImage = new gameify.Image("images/problemdialog.png");
 warnMessageImage.opacity = 0;
 const warnMessageSprite = new gameify.Sprite(256, 68, warnMessageImage);
@@ -20,11 +22,14 @@ export const message = {
     setScreen: (screen) => {
         screen.add(warnMessageSprite);
         screen.add(messageText);
+        screen.audio.add(messageAudio);
     },
     showText: (text, newDuration = 2000) => {
         duration = newDuration;
         messageText.string = text;
         show = true;
+
+        messageAudio.play();
     },
     hideText: () => {
         show = false;

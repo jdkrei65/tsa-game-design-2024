@@ -1,7 +1,13 @@
+import { gameify } from './gameify/gameify.js';
+
+const clickAudio = new gameify.audio.Sound('audio/sfx/hit_2.2.mp3');
 
 const modes = {};
 
 export const manageModes = {
+    setScreen: (screen) => {
+        screen.audio.add(clickAudio);
+    },
     exitAll: () => {
         for (const m in modes) {
             modes[m].exit();
@@ -10,6 +16,7 @@ export const manageModes = {
     enterMode: (name) => {
         manageModes.exitAll();
         modes[name].enter();
+        clickAudio.play();
     },
     addMode: (name, enterFunction, exitFunction) => {
         modes[name] = {
