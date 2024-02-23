@@ -12,8 +12,9 @@ const clickAudio = new gameify.audio.Sound('audio/sfx/hit_2.2.mp3');
 const placeBulidingAudio = new gameify.audio.Sound('audio/sfx/building.mp3');
 
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
+const buildingMapTileset = new gameify.Tileset("images/buildings_alex.png", 32, 32);
 const buildingMap = new gameify.Tilemap(64, 64);
-buildingMap.setTileset(buildingTileset);
+buildingMap.setTileset(buildingMapTileset);
 villagers.addNavObstacleMap(buildingMap);
 const buildButtonImages = {
     build:              buildingTileset.getTile(0, 0),
@@ -39,33 +40,33 @@ const buildings = {
     "house":      {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [12, 12, 40, 46],
-        image: buildingTileset.getTile(2, 1),
+        image: buildingMapTileset.getTile(0, 0),
         cost: { wood: 10, stone: 5 },
         unlocked: true,
     },
     "forager's hut":  {
         collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [10, 8, 46, 46],
-        image: buildingTileset.getTile(0, 2),
+        collisionArgs: [10, 13, 46, 46],
+        image: buildingMapTileset.getTile(1, 0),
         cost: { wood: 15 },
         unlocked: true,
     },
     "water tank":  {
         collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [14, 16, 36, 38],
-        image: buildingTileset.getTile(1, 2),
+        collisionArgs: [10, 8, 46, 46],
+        image: buildingMapTileset.getTile(2, 0),
         cost: { wood: 5, stone: 5 },
         unlocked: true,
     },
     "farm":  {
-        image: buildingTileset.getTile(1, 5, 2, 1),
+        image: buildingMapTileset.getTile(4, 0),
         cost: { wood: 5, stone: 15, gold: 5 },
         unlocked: false,
     },
     "witch hut":  {
         collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [9, 16, 46, 40],
-        image: buildingTileset.getTile(0, 7),
+        collisionArgs: [9, 12, 46, 50],
+        image: buildingMapTileset.getTile(3, 0),
         cost: { wood: 15, stone: 5 },
         unlocked: false,
         beforePlace: () => {
@@ -83,8 +84,8 @@ const buildings = {
     },
     "barn":  {
         collisionShape: gameify.shapes.Rectangle,
-        collisionArgs: [6, 18, 54, 40],
-        image: buildingTileset.getTile(2, 6),
+        collisionArgs: [6, 8, 52, 52],
+        image: buildingMapTileset.getTile(5, 0),
         cost: { wood: 20, stone: 5 },
         unlocked: false,
     },
@@ -204,6 +205,7 @@ const placeBuilding = (buildingName, building, position, player) => {
             resources[res] += delBuilding.cost[res];
         }
 
+        placeBulidingAudio.stop();
         placeBulidingAudio.play();
 
         // remove it from levelProgress
@@ -263,6 +265,7 @@ const placeBuilding = (buildingName, building, position, player) => {
         resources[res] -= building.cost[res];
     }
 
+    placeBulidingAudio.stop();
     placeBulidingAudio.play();
 
     // Place the tile
@@ -355,6 +358,7 @@ export const build = {
                         // It's a different button
                         button.click();
                     } else {
+                        clickAudio.stop();
                         clickAudio.play();
                         // Start building
                         previewBuildSprite.image = buildings[bt].image;

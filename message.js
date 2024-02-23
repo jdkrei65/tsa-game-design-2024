@@ -29,6 +29,7 @@ export const message = {
         messageText.string = text;
         show = true;
 
+        messageAudio.stop();
         messageAudio.play();
     },
     hideText: () => {

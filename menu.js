@@ -92,6 +92,7 @@ export const menu = {
                 if (screen.mouse.eventJustHappened('left')) {
                     set_player_animations(manVillagerTilesheet);
                     screen.setScene(nextScene);
+                    clickAudio.stop();
                     clickAudio.play();
                 }
             } else if (womanBox.contains(screen.mouse.getPosition())) {
@@ -100,6 +101,7 @@ export const menu = {
                 if (screen.mouse.eventJustHappened('left')) {
                     set_player_animations(womanVillagerTilesheet);
                     screen.setScene(nextScene);
+                    clickAudio.stop();
                     clickAudio.play();
                 }
             } else {
@@ -158,6 +160,7 @@ export const menu = {
                 playText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     screen.setScene(charSelectScene);
+                    clickAudio.stop();
                     clickAudio.play();
                 }
 
@@ -166,6 +169,7 @@ export const menu = {
                 if (screen.mouse.eventJustHappened('left')) {
                     console.log(screen.audio.getVolume());
                     menu.openOptions();
+                    clickAudio.stop();
                     clickAudio.play();
                 }
 

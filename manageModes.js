@@ -16,6 +16,7 @@ export const manageModes = {
     enterMode: (name) => {
         manageModes.exitAll();
         modes[name].enter();
+        clickAudio.stop();
         clickAudio.play();
     },
     addMode: (name, enterFunction, exitFunction) => {

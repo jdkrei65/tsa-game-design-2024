@@ -3,6 +3,8 @@ import { manageModes } from './manageModes.js';
 import { message } from './message.js';
 import { StaticSpacialHashArray } from './spacialHash.js';
 
+const gatherAudio = new gameify.audio.Sound('audio/sfx/hit_2_3.mp3');
+
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 
 const gatherButtonImage = buildingTileset.getTile(2, 3);
@@ -231,6 +233,9 @@ const gatherItem = (position, player, mapName) => {
 
     if (!gatheredItem) {
         message.showText(`You can't gather this item!`);
+    } else {
+        gatherAudio.stop();
+        gatherAudio.play();
     }
 }
 
@@ -255,6 +260,7 @@ export const gather = {
     setScreen: (screen) => {
         screen.add(gatherButton);
         screen.add(previewGatherSprite);
+        screen.audio.add(gatherAudio);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
     addMap: (name, map) => {
