@@ -63,6 +63,16 @@ export const villagers = {
         }
         witch.sprite.position = home_pos.add({x: 16, y: 24});
         worldVillagers.push(witch);
+
+        return witch;
+    },
+    removeVillager(villager) {
+        const index = worldVillagers.indexOf(villager);
+        if (index < 0) {
+            console.warn('villager not in list');
+            return;
+        }
+        worldVillagers.splice(index, 1);
     },
     addNavObstacleMap(map) {
         navMaps.push(map);

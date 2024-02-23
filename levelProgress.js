@@ -320,9 +320,9 @@ export const levelProgress = {
             console.warn('Goal not found: ', type, goal);
         }
     },
-    completeGoal: (type, goal) => {
+    completeGoal: (type, goal, n = 1) => {
         if (goals[type] && goals[type][goal]) {
-            goals[type][goal].completed += 1;
+            goals[type][goal].completed += n;
         } else {
             console.warn('Goal not found: ', type, goal);
         }

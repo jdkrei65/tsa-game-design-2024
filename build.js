@@ -65,8 +65,17 @@ const buildings = {
         image: buildingTileset.getTile(0, 7),
         cost: { wood: 15, stone: 5 },
         unlocked: false,
-        onPlace: (position) => {
-            villagers.addWitchVillager(position.multiply(buildingMap.twidth));
+        beforePlace: () => {
+            if (levelProgress.isCompleted('build', 'witch hut')) {
+                return 'You can only build one\nwitch hut.'
+            }
+        },
+        onPlace: (self, position) => {
+            self.villager = villagers.addWitchVillager(position.multiply(buildingMap.twidth));
+        },
+        beforeDelete: (self) => {
+            console.log(self.villager);
+            villagers.removeVillager(self.villager);
         }
     },
     "barn":  {
@@ -171,15 +180,29 @@ const placeBuilding = (buildingName, building, position, player) => {
     const resources = player.resources;
 
     if (building === buildings.demolishBuilding) {
-        if (!placedBuildings[position.y] || !placedBuildings[position.y][position.x]) {
+        const delBuilding = placedBuildings[position.y][position.x];
+
+        if (!placedBuildings[position.y] || !delBuilding) {
             console.warn('Nothing to demolish at ' + position);
             return;
         }
 
-        // refund the cost of the building
-        for (const res in placedBuildings[position.y][position.x].cost) {
-            resources[res] += placedBuildings[position.y][position.x].cost[res];
+        const bType = buildings[delBuilding.name]
+        if (bType.beforeDelete) {
+            const errText = bType.beforeDelete(delBuilding);
+            if (errText) {
+                message.showText(errText);
+                return;
+            }
         }
+
+        // refund the cost of the building
+        for (const res in delBuilding.cost) {
+            resources[res] += delBuilding.cost[res];
+        }
+
+        // remove it from levelProgress
+        levelProgress.completeGoal('build', delBuilding.name, -1);
 
         placedBuildings[position.y][position.x] = undefined;
         buildingMap.remove(position.x, position.y);
@@ -194,7 +217,6 @@ const placeBuilding = (buildingName, building, position, player) => {
 
     for (const entry of collisionTileMaps) {
         const map = entry.map;
-        console.log(entry, levelProgress.isGameComplete());
         if (entry.allowWhenGameComplete && levelProgress.isGameComplete()) continue;
         if (map.get(position.x, position.y)) {
             message.showText(entry.message || `Cannot place building!\nThere is an obstacle here.`);
@@ -207,6 +229,14 @@ const placeBuilding = (buildingName, building, position, player) => {
     if (missing.length !== 0) {
         message.showText(`Cannot place building!\nNot enough resouces.`);
         return;
+    }
+
+    if (building.beforePlace) {
+        const errText = building.beforePlace();
+        if (errText) {
+            message.showText(errText);
+            return;
+        }
     }
 
     let newShape;
@@ -222,8 +252,6 @@ const placeBuilding = (buildingName, building, position, player) => {
 
         collisionShapes.addItem(position.multiply(buildingMap.twidth), newShape);
     }
-    // call the onPlace function
-    if (building.onPlace) building.onPlace(position);
 
     // Then, actually deduct the cost
     for (const res in building.cost) {
@@ -233,6 +261,7 @@ const placeBuilding = (buildingName, building, position, player) => {
     // Place the tile
     placedBuildings[position.y] = placedBuildings[position.y] || [];
     placedBuildings[position.y][position.x] = building;
+    placedBuildings[position.y][position.x].name = buildingName;
     const tile = building.image.tileData;
 
     buildingMap.place(
@@ -241,6 +270,9 @@ const placeBuilding = (buildingName, building, position, player) => {
         0, // rotation
         tile.size.x, tile.size.y // size (how many tiles tall/wide)
     );
+
+    // call the onPlace function
+    if (building.onPlace) building.onPlace(placedBuildings[position.y][position.x], position);
 
     // Mark goals as completed
     levelProgress.completeGoal('build', buildingName);
