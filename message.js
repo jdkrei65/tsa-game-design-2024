@@ -17,6 +17,7 @@ const messageText = new gameify.Text('Message here',
 
 let show = false;
 let duration = 0;
+let audioCooldown = 0;
 
 export const message = {
     setScreen: (screen) => {
@@ -29,13 +30,19 @@ export const message = {
         messageText.string = text;
         show = true;
 
-        messageAudio.stop();
-        messageAudio.play();
+        if (audioCooldown > 0) {
+            console.warn('message cooldown!', audioCooldown);
+        } else {
+            messageAudio.stop();
+            messageAudio.play();
+            audioCooldown = 500;
+        }
     },
     hideText: () => {
         show = false;
     },
     updateMessage: (deltaTime) => {
+        audioCooldown -= deltaTime;
         duration -= deltaTime;
         if (show && duration < 0) {
             show = false;
