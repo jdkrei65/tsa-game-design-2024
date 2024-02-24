@@ -337,16 +337,20 @@ let greatestDeltaTimeSpike = 0;
 
 const plainsAudio = new gameify.audio.Sound('audio/plains_bg.mp3');
 const desertAudio = new gameify.audio.Sound('audio/desert_bg.mp3');
+const tundraAudio = new gameify.audio.Sound('audio/tundra_bg.mp3');
 let PAVolume = .1;
 plainsAudio.setVolume(PAVolume);
-desertAudio.setVolume(PAVolume);
+desertAudio.setVolume(1);
+tundraAudio.setVolume(0.7);
 screen.audio.add(plainsAudio);
 screen.audio.add(desertAudio);
+screen.audio.add(tundraAudio);
+
+console.log(plainsAudio, desertAudio, tundraAudio);
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onSceneShown(() => {
     plainsAudio.play();
-    plainsAudio.setLoop(false);
 })
 plainsWorldScene.onSceneHidden(() => {
     plainsAudio.stop();
@@ -355,8 +359,6 @@ let musicTimer = 30000;
 
 let currentLocation = 'plains';
 let lastLocation = 'plains';
-
-console.log(plainsAudio);
 
 plainsWorldScene.onUpdate((deltaTime) => {
     lastLocation = currentLocation;
@@ -379,7 +381,8 @@ plainsWorldScene.onUpdate((deltaTime) => {
     }
 
     if (lastLocation !== currentLocation) {
-        levelProgress.completeGoal('map', currentLocation)
+        levelProgress.completeGoal('map', currentLocation);
+        musicTimer = 500;
     }
 
     // MUSIC
@@ -387,10 +390,12 @@ plainsWorldScene.onUpdate((deltaTime) => {
     menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
     plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
 
-    const anyPlaying = plainsAudio.isPlaying() || desertAudio.isPlaying();
+    const anyPlaying = plainsAudio.isPlaying() || desertAudio.isPlaying() || tundraAudio.isPlaying();
     let currentAudio = plainsAudio;
     if (currentLocation == 'desert') {
         currentAudio = desertAudio;
+    } else  if (currentLocation == 'tundra') {
+        currentAudio = tundraAudio;
     }
 
     if (!anyPlaying && musicTimer < 0) {
