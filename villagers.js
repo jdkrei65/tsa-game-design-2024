@@ -4,6 +4,8 @@ import { levelProgress } from './levelProgress.js';
 
 const villagerTileset = new gameify.Tileset("images/villagers.png", 32, 48);
 const witchImage = villagerTileset.getTile(0, 0);
+const villagerManImage = new gameify.Image("images/man_villager.png");
+const villagerWomanImage = new gameify.Image("images/woman_villager.png");
 
 const popupImage = new gameify.Image('images/e_talk_popup.png');
 const popupSprite = new gameify.Sprite(0, 0, popupImage);
@@ -66,6 +68,31 @@ export const villagers = {
 
         return witch;
     },
+    addGenericVillager(home_pos) {
+        const villager = {
+            id: 'villager_' + Math.floor(Math.random()*100),
+            name: 'Villager',
+            speed: default_villager_speed,
+            active: true,
+            dialogueNumber: Math.ceil(Math.random()*5),
+            onInteract: (self, player) => {
+                // 1/4 chance to change dialogue
+                if (Math.random()*4 > 3) self.dialogueNumber = Math.ceil(Math.random()*5);
+
+                dialogue.setScene('villager_generic' + self.dialogueNumber, 0, false)
+            },
+            homeLocation: home_pos,
+            targetedLocation: false,
+            // 1/4 villagers can be talked to
+            canInteract: (Math.random()*4 > 3) ? true : false,
+            closeToPlayer: false,
+            sprite: new gameify.Sprite(0, 0, (Math.random()*2 > 1) ? villagerManImage : villagerWomanImage)
+        }
+        villager.sprite.position = home_pos.add({x: 16, y: 12});
+        worldVillagers.push(villager);
+
+        return villager;
+    },
     removeVillager(villager) {
         const index = worldVillagers.indexOf(villager);
         if (index < 0) {
@@ -124,6 +151,8 @@ export const villagers = {
 
                 let problem = false;
                 if (villager.targetedLocation.distanceTo(villager.homeLocation) > 256) {
+                    problem = true;
+                } else if (villager.targetedLocation.distanceTo(villager.homeLocation) > 192 && Math.random()*4 > 1) {
                     problem = true;
                 } else {
                     const pos = navMaps[0].screenToMap(villager.targetedLocation);

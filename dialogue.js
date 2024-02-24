@@ -292,6 +292,24 @@ back once I have a good coat, of course.
  advance in the game)`,
                 portrait: playerImage
             },
+        ],
+        villager_generic1: [
+            `It's so nice to move into this little town!`
+        ],
+        villager_generic2: [
+            `I'm excited to watch this town as it grows!`
+        ],
+        villager_generic3: [
+            `It's so nice to finally get away from the castle's big village..
+I shall enjoy my nice new life here.`
+        ],
+        villager_generic4: [
+            `It's nice to be out here, I just wish there were a few more people.
+Oh, and can we please have a stone path? It gets muddy when it rains.`
+        ],
+        villager_generic5: [
+            `I got dragged out here by my family, but I'm starting to enjoy this
+new little town.`
         ]
     }
 }

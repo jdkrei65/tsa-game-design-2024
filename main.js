@@ -336,17 +336,21 @@ const lastDeltaTimes = [];
 let greatestDeltaTimeSpike = 0;
 
 const plainsAudio = new gameify.audio.Sound('audio/plains_bg.mp3');
+const plainsAudio2 = new gameify.audio.Sound('audio/plains_bg_2.mp3');
+const plainsAudio3 = new gameify.audio.Sound('audio/plains_bg_2_alt.mp3');
 const desertAudio = new gameify.audio.Sound('audio/desert_bg.mp3');
 const tundraAudio = new gameify.audio.Sound('audio/tundra_bg.mp3');
 let PAVolume = .1;
 plainsAudio.setVolume(PAVolume);
+plainsAudio2.setVolume(1);
+plainsAudio3.setVolume(1);
 desertAudio.setVolume(1);
 tundraAudio.setVolume(0.7);
 screen.audio.add(plainsAudio);
+screen.audio.add(plainsAudio2);
+screen.audio.add(plainsAudio3);
 screen.audio.add(desertAudio);
 screen.audio.add(tundraAudio);
-
-console.log(plainsAudio, desertAudio, tundraAudio);
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onSceneShown(() => {
@@ -356,6 +360,8 @@ plainsWorldScene.onSceneHidden(() => {
     plainsAudio.stop();
 })
 let musicTimer = 30000;
+
+console.log(plainsAudio, (t)=>musicTimer=t);
 
 let currentLocation = 'plains';
 let lastLocation = 'plains';
@@ -390,12 +396,21 @@ plainsWorldScene.onUpdate((deltaTime) => {
     menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
     plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
 
-    const anyPlaying = plainsAudio.isPlaying() || desertAudio.isPlaying() || tundraAudio.isPlaying();
+    const anyPlaying = plainsAudio.isPlaying()
+                    || desertAudio.isPlaying()
+                    || tundraAudio.isPlaying()
+                    || plainsAudio2.isPlaying()
+                    || plainsAudio3.isPlaying();
+
     let currentAudio = plainsAudio;
     if (currentLocation == 'desert') {
         currentAudio = desertAudio;
     } else  if (currentLocation == 'tundra') {
         currentAudio = tundraAudio;
+    } else if (Math.random() > .4) {
+        currentAudio = plainsAudio2;
+    } else if (Math.random() > .4) {
+        currentAudio = plainsAudio2;
     }
 
     if (!anyPlaying && musicTimer < 0) {

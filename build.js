@@ -43,6 +43,13 @@ const buildings = {
         image: buildingMapTileset.getTile(0, 0),
         cost: { wood: 10, stone: 5 },
         unlocked: true,
+        onPlace: (self, position) => {
+            self.villager = villagers.addGenericVillager(position.multiply(buildingMap.twidth));
+        },
+        beforeDelete: (self) => {
+            console.log(self.villager);
+            villagers.removeVillager(self.villager);
+        }
     },
     "forager's hut":  {
         collisionShape: gameify.shapes.Rectangle,
@@ -50,6 +57,13 @@ const buildings = {
         image: buildingMapTileset.getTile(1, 0),
         cost: { wood: 15 },
         unlocked: true,
+        onPlace: (self, position) => {
+            self.villager = villagers.addGenericVillager(position.multiply(buildingMap.twidth));
+        },
+        beforeDelete: (self) => {
+            console.log(self.villager);
+            villagers.removeVillager(self.villager);
+        }
     },
     "water tank":  {
         collisionShape: gameify.shapes.Rectangle,
@@ -271,8 +285,10 @@ const placeBuilding = (buildingName, building, position, player) => {
 
     // Place the tile
     placedBuildings[position.y] = placedBuildings[position.y] || [];
-    placedBuildings[position.y][position.x] = building;
-    placedBuildings[position.y][position.x].name = buildingName;
+    placedBuildings[position.y][position.x] = {
+        cost: building.cost,
+        name: buildingName
+    };
     const tile = building.image.tileData;
 
     buildingMap.place(
