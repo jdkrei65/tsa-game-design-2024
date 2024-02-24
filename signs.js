@@ -1,8 +1,8 @@
 import { dialogue } from './dialogue.js';
 import { gameify } from './gameify/gameify.js';
 
-const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
-const signImage = buildingTileset.getTile(2, 7);
+const buildingMapTileset = new gameify.Tileset("images/buildings_alex.png", 32, 32);
+const signImage = buildingMapTileset.getTile(3, 1);
 
 
 const popupImage = new gameify.Image('images/e_read_popup.png');
