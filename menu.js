@@ -1,6 +1,7 @@
 import { gameify } from './gameify/gameify.js';
 import { inputbox } from './inputbox.js';
 import { manageModes } from './manageModes.js';
+import { dialogue } from './dialogue.js';
 
 let menuScene = undefined;
 const menuAudio = new gameify.audio.Sound('audio/main_menu.mp3');
@@ -90,6 +91,7 @@ export const menu = {
                 screen.element.style.cursor = 'pointer';
                 manSelText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
+                    dialogue.setPlayerImage('man');
                     set_player_animations(manVillagerTilesheet);
                     screen.setScene(nextScene);
                     clickAudio.stop();
@@ -99,6 +101,7 @@ export const menu = {
                 screen.element.style.cursor = 'pointer';
                 womanSelText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
+                    dialogue.setPlayerImage('woman');
                     set_player_animations(womanVillagerTilesheet);
                     screen.setScene(nextScene);
                     clickAudio.stop();

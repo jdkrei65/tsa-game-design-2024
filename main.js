@@ -336,9 +336,12 @@ const lastDeltaTimes = [];
 let greatestDeltaTimeSpike = 0;
 
 const plainsAudio = new gameify.audio.Sound('audio/plains_bg.mp3');
+const desertAudio = new gameify.audio.Sound('audio/desert_bg.mp3');
 let PAVolume = .1;
 plainsAudio.setVolume(PAVolume);
+desertAudio.setVolume(PAVolume);
 screen.audio.add(plainsAudio);
+screen.audio.add(desertAudio);
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onSceneShown(() => {
@@ -356,18 +359,6 @@ let lastLocation = 'plains';
 console.log(plainsAudio);
 
 plainsWorldScene.onUpdate((deltaTime) => {
-    PAVolume = Math.min(1, PAVolume + deltaTime/4000);
-    menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
-    plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
-
-    if (!plainsAudio.isPlaying() && musicTimer < 0) {
-        plainsAudio.play();
-        musicTimer = (Math.random() * 30000) + 15000 // 15-30 s of delay
-        console.log(musicTimer);
-    } else if (!plainsAudio.isPlaying()) {
-        musicTimer -= deltaTime;
-    }
-
     lastLocation = currentLocation;
     if (player.sprite.position.y < -1900) {
         currentLocation = 'desert';
@@ -389,6 +380,25 @@ plainsWorldScene.onUpdate((deltaTime) => {
 
     if (lastLocation !== currentLocation) {
         levelProgress.completeGoal('map', currentLocation)
+    }
+
+    // MUSIC
+    PAVolume = Math.min(1, PAVolume + deltaTime/4000);
+    menu.menuAudio.setVolume(Math.max(0, .5-PAVolume))
+    plainsAudio.setVolume(Math.min(PAVolume-.5, .5));
+
+    const anyPlaying = plainsAudio.isPlaying() || desertAudio.isPlaying();
+    let currentAudio = plainsAudio;
+    if (currentLocation == 'desert') {
+        currentAudio = desertAudio;
+    }
+
+    if (!anyPlaying && musicTimer < 0) {
+        currentAudio.play();
+        musicTimer = (Math.random() * 40000) + 20000 // 20-40 s of delay
+        console.log(musicTimer);
+    } else if (!anyPlaying) {
+        musicTimer -= deltaTime;
     }
 
     // Reset the mouse cursor to default
