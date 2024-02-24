@@ -119,6 +119,9 @@ export let gameify = {
             this.pressedKeys = [];
         }
 
+        window.addEventListener('blur', this.forceClearPressedKeys);
+        this.captureScope.addEventListener('blur', this.forceClearPressedKeys);
+
         /** Called when a key is released
          * @private
          */
