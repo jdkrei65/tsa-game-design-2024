@@ -61,7 +61,7 @@ export const villagers = {
             closeToPlayer: false,
             sprite: new gameify.Sprite(0, 0, witchImage)
         }
-        witch.sprite.position = home_pos.add({x: 16, y: 24});
+        witch.sprite.position = home_pos.add({x: 16, y: 12});
         worldVillagers.push(witch);
 
         return witch;
@@ -108,7 +108,9 @@ export const villagers = {
             }
 
             if (!villager.targetedLocation) {
-                villager.targetedLocation = villager.sprite.position.copy();
+                villager.targetedLocation = navMaps[0].screenToMap(villager.sprite.position)
+                                                      .multiply(navMaps[0].twidth)
+                                                      .add({x: 16, y: 12});
                 const dir = Math.floor(Math.random() * (/*max=*/500 + 1)); // 4/100 chance to move
                 if (dir === 0) {
                     villager.targetedLocation.y -= 64;
@@ -136,7 +138,7 @@ export const villagers = {
 
                 if (problem) villager.targetedLocation = false;
 
-            } else if (!villager.closeToPlayer && villager.targetedLocation.distanceTo(villager.sprite.position) > 16) {
+            } else if (!villager.closeToPlayer && villager.targetedLocation.distanceTo(villager.sprite.position) > 4) {
                 // Don't move when close to the player
                 villager.sprite.velocity.x = 0;
                 villager.sprite.velocity.y = 0;
