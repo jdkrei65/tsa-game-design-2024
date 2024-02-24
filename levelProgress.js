@@ -284,7 +284,7 @@ much as you'd like!
     levelUpText.string = `Congratulations! You've built enough
 to become a ${level.name.toUpperCase()}!
 
-- ${level.villagers} new villagers have arrived!
+- ${level.villagers} new villagers would like to move in!
 - You've unlocked new buildings:
     ${level.buildings.map(a=>a.toUpperCase()).join(", ")}
 ${level.mapAreas.length>0?
