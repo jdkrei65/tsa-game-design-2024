@@ -17,11 +17,12 @@ let currentScene = undefined;
 let curScenePos = 0;
 let dlIsOpen = false;
 
-const witchImage = new gameify.Image("images/witch_portrait.png");
+const witchImage1 = new gameify.Image("images/witch_portrait.png");
 const womanImage = new gameify.Image("images/player_woman_portrait.png");
 const manImage = new gameify.Image("images/player_man_portrait.png");
-let playerImage = womanImage;
-const currentCharSprite = new gameify.Sprite(630, 445, dlBoxImage);
+let playerImage = ()=>window.DL_playerImage;
+let witchImage = ()=>witchImage1;
+const currentCharSprite = new gameify.Sprite(630, 445, womanImage);
 currentCharSprite.scale = 0.25;
 
 export const dialogue = {
@@ -34,10 +35,11 @@ export const dialogue = {
     },
     setPlayerImage: (img) => {
         if (img === 'man') {
-            playerImage = manImage;
+            window.DL_playerImage = manImage;
         } else {
-            playerImage = womanImage;
+            window.DL_playerImage = womanImage;
         }
+        currentCharSprite.setImage(playerImage);
     },
     /** Set the dialogue text
      * @param {string} text - the text
@@ -133,7 +135,8 @@ export const dialogue = {
             dlText.string = dialogue.lines[currentScene][curScenePos].text || dialogue.lines[currentScene][curScenePos];
 
             if (dialogue.lines[currentScene][curScenePos].portrait) {
-                currentCharSprite.image = dialogue.lines[currentScene][curScenePos].portrait;
+                const image = dialogue.lines[currentScene][curScenePos].portrait();
+                currentCharSprite.setImage(image);
                 currentCharSprite.draw();
             }
         }
