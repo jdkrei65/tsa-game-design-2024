@@ -39,6 +39,7 @@ import map_BorderLayer  from './mapdata/BorderLayer.tilemapdata.js';
 window.DRAW_SHAPES          = false;    // default false
 window.DISPLAY_FRAME_TIME   = false;    // default false
 window.DRAW_WORLD_BORDER    = false;    // default false
+window.AREA_UNLOCK          = false;    // default false
 // other options
 window.RESIZE_CANVAS        = 'always'; // 'always', 'stepped', or 'never'
 window.COLLISIONS_ENABLED   = true;     // default true
@@ -368,14 +369,14 @@ let lastLocation = 'plains';
 
 plainsWorldScene.onUpdate((deltaTime) => {
     lastLocation = currentLocation;
-    if (player.sprite.position.y < -1900) {
+    if (player.sprite.position.y < -1900 && !window.AREA_UNLOCK) {
         currentLocation = 'desert';
 
         if (!levelProgress.isCompleted('items', 'endless flask')) {
             player.sprite.position.y = -1900;
             dialogue.setScene('dehydration', 0, false);
         }
-    } else if (player.sprite.position.x > 3850) {
+    } else if (player.sprite.position.x > 3850 && !window.AREA_UNLOCK) {
         currentLocation = 'tundra';
 
         if (!levelProgress.isCompleted('items', 'fur coat')) {

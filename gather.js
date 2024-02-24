@@ -156,7 +156,7 @@ const gatherables = {
                 wood: 18
             }
         },
-        rock: {
+        rock_cliff: {
             collisionShape: gameify.shapes.Rectangle,
             collisionArgs: [8, 0, 48, 56],
             static: true, // can't be gathered
@@ -169,6 +169,32 @@ const gatherables = {
                 [0, 2],
             ], // position on tilemap
             resources: { /* not gatherable */ }
+        },
+        rock: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [18, 40, 30, 25],
+            sources: [
+                [0, 4],
+                [1, 4]
+            ], // position on tilemap
+            resources: {
+                stone: 18,
+                gold: 3,
+            }
+        },
+        crystal: {
+            collisionShape: gameify.shapes.Rectangle,
+            collisionArgs: [18, 40, 30, 25],
+            sources: [
+                [3, 4]
+            ],
+            resources: { gold: 12 }
+        },
+        flower: {
+            sources: [
+                [2, 4]
+            ],
+            resources: { }
         },
         cliffLeft: {
             collisionShape: gameify.shapes.Rectangle,
