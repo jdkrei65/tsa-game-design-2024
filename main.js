@@ -643,7 +643,7 @@ plainsWorldScene.onDraw(() => {
     dialogue.drawBox();
     gather.drawUI();
     build.drawUI();
-    levelProgress.drawUI();
+    levelProgress.drawUI(screen);
     message.draw();
 });
 screen.setScene(menu.createScene(screen, plainsWorldScene, player));

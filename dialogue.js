@@ -170,7 +170,7 @@ but first, we must get resources to survive by ourselves.
             {
                 text: `We must also have food and water. We don't want to starve, of course!
 
- - Build a water tank to store water
+ - Build a water tank to store/provide water
  - The forager's hut you built will provide food
  - As your village expands, you'll need to build more
 `, portrait: playerImage

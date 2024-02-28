@@ -42,6 +42,7 @@ const buildings = {
         collisionArgs: [12, 12, 40, 46],
         image: buildingMapTileset.getTile(0, 0),
         cost: { wood: 10, stone: 5 },
+        provides: { housing: 1 },
         unlocked: true,
         onPlace: (self, position) => {
             self.villager = villagers.addGenericVillager(position.multiply(buildingMap.twidth));
@@ -56,6 +57,7 @@ const buildings = {
         collisionArgs: [10, 13, 46, 46],
         image: buildingMapTileset.getTile(1, 0),
         cost: { wood: 15 },
+        provides: { housing: 1, food: 2 },
         unlocked: true,
         onPlace: (self, position) => {
             self.villager = villagers.addGenericVillager(position.multiply(buildingMap.twidth));
@@ -70,11 +72,13 @@ const buildings = {
         collisionArgs: [10, 8, 46, 46],
         image: buildingMapTileset.getTile(2, 0),
         cost: { wood: 5, stone: 5 },
+        provides: { water: 2 },
         unlocked: true,
     },
     "farm":  {
         image: buildingMapTileset.getTile(4, 0),
         cost: { wood: 5, stone: 15, gold: 5 },
+        provides: { food: 4 },
         unlocked: false,
     },
     "witch hut":  {
@@ -82,6 +86,7 @@ const buildings = {
         collisionArgs: [9, 12, 46, 50],
         image: buildingMapTileset.getTile(3, 0),
         cost: { wood: 15, stone: 5 },
+        provides: { housing: 1 },
         unlocked: false,
         beforePlace: () => {
             if (levelProgress.isCompleted('build', 'witch hut')) {
@@ -101,6 +106,7 @@ const buildings = {
         collisionArgs: [6, 8, 52, 52],
         image: buildingMapTileset.getTile(5, 0),
         cost: { wood: 20, stone: 5 },
+        provides: { food: 5 },
         unlocked: false,
     },
     "bakery":  {
@@ -215,6 +221,11 @@ const placeBuilding = (buildingName, building, position, player) => {
             }
         }
 
+        // remove provided resourcess
+        for (const res in delBuilding.provides) {
+            levelProgress.affectMeter(res, -delBuilding.provides[res]);
+        }
+
         // refund the cost of the building
         for (const res in delBuilding.cost) {
             resources[res] += delBuilding.cost[res];
@@ -278,6 +289,11 @@ const placeBuilding = (buildingName, building, position, player) => {
     // Then, actually deduct the cost
     for (const res in building.cost) {
         resources[res] -= building.cost[res];
+    }
+
+    // Add provided resources
+    for (const res in building.provides) {
+        levelProgress.affectMeter(res, building.provides[res]);
     }
 
     placeBulidingAudio.stop();
