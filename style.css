@@ -41,9 +41,10 @@ canvas {
     padding: 5px;
 
     width: 200px;
-    height: 100%;
+    height: 100vh;
 
     font-family: monospace;
+    overflow-y: hidden;
 }
 #links summary {
     opacity: 0.5;
@@ -51,6 +52,9 @@ canvas {
 }
 #links a {
     color: #88f;
+}
+#links[open] {
+    overflow-y: scroll;
 }
 #links[open]:hover {
     z-index: 9;
@@ -126,4 +130,25 @@ canvas {
     width: 100vw;
     height: 100vh;
     max-width: unset;
+}
+
+#err {
+    margin-top: 20px;
+}
+
+#err hr {
+    border: 1px solid #2a2a5b88;
+}
+
+#err span.error {
+    color: red;
+    font-weight: bold;
+}
+#err span.warn {
+    color: yellow;
+    font-weight: bold;
+}
+#err span.log {
+    color: lightblue;
+    font-weight: bold;
 }

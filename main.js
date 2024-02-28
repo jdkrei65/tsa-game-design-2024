@@ -49,21 +49,48 @@ window.PLAYER_SPEED_BONUS   = 1;        // default 1, for no bonus
 
 window.onerror = onerror = (event, source, lineno, colno, error) => {
     document.querySelector('#err').innerHTML += `
-        ERROR: ${error}
+        <span class="error">ERROR:</span> ${error}
         <br>
         AT: ${source} ${lineno}:${colno}
         <hr>
     `;
 }
+let lastLogText = null;
+let lastLogEl = undefined;
 (function (oldLog) {
     console.log = (...args) => {
+        oldLog(...args);
+        if (lastLogText === `${args}`) {
+            lastLogEl.innerHTML = (Number(lastLogEl.innerHTML) || 0)+1;
+            return;
+        }
+        const count = document.createElement('span');
+        document.querySelector('#err').appendChild(count);
+        lastLogEl = count;
         document.querySelector('#err').innerHTML += `
-            LOG: ${args}
+            <span class="log">LOG:</span> ${args}
             <hr>
         `;
-        oldLog(...args);
+        lastLogText = `${args}`;
     }
-})(console.log)
+})(console.log);
+(function (oldLog) {
+    console.warn = (...args) => {
+        oldLog(...args);
+        if (lastLogText === `${args}`) {
+            lastLogEl.innerHTML = (Number(lastLogEl.innerHTML) || 0)+1;
+            return;
+        }
+        const count = document.createElement('span');
+        document.querySelector('#err').appendChild(count);
+        lastLogEl = count;
+        document.querySelector('#err').innerHTML += `
+            <span class="warn">WARN:</span> ${args}
+            <hr>
+        `;
+        lastLogText = `${args}`;
+    }
+})(console.warn);
 
 // don't change these
 const SCREEN_WIDTH = 800;
