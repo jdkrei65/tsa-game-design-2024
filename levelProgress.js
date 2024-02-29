@@ -154,7 +154,7 @@ const levels = [{
     }]
 }, {
     name: 'Small settlement',
-    villagers: 3,
+    villagers: 4,
     buildings: ["farm", "witch hut"],
     mapAreas: [],
     requirements: [{
@@ -169,7 +169,7 @@ const levels = [{
     }]
 }, {
     name: 'Growing village',
-    villagers: 3,
+    villagers: 4,
     buildings: ["barn", "bakery"],
     mapAreas: ["desert"],
     requirements: [{
@@ -187,7 +187,7 @@ const levels = [{
     }]
 }, {
     name: 'Busy village',
-    villagers: 3,
+    villagers: 4,
     buildings: ["stable", "tailor"],
     mapAreas: ["tundra"],
     requirements: [{

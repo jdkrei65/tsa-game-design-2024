@@ -78,7 +78,7 @@ const buildings = {
     "farm":  {
         image: buildingMapTileset.getTile(4, 0),
         cost: { wood: 5, stone: 15, gold: 5 },
-        provides: { food: 4 },
+        provides: { food: 3 },
         unlocked: false,
     },
     "witch hut":  {
