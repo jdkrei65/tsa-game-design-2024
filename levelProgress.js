@@ -329,7 +329,7 @@ export const levelProgress = {
         screen.add(levelUpSprite);
         screen.add(levelUpText);
         screen.add(optionsSprite);
-        screen.audio.add(levelUpAudio);
+        screen.audio_sfx.add(levelUpAudio);
     },
     isGameComplete: () => {
         return (levels[currentLevel] === undefined);

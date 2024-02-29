@@ -6,7 +6,7 @@ const modes = {};
 
 export const manageModes = {
     setScreen: (screen) => {
-        screen.audio.add(clickAudio);
+        screen.audio_sfx.add(clickAudio);
     },
     exitAll: () => {
         for (const m in modes) {

@@ -286,7 +286,7 @@ export const gather = {
     setScreen: (screen) => {
         screen.add(gatherButton);
         screen.add(previewGatherSprite);
-        screen.audio.add(gatherAudio);
+        screen.audio_sfx.add(gatherAudio);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
     addMap: (name, map) => {

@@ -356,8 +356,8 @@ export const build = {
         screen.add(buildingMap);
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
-        screen.audio.add(clickAudio);
-        screen.audio.add(placeBulidingAudio);
+        screen.audio_sfx.add(clickAudio);
+        screen.audio_sfx.add(placeBulidingAudio);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
     },
     updateUI: (deltaTime, screen, player) => {

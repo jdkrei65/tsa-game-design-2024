@@ -98,10 +98,27 @@ const SCREEN_HEIGHT = 600;
 const canvasElement = document.querySelector('#game-canvas');
 const screen = new gameify.Screen(canvasElement, SCREEN_WIDTH, SCREEN_HEIGHT);
 screen.setAntialiasing(false);
+screen.audio_sfx = new gameify.audio.AudioManager();
+screen.audio_voices = new gameify.audio.AudioManager();
 screen.audio.setVolume(localStorage.getItem('volume') ?? .1);
-window.CHANGE_VOLUME_FUNC = (volume) => {
+screen.audio_sfx.setVolume(localStorage.getItem('volume_sfx') ?? .1);
+screen.audio_voices.setVolume(localStorage.getItem('volume_voices') ?? .1);
+
+window.CHANGE_VOLUME_MUSIC = (volume) => {
+    musicTimer = 0; // start music immediately
     localStorage.setItem('volume', Number(volume));
     screen.audio.setVolume(Number(volume));
+}
+const clickAudio = new gameify.audio.Sound('audio/sfx/hit_2.2.mp3');
+screen.audio_sfx.add(clickAudio);
+window.CHANGE_VOLUME_SFX = (volume) => {
+    localStorage.setItem('volume_sfx', Number(volume));
+    screen.audio_sfx.setVolume(Number(volume));
+    clickAudio.play();
+}
+window.CHANGE_VOLUME_VOICES = (volume) => {
+    localStorage.setItem('volume_voices', Number(volume));
+    screen.audio_voices.setVolume(Number(volume));
 }
 
 const rs = (evt) => {

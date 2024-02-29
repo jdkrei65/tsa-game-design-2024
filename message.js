@@ -23,7 +23,7 @@ export const message = {
     setScreen: (screen) => {
         screen.add(warnMessageSprite);
         screen.add(messageText);
-        screen.audio.add(messageAudio);
+        screen.audio_sfx.add(messageAudio);
     },
     showText: (text, newDuration = 2000) => {
         duration = newDuration;

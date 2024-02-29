@@ -33,11 +33,21 @@ const set_player_animations = (sheet) => {
 
 export const menu = {
     openOptions() {
-        inputbox.alert(`Select volume<br>
-            <span class="range-input"><input oninput="window.CHANGE_VOLUME_FUNC((2**(this.value-3))/6)"
+        inputbox.alert(`Music volume:<br>
+            <span class="range-input"><input oninput="window.CHANGE_VOLUME_MUSIC((2**(this.value-3))/6)"
                 value="${Math.log2(screen.audio.getVolume())+3}*6" type="range" min="0" max="5" step=".25"></span>
             <br>
-            <button onclick="window.CHANGE_VOLUME_FUNC(0)">Mute sounds</button>
+            Effects volume:<br>
+            <span class="range-input"><input oninput="window.CHANGE_VOLUME_SFX((2**(this.value-3))/6)"
+                value="${Math.log2(screen.audio_sfx.getVolume())+3}*6" type="range" min="0" max="5" step=".25"></span>
+            <br>
+            Voices volume:<br>
+            <span class="range-input"><input oninput="window.CHANGE_VOLUME_VOICES((2**(this.value-3))/6)"
+                value="${Math.log2(screen.audio_voices.getVolume())+3}*6" type="range" min="0" max="5" step=".25"></span>
+            <br>
+            <button onclick="window.CHANGE_VOLUME_MUSIC(0); window.CHANGE_VOLUME_SFX(0); window.CHANGE_VOLUME_VOICES(0)">
+                Mute sounds
+            </button>
         `);
     },
     menuAudio,
@@ -46,7 +56,7 @@ export const menu = {
         screen = _screen;
 
         const clickAudio = new gameify.audio.Sound('audio/sfx/hit_2.2.mp3');
-        screen.audio.add(clickAudio);
+        screen.audio_sfx.add(clickAudio);
 
         const menuTextStyle = new gameify.TextStyle('DefaultFont', 32, '#fff');
         const menuTextHoverStyle = new gameify.TextStyle('DefaultFont', 32, '#e3c576');
@@ -145,7 +155,7 @@ export const menu = {
         const optionsBox = new gameify.shapes.Rectangle(420, 520, 140, 45);
 
         menuAudio.setVolume(.5);
-        screen.audio.add(menuAudio);
+        screen.audio_sfx.add(menuAudio);
 
         menuScene = new gameify.Scene(screen);
         menuScene.onUpdate((deltaTime) => {
@@ -170,7 +180,6 @@ export const menu = {
             } else if (optionsBox.contains(screen.mouse.getPosition())) {
                 optionsText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
-                    console.log(screen.audio.getVolume());
                     menu.openOptions();
                     clickAudio.stop();
                     clickAudio.play();
