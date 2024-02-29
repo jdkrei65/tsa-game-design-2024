@@ -39,11 +39,12 @@ const clipboardText = new gameify.Text(
 );
 
 const levelUpImage = new gameify.Image("images/levelUpScreen.png");
+const levelUpHoverImage = new gameify.Image("images/levelUpScreen_hover.png");
 const levelUpSprite = new gameify.Sprite(0, 0, levelUpImage);
 levelUpSprite.scale = 2;
 
 const levelUpTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
-const levelUpText = new gameify.Text('You leveled up!', 200, 200, levelUpTextStyle)
+const levelUpText = new gameify.Text('You leveled up!', 225, 230, levelUpTextStyle)
 levelUpTextStyle.lineHeight = 1.5;
 
 
@@ -388,13 +389,16 @@ export const levelProgress = {
         // Yay! button on level up screen
         if (levelUpModeActive
             && mousePos.x > 290 && mousePos.y > 420
-            && mousePos.x < 473 && mousePos.y < 481
+            && mousePos.x < 505 && mousePos.y < 478
         ) {
             screen.element.style.cursor = 'pointer';
+            levelUpSprite.setImage(levelUpHoverImage);
 
             if (screen.mouse.eventJustHappened('left', /*capture=*/true)) {
                 exitLevelUpMode();
             }
+        } else if (levelUpModeActive) {
+            levelUpSprite.setImage(levelUpImage);
         }
 
         clipboardText.string = getLevelText(currentLevel);
