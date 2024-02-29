@@ -12,6 +12,9 @@ const dlText = new gameify.Text("...", 80, 435, dlTextStyle);
 dlText.style.lineHeight = 1.3;
 const dlContinueText = new gameify.Text(`[SPACE to continue]`, 80, 545, dlTextStyle);
 
+const priskaDialogueSound = new gameify.audio.Sound('audio/sfx/priska_babbling.mp3');
+priskaDialogueSound.setVolume(.25);
+
 let screen = undefined;
 let currentScene = undefined;
 let curScenePos = 0;
@@ -32,6 +35,7 @@ export const dialogue = {
         screen.add(dlText);
         screen.add(dlContinueText);
         screen.add(currentCharSprite);
+        screen.audio_voices.add(priskaDialogueSound);
     },
     setPlayerImage: (img) => {
         if (img === 'man') {
@@ -74,6 +78,7 @@ export const dialogue = {
     forceClose: () => {
         currentScene = undefined;
         dlIsOpen = false;
+        priskaDialogueSound.stop();
     },
     setScene: (line, num = 0, force = true) => {
         if (!force && dlIsOpen) {
@@ -86,6 +91,8 @@ export const dialogue = {
         dlIsOpen = true;
         currentScene = line;
         curScenePos = num;
+        priskaDialogueSound.stop();
+        priskaDialogueSound.play();
         return true;
     },
     updateBox: () => {
@@ -98,6 +105,10 @@ export const dialogue = {
                 // complete the dialogue scene if there is no next
                 levelProgress.completeGoal('dialogue', currentScene);
                 dialogue.forceClose();
+            } else {
+                console.log('playing_')
+                priskaDialogueSound.stop();
+                priskaDialogueSound.play();
             }
         } else if (dialogue.lines[currentScene] && backPressed) {
             // go back

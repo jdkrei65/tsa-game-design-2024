@@ -31,23 +31,35 @@ const set_player_animations = (sheet) => {
     player.sprite.animator.set('walk_west',  make_player_anim(sheet, 3));
 }
 
+const all_muted = () => {
+    return screen.audio.getVolume() == 0
+        && screen.audio_sfx.getVolume() == 0
+        && screen.audio.getVolume() == 0;
+}
+const get_volume = (vv) => {
+    return (screen['audio'+vv].getVolume() || localStorage.getItem('volume' + vv)) ?? .1;
+}
+
 export const menu = {
     openOptions() {
+        console.log(screen.audio_sfx.getVolume(), Math.log2(screen.audio_sfx.getVolume()*6)+3)
         inputbox.alert(`Music volume:<br>
             <span class="range-input"><input oninput="window.CHANGE_VOLUME_MUSIC((2**(this.value-3))/6)"
-                value="${Math.log2(screen.audio.getVolume())+3}*6" type="range" min="0" max="5" step=".25"></span>
+                value="${Math.log2(get_volume('')*6)+3}" type="range" min="0" max="5" step=".25"></span>
             <br>
             Effects volume:<br>
             <span class="range-input"><input oninput="window.CHANGE_VOLUME_SFX((2**(this.value-3))/6)"
-                value="${Math.log2(screen.audio_sfx.getVolume())+3}*6" type="range" min="0" max="5" step=".25"></span>
+                value="${Math.log2(get_volume('_sfx')*6)+3}" type="range" min="0" max="5" step=".25"></span>
             <br>
             Voices volume:<br>
             <span class="range-input"><input oninput="window.CHANGE_VOLUME_VOICES((2**(this.value-3))/6)"
-                value="${Math.log2(screen.audio_voices.getVolume())+3}*6" type="range" min="0" max="5" step=".25"></span>
+                value="${Math.log2(get_volume('_voices')*6)+3}" type="range" min="0" max="5" step=".25"></span>
             <br>
-            <button onclick="window.CHANGE_VOLUME_MUSIC(0); window.CHANGE_VOLUME_SFX(0); window.CHANGE_VOLUME_VOICES(0)">
+            ${all_muted() ? `<button onclick="window.UNMUTE_AUDIO();">
+                Unmute sounds
+            </button>` : `<button onclick="window.MUTE_AUDIO();">
                 Mute sounds
-            </button>
+            </button>`}
         `);
     },
     menuAudio,
@@ -155,7 +167,7 @@ export const menu = {
         const optionsBox = new gameify.shapes.Rectangle(420, 520, 140, 45);
 
         menuAudio.setVolume(.5);
-        screen.audio_sfx.add(menuAudio);
+        screen.audio.add(menuAudio);
 
         menuScene = new gameify.Scene(screen);
         menuScene.onUpdate((deltaTime) => {

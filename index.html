@@ -50,9 +50,10 @@
             <button onclick="for (const res in window.PLAYER.resources) window.PLAYER.resources[res] += 100;">Give bonus resources</button>
         </label>
         <label>
-            <button onclick="window.FWH.villagers += 1;">+ villagers</button>
-            <button onclick="window.FWH.housing += 1;">+ housing</button>
-            <button onclick="window.FWH.water += 1;">+ water</button>
+            FWH<br>
+            <button onclick="window.FWH.villagers += 1;">+ villagers</button><br>
+            <button onclick="window.FWH.housing += 1;">+ housing</button><br>
+            <button onclick="window.FWH.water += 1;">+ water</button><br>
             <button onclick="window.FWH.food += 1;">+ food</button>
         </label>
         <label>
@@ -62,11 +63,14 @@
             <button onclick="window.LOG_PLAYER_POS_FUNC();">Log player position</button>
         </label>
         <label>
+            <button onclick="window.CLEAR_AUDIO_SETTINGS();">Reset volume settings</button>
+        </label>
+        <label>
             Teleport<br>
             <button onclick="window.TP_TO(300, 200);">TP Spawn (Plains)</button><br>
             <button onclick="window.TP_TO(3926, 92);">TP Tundra</button><br>
             <button onclick="window.TP_TO(7405, -1160);">TP Tundra Mountains</button><br>
-            <button onclick="window.TP_TO(200, -1913);">TP Desert</button><br>
+            <button onclick="window.TP_TO(200, -1913);">TP Desert</button>
         </label>
 
         <code id="err"></code>

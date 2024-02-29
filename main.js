@@ -100,9 +100,25 @@ const screen = new gameify.Screen(canvasElement, SCREEN_WIDTH, SCREEN_HEIGHT);
 screen.setAntialiasing(false);
 screen.audio_sfx = new gameify.audio.AudioManager();
 screen.audio_voices = new gameify.audio.AudioManager();
-screen.audio.setVolume(localStorage.getItem('volume') ?? .1);
-screen.audio_sfx.setVolume(localStorage.getItem('volume_sfx') ?? .1);
-screen.audio_voices.setVolume(localStorage.getItem('volume_voices') ?? .1);
+
+window.MUTE_AUDIO = (skipOptions = false) => {
+    screen.audio.setVolume(0);
+    screen.audio_sfx.setVolume(0);
+    screen.audio_voices.setVolume(0);
+    if (!skipOptions) menu.openOptions();
+}
+window.UNMUTE_AUDIO = (skipOptions = false) => {
+    screen.audio.setVolume(localStorage.getItem('volume') ?? .1);
+    screen.audio_sfx.setVolume(localStorage.getItem('volume_sfx') ?? .1);
+    screen.audio_voices.setVolume(localStorage.getItem('volume_voices') ?? .1);
+    if (!skipOptions) menu.openOptions();
+}
+window.UNMUTE_AUDIO(true);
+window.CLEAR_AUDIO_SETTINGS = () => {
+    localStorage.removeItem('volume');
+    localStorage.removeItem('volume_sfx');
+    localStorage.removeItem('volume_voices');
+}
 
 window.CHANGE_VOLUME_MUSIC = (volume) => {
     musicTimer = 0; // start music immediately
@@ -152,7 +168,6 @@ window.onresize = rs; rs();
 
 // Init imported things
 dialogue.setScreen(screen);
-dialogue.setScene('tutorial');
 villagers.setScreen(screen);
 build.setScreen(screen);
 message.setScreen(screen);
@@ -399,6 +414,7 @@ screen.audio.add(tundraAudio);
 
 const plainsWorldScene = new gameify.Scene(screen);
 plainsWorldScene.onSceneShown(() => {
+    dialogue.setScene('tutorial');
     plainsAudio.play();
 })
 plainsWorldScene.onSceneHidden(() => {
