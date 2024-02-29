@@ -42,7 +42,6 @@ const get_volume = (vv) => {
 
 export const menu = {
     openOptions() {
-        console.log(screen.audio_sfx.getVolume(), Math.log2(screen.audio_sfx.getVolume()*6)+3)
         inputbox.alert(`Music volume:<br>
             <span class="range-input"><input oninput="window.CHANGE_VOLUME_MUSIC((2**(this.value-3))/6)"
                 value="${Math.log2(get_volume('')*6)+3}" type="range" min="0" max="5" step=".25"></span>
@@ -106,9 +105,6 @@ export const menu = {
             manSelText.style = menuTextStyle;
             womanSelText.style = menuTextStyle;
 
-            if (screen.mouse.eventJustHappened('left')) {
-                console.log(screen.mouse.getPosition());
-            }
             if (manBox.contains(screen.mouse.getPosition())) {
                 screen.element.style.cursor = 'pointer';
                 manSelText.style = menuTextHoverStyle;
@@ -177,9 +173,6 @@ export const menu = {
             optionsText.style = menuTextStyle;
 
             screen.element.style.cursor = 'pointer';
-            if (screen.mouse.eventJustHappened('left')) {
-                console.log(screen.mouse.getPosition());
-            }
 
             if (box.contains(screen.mouse.getPosition())) {
                 playText.style = menuTextHoverStyle;

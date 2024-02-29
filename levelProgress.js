@@ -358,9 +358,6 @@ export const levelProgress = {
     },
     updateUI: (deltaTime, screen, player) => {
         const mousePos = screen.mouse.getPosition();
-        if (screen.mouse.eventJustHappened('left')) {
-            console.log(mousePos);
-        }
         if (mousePos.x > clipboardButton.position.x
             && mousePos.y > clipboardButton.position.y
             && mousePos.x < clipboardButton.position.x + clipboardButton.getSize().x
