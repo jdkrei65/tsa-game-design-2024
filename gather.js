@@ -49,8 +49,7 @@ const gatherables = {
                 [4, 4]
             ],
             resources: {
-                wood: 6,
-                apples: 3
+                wood: 6
             }
         },
         bush: {
@@ -61,8 +60,7 @@ const gatherables = {
                 [2, 4]
             ], // position on tilemap
             resources: {
-                wood: 3,
-                apples: 2
+                wood: 3
             }
         },
         flower: {

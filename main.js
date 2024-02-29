@@ -188,7 +188,6 @@ const player = {
     resources: {
         wood: 0,
         stone: 0,
-        apples: 0,
         berries: 0,
         gold: 10
     }
