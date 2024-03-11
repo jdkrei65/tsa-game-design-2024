@@ -119,7 +119,7 @@ const gatherables = {
         },
         tree: {
             collisionShape: gameify.shapes.Rectangle,
-            collisionArgs: [15, 40, 34, 25],
+            collisionArgs: [15, 40, 30, 25],
             sources: [
                 [3, 4],
                 [4, 4],
@@ -156,7 +156,7 @@ const gatherables = {
         },
         rock_cliff: {
             collisionShape: gameify.shapes.Rectangle,
-            collisionArgs: [8, 0, 48, 56],
+            collisionArgs: [8, -12, 48, 68],
             static: true, // can't be gathered
             sources: [
                 [1, 1],
@@ -170,7 +170,7 @@ const gatherables = {
         },
         rock: {
             collisionShape: gameify.shapes.Rectangle,
-            collisionArgs: [18, 40, 30, 25],
+            collisionArgs: [18, 38, 30, 24],
             sources: [
                 [0, 4],
                 [1, 4]
@@ -196,7 +196,7 @@ const gatherables = {
         },
         cliffLeft: {
             collisionShape: gameify.shapes.Rectangle,
-            collisionArgs: [8, 8, 4, 48],
+            collisionArgs: [4, 8, 8, 48],
             static: true, // can't be gathered
             sources: [
                 [4, 2],
@@ -208,7 +208,7 @@ const gatherables = {
         },
         cliffRight: {
             collisionShape: gameify.shapes.Rectangle,
-            collisionArgs: [52, 8, 4, 48],
+            collisionArgs: [52, 8, 8, 48],
             static: true, // can't be gathered
             sources: [
                 [5, 3],

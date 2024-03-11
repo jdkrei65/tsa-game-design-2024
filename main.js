@@ -448,7 +448,11 @@ plainsWorldScene.onUpdate((deltaTime) => {
 
     if (lastLocation !== currentLocation) {
         levelProgress.completeGoal('map', currentLocation);
-        musicTimer = 500;
+        if (lastLocation !== 'plains') {
+            // only fade when going to plains
+            // not when leaving
+            musicTimer = 500;
+        }
     }
 
     // MUSIC
