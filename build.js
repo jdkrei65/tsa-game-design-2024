@@ -425,9 +425,20 @@ export const build = {
    ${cost.stone || 0} stone ${missing.includes('stone') ? '(missing)' : ''}
    ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}`;
                 if (currentBuilding === buildings.demolishBuilding) {
-                    resourceCostText.string = `Demolish buliding
+                    
+                    const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
+                    const mouseMapPosition = buildingMap.screenToMap(mouseWorldPosition);
+                    const hoveredBuilding = placedBuildings[mouseMapPosition.y]?.[mouseMapPosition.x];
+                    if (hoveredBuilding) {
+                        resourceCostText.string = `Demolish ${hoveredBuilding.name}
+   ${hoveredBuilding.cost.wood || 0} wood
+   ${hoveredBuilding.cost.stone || 0} stone
+   ${hoveredBuilding.cost.gold || 0} gold`;
+                    } else {
+                        resourceCostText.string = `Demolish building
       (refunds entire
       cost of building)`;
+                    }
                 }
             }
         } else {
