@@ -17,7 +17,7 @@ import map_PlainsObjectLayer from './mapdata/plains/PlainsObjectLayer.tilemapdat
 import map_PlainsOceanLayer  from './mapdata/plains/PlainsOceanLayer.tilemapdata.js';
 import map_PlainsPathLayer   from './mapdata/plains/PlainsPathLayer.tilemapdata.js';
 
-// TODO WITH DESERT MAP
+// TODO WITH DESERT MAP 
 // - don't allow building in the desert ( add a proper error message )
 // - make gathering work in the desert
 // - dehydration
