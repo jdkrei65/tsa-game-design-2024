@@ -144,13 +144,14 @@ const buildings = {
 }
 
 // Resource cost display
-const resourceCostImage = new gameify.Image("images/bulidCostBox.png");
+const resourceCostImage = new gameify.Image("images/buildCostBoxFWH.png");
 resourceCostImage.opacity = 0;
 const resourceCostSprite = new gameify.Sprite(68, 68, resourceCostImage);
 const resourceCostTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 resourceCostTextStyle.opacity = 0;
 resourceCostTextStyle.lineHeight = 1.25;
 const resourceCostText = new gameify.Text('Resource Cost', 58+24, 78, resourceCostTextStyle);
+const fwhBenefitText = new gameify.Text('Provides', 279, 78, resourceCostTextStyle);
 resourceCostSprite.scale = 1.5;
 const previewBuildSprite = new gameify.Sprite(0, 0, buildings["house"].image);
 previewBuildSprite.scale = 2;
@@ -303,6 +304,7 @@ const placeBuilding = (buildingName, building, position, player) => {
     placedBuildings[position.y] = placedBuildings[position.y] || [];
     placedBuildings[position.y][position.x] = {
         cost: building.cost,
+        provides: building.provides,
         name: buildingName
     };
     const tile = building.image.tileData;
@@ -356,6 +358,7 @@ export const build = {
         screen.add(buildingMap);
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
+        screen.add(fwhBenefitText);
         screen.audio_sfx.add(clickAudio);
         screen.audio_sfx.add(placeBulidingAudio);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
@@ -415,15 +418,22 @@ export const build = {
             if (currentBuilding) {
                 const opacity = Math.min(1, resourceCostText.style.opacity + deltaTime / 200);
                 resourceCostText.style.opacity = opacity;
+                fwhBenefitText.style.opacity = opacity;
                 resourceCostSprite.image.opacity = opacity;
 
                 const missing = getMissingResources(currentBuilding, player.resources);
-                const cost = currentBuilding.cost;
+                const cost = currentBuilding.cost || {};
+                const benefit = currentBuilding.provides || {};
 // Indentation matters for text strings
                 resourceCostText.string = `Build ${buildingName}:
    ${cost.wood  || 0} wood  ${missing.includes('wood') ? '(missing)' : ''}
    ${cost.stone || 0} stone ${missing.includes('stone') ? '(missing)' : ''}
    ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}`;
+
+                fwhBenefitText.string = `   Provides:
+   ${benefit.housing  || 0} housing
+   ${benefit.water || 0} water
+   ${benefit.food  || 0} food`;
                 if (currentBuilding === buildings.demolishBuilding) {
                     
                     const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
@@ -434,10 +444,19 @@ export const build = {
    ${hoveredBuilding.cost.wood || 0} wood
    ${hoveredBuilding.cost.stone || 0} stone
    ${hoveredBuilding.cost.gold || 0} gold`;
+
+                        fwhBenefitText.string = `   Removes:
+   ${hoveredBuilding.provides?.housing  || 0} housing
+   ${hoveredBuilding.provides?.water || 0} water
+   ${hoveredBuilding.provides?.food  || 0} food`;
                     } else {
                         resourceCostText.string = `Demolish building
-      (refunds entire
-      cost of building)`;
+    (refunds entire
+    cost of building)`;
+
+                        fwhBenefitText.string = `
+   (removes all
+   benefits)`;
                     }
                 }
             }
@@ -445,6 +464,7 @@ export const build = {
             // fade the box out
             const opacity = Math.max(0.01, resourceCostText.style.opacity - deltaTime / 200);
             resourceCostText.style.opacity = opacity;
+            fwhBenefitText.style.opacity = opacity;
             resourceCostSprite.image.opacity = opacity;
         }
     },
@@ -483,5 +503,6 @@ export const build = {
 
         resourceCostSprite.draw();
         resourceCostText.draw();
+        fwhBenefitText.draw();
     }
 }
