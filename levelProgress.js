@@ -69,7 +69,10 @@ const goals = {
             text: "[{x}] Build a witch hut"
         },
         "barn": { },
-        "farm": { }
+        "farm": { },
+        "stable": {
+            text: "[{x}] Build a stable"
+        }
     },
     dialogue: {
         reset: false,
@@ -101,6 +104,9 @@ const goals = {
         },
         "fur coat": {
             text: '[{x}] Obtain a coat'
+        },
+        "ride horse": {
+            text: '[{x}] Ride the ostritch'
         }
     }
 };

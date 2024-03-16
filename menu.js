@@ -9,8 +9,10 @@ let screen = undefined;
 
 let player = undefined;
 
-const womanVillagerTilesheet = new gameify.Tileset('images/woman_animated_sprite_full.png', 32, 48);
-const manVillagerTilesheet = new gameify.Tileset('images/man_animated_sprite_full.png', 32, 48);
+const womanPlayerTilesheet = new gameify.Tileset('images/woman_animated_sprite_full.png', 32, 48);
+const manPlayerTilesheet = new gameify.Tileset('images/man_animated_sprite_full.png', 32, 48);
+const horseWomanTilesheet = new gameify.Tileset('images/sheep_walking.png', 32, 48);
+const horseManTilesheet = new gameify.Tileset('images/sheep_walking.png', 32, 48);
 const make_player_anim = (sheet, row) => {
     return new gameify.Animation([
         { image: { type: 'Image', value: sheet.getTile(0, row) }, },
@@ -20,15 +22,33 @@ const make_player_anim = (sheet, row) => {
         { image: { type: 'Image', value: sheet.getTile(4, row) }, },
         { image: { type: 'Image', value: sheet.getTile(5, row) }, },
         { image: { type: 'Image', value: sheet.getTile(6, row) }, },
-        { image: { type: 'Image', value: sheet.getTile(7, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(7, row) }, }
     ], {duration: 750, loop: true})
 }
-const set_player_animations = (sheet) => {
-    player.sprite.animator.set('idle', new gameify.Animation([], {duration: 500, loop: true}));
+const make_horse_anim = (sheet, row) => {
+    return new gameify.Animation([
+        { image: { type: 'Image', value: sheet.getTile(0, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(1, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(2, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(3, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(4, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(5, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(6, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(7, row) }, }
+    ], {duration: 750, loop: true})
+}
+const set_player_animations = (sheet, horseSheet) => {
+    player.sprite.animator.set('idle',       new gameify.Animation([], {duration: 500, loop: true}));
     player.sprite.animator.set('walk_north', make_player_anim(sheet, 0));
     player.sprite.animator.set('walk_south', make_player_anim(sheet, 2));
     player.sprite.animator.set('walk_east',  make_player_anim(sheet, 1));
     player.sprite.animator.set('walk_west',  make_player_anim(sheet, 3));
+
+    player.sprite.animator.set('horse_idle',       new gameify.Animation([], {duration: 500, loop: true}));
+    player.sprite.animator.set('horse_walk_north', make_horse_anim(horseSheet, 0));
+    player.sprite.animator.set('horse_walk_south', make_horse_anim(horseSheet, 0));
+    player.sprite.animator.set('horse_walk_east',  make_horse_anim(horseSheet, 0));
+    player.sprite.animator.set('horse_walk_west',  make_horse_anim(horseSheet, 0));
 }
 
 const all_muted = () => {
@@ -110,7 +130,7 @@ export const menu = {
                 manSelText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     dialogue.setPlayerImage('man');
-                    set_player_animations(manVillagerTilesheet);
+                    set_player_animations(manPlayerTilesheet, horseManTilesheet);
                     screen.setScene(nextScene);
                     clickAudio.stop();
                     clickAudio.play();
@@ -120,7 +140,7 @@ export const menu = {
                 womanSelText.style = menuTextHoverStyle;
                 if (screen.mouse.eventJustHappened('left')) {
                     dialogue.setPlayerImage('woman');
-                    set_player_animations(womanVillagerTilesheet);
+                    set_player_animations(womanPlayerTilesheet, horseWomanTilesheet);
                     screen.setScene(nextScene);
                     clickAudio.stop();
                     clickAudio.play();

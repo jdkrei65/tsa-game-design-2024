@@ -184,6 +184,8 @@ const player = {
     direction: new gameify.Vector2d(1, 0),
     walk_speed: 90, // px per s
     sprint_speed: 150,
+    on_horse: false,
+    horse_speed: 300,
     speed: 90, // default to waking speed, this is overwritten anyway
     resources: {
         wood: 0,
@@ -513,8 +515,15 @@ plainsWorldScene.onUpdate((deltaTime) => {
         manageModes.enterMode('options');
     }
 
-    // SPRINT
-    if (screen.keyboard.keyIsPressed("Shift")) {
+    // Sprinting and the horse (ostrich)
+    if (player.on_horse) {
+        player.speed = player.horse_speed * window.PLAYER_SPEED_BONUS;
+
+        if (screen.keyboard.keyWasJustPressed('E')) {
+            player.on_horse.dismount(player.on_horse, player);
+        }
+
+    } else if (screen.keyboard.keyIsPressed("Shift")) {
         player.speed = player.sprint_speed * window.PLAYER_SPEED_BONUS;
     } else {
         player.speed = player.walk_speed * window.PLAYER_SPEED_BONUS;
@@ -571,18 +580,21 @@ plainsWorldScene.onUpdate((deltaTime) => {
         }
     }
 
+
+    const horse = player.on_horse ? 'horse_' : '';
+    
     // Stuck on an obstacle, or not moving
     if (!can_move || Math.max(Math.abs(player.sprite.velocity.y), Math.abs(player.sprite.velocity.x)) < 10) {
-        player.sprite.animator.play('idle');
+        player.sprite.animator.play(horse + 'idle');
 
     } else if (player.sprite.velocity.x > 10) {
-        player.sprite.animator.play('walk_east');
+        player.sprite.animator.play(horse + 'walk_east');
     } else if (player.sprite.velocity.x < -10){
-        player.sprite.animator.play('walk_west');
+        player.sprite.animator.play(horse + 'walk_west');
     } else if (player.sprite.velocity.y > 10) {
-        player.sprite.animator.play('walk_south');
+        player.sprite.animator.play(horse + 'walk_south');
     } else {
-        player.sprite.animator.play('walk_north');
+        player.sprite.animator.play(horse + 'walk_north');
     }
 
     for (const res in resourceIndicators) {

@@ -321,6 +321,10 @@ Oh, and can we please have a stone path? It gets muddy when it rains.`
         villager_generic5: [
             `I got dragged out here by my family, but I'm starting to enjoy this
 new little town.`
+        ],
+        horse_tutorial: [
+            `While riding the ostritch, you move twice as fast!
+Press E while riding to dismount.`
         ]
     }
 }

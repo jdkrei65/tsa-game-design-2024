@@ -3,15 +3,18 @@ import { gameify } from './gameify/gameify.js';
 import { levelProgress } from './levelProgress.js';
 
 const villagerTileset = new gameify.Tileset("images/villagers.png", 32, 48);
+const horseTileset = new gameify.Tileset("images/sheep_walking.png", 32, 28);
 const witchImage = villagerTileset.getTile(0, 0);
 const villagerManImage = new gameify.Image("images/man_villager.png");
 const villagerWomanImage = new gameify.Image("images/woman_villager.png");
 
-const popupImage = new gameify.Image('images/e_talk_popup.png');
-const popupSprite = new gameify.Sprite(0, 0, popupImage);
+const talkPopupImage = new gameify.Image('images/e_talk_popup.png');
+const ridePopupImage = new gameify.Image('images/e_ride_popup.png');
+const popupSprite = new gameify.Sprite(0, 0, talkPopupImage);
 popupSprite.scale = 2;
 
 const default_villager_speed = 15;
+const default_horse_speed = 10;
 
 const worldVillagers = [];
 
@@ -20,7 +23,7 @@ const navMaps = [];
 export const villagers = {
     addWitchVillager(home_pos) {
         const witch = {
-            id: 'witch_' + Math.floor(Math.random()*100),
+            id: 'witch_' + Math.floor(Math.random()*1000),
             name: 'Witch',
             speed: default_villager_speed,
             active: true,
@@ -70,7 +73,7 @@ export const villagers = {
     },
     addGenericVillager(home_pos) {
         const villager = {
-            id: 'villager_' + Math.floor(Math.random()*100),
+            id: 'villager_' + Math.floor(Math.random()*1000),
             name: 'Villager',
             speed: default_villager_speed,
             active: true,
@@ -92,6 +95,53 @@ export const villagers = {
         worldVillagers.push(villager);
 
         return villager;
+    },
+    addHorse(home_pos) {
+        const horse = {
+            id: 'horse_' + Math.floor(Math.random()*1000),
+            name: 'Ostritch',
+            speed: default_horse_speed,
+            active: true,
+            onInteract: (self, player) => {
+                if (!levelProgress.isCompleted('items', 'ride horse')) {
+                    // If this is the first time on the horse,
+                    // teach them how to use it
+                    if (dialogue.setScene('horse_tutorial', 0, false)) {
+                        levelProgress.completeGoal('items', 'ride horse');
+
+                        player.on_horse = self;
+                        self.active = false;
+                        console.log('mount');
+                    }
+                } else {
+                    player.on_horse = self;
+                    self.active = false;
+                    console.log('mount');
+                }
+
+                self.dismountFrames = 1;
+            },
+            dismount: (self, player) => {
+                if (self.dismountFrames > 0) {
+                    self.dismountFrames -= 1;
+                    return;
+                }
+                self.sprite.position = player.sprite.position;
+                self.active = true;
+                player.on_horse = false;
+                console.log('dismount');
+            }, 
+            homeLocation: home_pos,
+            targetedLocation: false,
+            canInteract: true,
+            closeToPlayer: false,
+            sprite: new gameify.Sprite(0, 0, horseTileset.getTile(0, 0)),
+            popupImage: ridePopupImage,
+        }
+        horse.sprite.position = home_pos.add({x: 16, y: 12});
+        worldVillagers.push(horse);
+
+        return horse;
     },
     removeVillager(villager) {
         const index = worldVillagers.indexOf(villager);
@@ -128,8 +178,14 @@ export const villagers = {
                 popupSprite.position = villager.sprite.position.copy();
                 popupSprite.position.y -= 38;
                 popupSprite.position.x -= 32;
+
+                if (villager.popupImage) {
+                    popupSprite.setImage(villager.popupImage);
+                } else {
+                    popupSprite.setImage(talkPopupImage);
+                }
     
-                if (screen.keyboard.keyWasJustPressed('E')) {
+                if (screen.keyboard.keyWasJustPressed('E', /*capture=*/true)) {
                     villager.onInteract(villager, player);
                 }
             }

@@ -121,6 +121,9 @@ const buildings = {
         collisionArgs: [6, 18, 54, 40],
         image: buildingMapTileset.getTile(1, 1),
         cost: { wood: 40, stone: 5, gold: 2 },
+        onPlace: (self, position) => {
+            self.horse = villagers.addHorse(position.multiply(buildingMap.twidth));
+        },
         unlocked: false,
     },
     "tailor":  {
