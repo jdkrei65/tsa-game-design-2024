@@ -362,6 +362,7 @@ export let gameify = {
          * }
         */
         this.eventJustHappened = (event, capture) => {
+            let found = false;
             for (const i in this.eventsJustHappened) {
                 let evt = this.eventsJustHappened[i];
                 if (evt[1] == event || evt[2] == event) {
@@ -369,10 +370,12 @@ export let gameify = {
                     if (capture) {
                         this.eventsJustHappened.splice(i, 1);
                     }
-                    return true;
+                    // don't return immediately, look through all of them
+                    // (this is so that ALL of a matching key are expired and/or captured)
+                    found = true;
                 }
             }
-            return false;
+            return found;
         }
 
         // How long before "just pressed" keys are removed from the eventsJustHappened list (in frames)
