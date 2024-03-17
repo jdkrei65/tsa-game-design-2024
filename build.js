@@ -432,7 +432,7 @@ export const build = {
                 const opacity = Math.min(1, resourceCostText.style.opacity + deltaTime / 200);
                 resourceCostText.style.opacity = opacity;
                 fwhBenefitText.style.opacity = opacity;
-                resourceCostSprite.image.opacity = opacity*0.7;
+                resourceCostSprite.image.opacity = opacity*0.8;
 
                 const missing = getMissingResources(currentBuilding, player.resources);
                 const cost = currentBuilding.cost || {};
