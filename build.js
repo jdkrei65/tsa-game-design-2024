@@ -110,6 +110,7 @@ const buildings = {
         unlocked: false,
     },
     "bakery":  {
+        description: `\nProvides +3 food per farm built`,
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [6, 18, 54, 40],
         image: buildingMapTileset.getTile(0, 1),
@@ -117,6 +118,8 @@ const buildings = {
         unlocked: false,
     },
     "stable":  {
+        description: `\nHouses a rideable Ostritch for
+faster travel.`,
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [6, 18, 54, 40],
         image: buildingMapTileset.getTile(1, 1),
@@ -148,13 +151,14 @@ const buildings = {
 
 // Resource cost display
 const resourceCostImage = new gameify.Image("images/buildCostBoxFWH.png");
+const resourceCostImageLarge = new gameify.Image("images/buildCostBoxFWH_description.png");
 resourceCostImage.opacity = 0;
 const resourceCostSprite = new gameify.Sprite(68, 68, resourceCostImage);
 const resourceCostTextStyle = new gameify.TextStyle('DefaultFont', 16, 'black');
 resourceCostTextStyle.opacity = 0;
 resourceCostTextStyle.lineHeight = 1.25;
-const resourceCostText = new gameify.Text('Resource Cost', 58+24, 78, resourceCostTextStyle);
-const fwhBenefitText = new gameify.Text('Provides', 279, 78, resourceCostTextStyle);
+const resourceCostText = new gameify.Text('Resource Cost', 58+24, 82, resourceCostTextStyle);
+const fwhBenefitText = new gameify.Text('Provides', 279, 82, resourceCostTextStyle);
 resourceCostSprite.scale = 1.5;
 const previewBuildSprite = new gameify.Sprite(0, 0, buildings["house"].image);
 previewBuildSprite.scale = 2;
@@ -419,10 +423,16 @@ export const build = {
         if (buildModeActive && currentBuilding) {
             
             if (currentBuilding) {
+                if (currentBuilding.description) {
+                    resourceCostSprite.setImage(resourceCostImageLarge);
+                } else {
+                    resourceCostSprite.setImage(resourceCostImage);
+                }
+
                 const opacity = Math.min(1, resourceCostText.style.opacity + deltaTime / 200);
                 resourceCostText.style.opacity = opacity;
                 fwhBenefitText.style.opacity = opacity;
-                resourceCostSprite.image.opacity = opacity;
+                resourceCostSprite.image.opacity = opacity*0.7;
 
                 const missing = getMissingResources(currentBuilding, player.resources);
                 const cost = currentBuilding.cost || {};
@@ -431,7 +441,8 @@ export const build = {
                 resourceCostText.string = `Build ${buildingName}:
    ${cost.wood  || 0} wood  ${missing.includes('wood') ? '(missing)' : ''}
    ${cost.stone || 0} stone ${missing.includes('stone') ? '(missing)' : ''}
-   ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}`;
+   ${cost.gold  || 0} gold  ${missing.includes('gold') ? '(missing)' : ''}
+${currentBuilding.description || ''}`;
 
                 fwhBenefitText.string = `   Provides:
    ${benefit.housing  || 0} housing
