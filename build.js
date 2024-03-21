@@ -13,8 +13,11 @@ const placeBulidingAudio = new gameify.audio.Sound('audio/sfx/building.mp3');
 
 const buildingTileset = new gameify.Tileset("images/builditembuttons.png", 32, 32);
 const buildingMapTileset = new gameify.Tileset("images/buildings_alex.png", 32, 32);
+const buildingDesertTileset = new gameify.Tileset("images/buildings_desert.png", 32, 32);
 const buildingMap = new gameify.Tilemap(64, 64);
+const buildingDesertMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingMapTileset);
+buildingDesertMap.setTileset(buildingDesertTileset);
 villagers.addNavObstacleMap(buildingMap);
 const buildButtonImages = {
     build:              buildingTileset.getTile(0, 0),
@@ -36,11 +39,23 @@ const buildButtonImages = {
 const placedBuildings = [];
 const collisionTileMaps = [];
 
+const getBuildingImage = (building, map) => {
+    switch (map) {
+        case 'desert':
+            return buildingDesertTileset.getTile(building.tilePos.x, building.tilePos.y);
+        case 'plains':
+        default:
+            return buildingMapTileset.getTile(building.tilePos.x, building.tilePos.y);
+            
+    }
+}
+
 const buildings = {
     "house":      {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [12, 12, 40, 46],
         image: buildingMapTileset.getTile(0, 0),
+        tilePos: new gameify.Vector2d(0, 0),
         cost: { wood: 10, stone: 5 },
         provides: { housing: 1 },
         unlocked: true,
@@ -56,6 +71,7 @@ const buildings = {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [10, 13, 46, 46],
         image: buildingMapTileset.getTile(1, 0),
+        tilePos: new gameify.Vector2d(1, 0),
         cost: { wood: 15 },
         provides: { housing: 1, food: 2 },
         unlocked: true,
@@ -71,12 +87,14 @@ const buildings = {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [10, 8, 46, 46],
         image: buildingMapTileset.getTile(2, 0),
+        tilePos: new gameify.Vector2d(2, 0),
         cost: { wood: 5, stone: 5 },
         provides: { water: 2 },
         unlocked: true,
     },
     "farm":  {
         image: buildingMapTileset.getTile(4, 0),
+        tilePos: new gameify.Vector2d(4, 0),
         cost: { wood: 5, stone: 15, gold: 5 },
         provides: { food: 3 },
         unlocked: false,
@@ -85,6 +103,7 @@ const buildings = {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [9, 12, 46, 50],
         image: buildingMapTileset.getTile(3, 0),
+        tilePos: new gameify.Vector2d(3, 0),
         cost: { wood: 15, stone: 5 },
         provides: { housing: 1 },
         unlocked: false,
@@ -105,6 +124,7 @@ const buildings = {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [6, 8, 52, 52],
         image: buildingMapTileset.getTile(5, 0),
+        tilePos: new gameify.Vector2d(5, 0),
         cost: { wood: 20, stone: 5 },
         provides: { food: 5 },
         unlocked: false,
@@ -114,6 +134,7 @@ const buildings = {
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [6, 18, 54, 40],
         image: buildingMapTileset.getTile(0, 1),
+        tilePos: new gameify.Vector2d(0, 1),
         cost: { wood: 15, stone: 25 },
         unlocked: false,
     },
@@ -123,6 +144,7 @@ faster travel.`,
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [6, 18, 54, 40],
         image: buildingMapTileset.getTile(1, 1),
+        tilePos: new gameify.Vector2d(1, 1),
         cost: { wood: 40, stone: 5, gold: 2 },
         onPlace: (self, position) => {
             self.horse = villagers.addHorse(position.multiply(buildingMap.twidth));
@@ -133,21 +155,33 @@ faster travel.`,
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [6, 18, 54, 40],
         image: buildingMapTileset.getTile(2, 1),
+        tilePos: new gameify.Vector2d(2, 1),
         cost: { wood: 10, stone: 10, gold: 10 },
         unlocked: false,
     },
     "__": {
         // dummy building, never unlocked
         image: buildingTileset.getTile(0, 0),
+        tilePos: new gameify.Vector2d(0, 0),
         cost: {},
         unlocked: false,
     },
     demolishBuilding: {
         image: buildingTileset.getTile(1, 3),
+        tilePos: new gameify.Vector2d(1, 3),
         cost: {},
         unlocked: true,
     }
 }
+
+
+
+buildingDesertMap.place(buildings.house.tilePos.x, buildings.house.tilePos.y, -33, -63);
+buildingDesertMap.place(buildings.house.tilePos.x, buildings.house.tilePos.y, 2, -34);
+buildingDesertMap.place(buildings['forager\'s hut'].tilePos.x, buildings['forager\'s hut'].tilePos.y, 4, -34);
+buildingDesertMap.place(buildings['water tank'].tilePos.x, buildings['water tank'].tilePos.y, 4, -35);
+
+
 
 // Resource cost display
 const resourceCostImage = new gameify.Image("images/buildCostBoxFWH.png");
@@ -160,7 +194,7 @@ resourceCostTextStyle.lineHeight = 1.25;
 const resourceCostText = new gameify.Text('Resource Cost', 58+24, 82, resourceCostTextStyle);
 const fwhBenefitText = new gameify.Text('Provides', 279, 82, resourceCostTextStyle);
 resourceCostSprite.scale = 1.5;
-const previewBuildSprite = new gameify.Sprite(0, 0, buildings["house"].image);
+const previewBuildSprite = new gameify.Sprite(0, 0, getBuildingImage(buildings["house"]));
 previewBuildSprite.scale = 2;
 
 const buildButtons = [];
@@ -314,7 +348,7 @@ const placeBuilding = (buildingName, building, position, player) => {
         provides: building.provides,
         name: buildingName
     };
-    const tile = building.image.tileData;
+    const tile = getBuildingImage(building).tileData;
 
     buildingMap.place(
         tile.position.x, tile.position.y, // source position
@@ -363,6 +397,7 @@ export const build = {
         }
         screen.add(previewBuildSprite);
         screen.add(buildingMap);
+        screen.add(buildingDesertMap);
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
         screen.add(fwhBenefitText);
@@ -404,7 +439,7 @@ export const build = {
                         clickAudio.stop();
                         clickAudio.play();
                         // Start building
-                        previewBuildSprite.image = buildings[bt].image;
+                        previewBuildSprite.image = getBuildingImage(buildings[bt]);
                         currentlyBuilding = bt;
                     }
                 }
@@ -496,6 +531,7 @@ ${currentBuilding.description || ''}`;
     },
     draw: (screen, player) => {
         buildingMap.draw();
+        buildingDesertMap.draw();
         if (currentlyBuilding && !buttonHovered) {
             previewBuildSprite.image.opacity = 0.5;
             previewBuildSprite.draw();
