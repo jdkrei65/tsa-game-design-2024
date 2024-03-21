@@ -122,6 +122,7 @@ window.CLEAR_AUDIO_SETTINGS = () => {
 
 window.CHANGE_VOLUME_MUSIC = (volume) => {
     musicTimer = 0; // start music immediately
+    console.log('MUSIC TIMER SET ', musicTimer);
     localStorage.setItem('volume', Number(volume));
     screen.audio.setVolume(Number(volume));
 }
@@ -454,6 +455,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
             // only fade when going to plains
             // not when leaving
             musicTimer = 500;
+            console.log('MUSIC TIMER SET ', musicTimer);
         }
     }
 
@@ -482,7 +484,7 @@ plainsWorldScene.onUpdate((deltaTime) => {
     if (!anyPlaying && musicTimer < 0) {
         currentAudio.play();
         musicTimer = (Math.random() * 40000) + 20000 // 20-40 s of delay
-        console.log(musicTimer);
+        console.log('MUSIC TIMER SET ', musicTimer);
     } else if (!anyPlaying) {
         musicTimer -= deltaTime;
     }
