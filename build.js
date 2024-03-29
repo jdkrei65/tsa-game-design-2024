@@ -40,6 +40,9 @@ const placedBuildings = [];
 const collisionTileMaps = [];
 
 const getBuildingImage = (building, map) => {
+    if (building === buildings.demolishBuilding) {
+        return buildButtonImages.demolishBuilding;
+    }
     switch (map) {
         case 'desert':
             return buildingDesertTileset.getTile(building.tilePos.x, building.tilePos.y);
