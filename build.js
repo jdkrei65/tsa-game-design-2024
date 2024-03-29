@@ -71,11 +71,13 @@ const buildings = {
         }
     },
     "forager's hut":  {
+        description: `\nAlso produces +2 wood and\n+2 stone per minute.`,
         collisionShape: gameify.shapes.Rectangle,
         collisionArgs: [10, 13, 46, 46],
         image: buildingMapTileset.getTile(1, 0),
         tilePos: new gameify.Vector2d(1, 0),
         cost: { wood: 15 },
+        produces: { wood: 1, stone: 1 }, // resources per tick (every 30 s)
         provides: { housing: 1, food: 2 },
         unlocked: true,
         onPlace: (self, position) => {
@@ -349,6 +351,7 @@ const placeBuilding = (buildingName, building, position, player) => {
     placedBuildings[position.y][position.x] = {
         cost: building.cost,
         provides: building.provides,
+        produces: building.produces,
         name: buildingName
     };
     const tile = getBuildingImage(building).tileData;
@@ -376,6 +379,8 @@ buildButtons['buildActive'].click = () => {
 
 let buttonHovered = false;
 let collisionShapes = undefined; // defined in setScreen (b/c that's after window.OPTION variables are set)
+const resourceTickTime = 30000; // tick resources every 30 seconds
+let currentTickTime = 0;
 
 export const build = {
     buildings,
@@ -521,6 +526,23 @@ ${currentBuilding.description || ''}`;
         }
     },
     update: (deltaTime, screen, player) => {
+        currentTickTime += deltaTime;
+        if (currentTickTime > resourceTickTime) {
+            currentTickTime = 0;
+            for (const x of placedBuildings) {
+                for (const building of x || []) {
+                    console.log('bld', building);
+                    if (building && building.produces) {
+                        for (const resource in building.produces) {
+                            console.log(resource);
+                            player.resources[resource] += building.produces[resource];
+                        }
+                        // add to player resources
+                    }
+                }
+            }
+        }
+
         if (!currentlyBuilding) return;
 
         const mouseWorldPosition = screen.camera.screenToWorld(screen.mouse.getPosition());
