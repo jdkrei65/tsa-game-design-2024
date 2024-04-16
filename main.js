@@ -389,8 +389,9 @@ signs.addSign(6*64, 1*64, `You're in the Forest!` + directionText, screen, async
     sign.text = `You're in ${name}!` + directionText;
     sign.actionText = `rename ${name}`;
 }, 'name your village');
-signs.addSign(2*64, -25*64, `^ N - Desert\n> E - Tundra\nv S - Forest`, screen);
-signs.addSign(26*64, -1*64, `You're in the Forest!\nNE - Desert\n> E - Tundra\n`, screen);
+signs.addSign(2*64, -25*64, `^ N - Desert\n> SE - Tundra\nv S - Forest`, screen);
+signs.addSign(4*64, -10*64, `You're in the Forest!\n^ N - Desert\n> SE - Tundra\n`, screen);
+signs.addSign(26*64, -1*64, `You're in the Forest!\n^ NE - Desert\n> E - Tundra\n`, screen);
 signs.addSign(56*64, 1*64, `< W - Forest\n> E - Tundra\n`, screen);
 
 

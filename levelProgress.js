@@ -195,7 +195,7 @@ const levels = [{
 }, {
     name: 'Busy village',
     villagers: 4,
-    buildings: ["stable", "tailor"],
+    buildings: ["stable", "tailor"], /* Get the stable BEFORE this, when you first visit the desert */
     mapAreas: ["tundra"],
     requirements: [{
         goal: goals.map["tundra"],

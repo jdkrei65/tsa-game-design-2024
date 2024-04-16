@@ -531,10 +531,8 @@ ${currentBuilding.description || ''}`;
             currentTickTime = 0;
             for (const x of placedBuildings) {
                 for (const building of x || []) {
-                    console.log('bld', building);
                     if (building && building.produces) {
                         for (const resource in building.produces) {
-                            console.log(resource);
                             player.resources[resource] += building.produces[resource];
                         }
                         // add to player resources
