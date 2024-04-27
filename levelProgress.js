@@ -177,7 +177,7 @@ const levels = [{
 }, {
     name: 'Growing village',
     villagers: 4,
-    buildings: ["barn", "bakery"],
+    buildings: ["barn", "stable"],
     mapAreas: ["desert"],
     requirements: [{
         goal: goals.map["desert"],
@@ -195,7 +195,7 @@ const levels = [{
 }, {
     name: 'Busy village',
     villagers: 4,
-    buildings: ["stable", "tailor"], /* Get the stable BEFORE this, when you first visit the desert */
+    buildings: ["bakery", "tailor"],
     mapAreas: ["tundra"],
     requirements: [{
         goal: goals.map["tundra"],

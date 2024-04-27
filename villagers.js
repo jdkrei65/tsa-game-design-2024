@@ -3,7 +3,7 @@ import { gameify } from './gameify/gameify.js';
 import { levelProgress } from './levelProgress.js';
 
 const villagerTileset = new gameify.Tileset("images/villagers.png", 32, 48);
-const horseTileset = new gameify.Tileset("images/sheep_walking.png", 32, 28);
+const horseTileset = new gameify.Tileset("images/Ostrich_walking_LR2.png", 64, 48);
 const witchImage = villagerTileset.getTile(0, 0);
 const villagerManImage = new gameify.Image("images/man_villager.png");
 const villagerWomanImage = new gameify.Image("images/woman_villager.png");

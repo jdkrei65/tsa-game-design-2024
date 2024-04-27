@@ -186,7 +186,7 @@ const player = {
     walk_speed: 90, // px per s
     sprint_speed: 150,
     on_horse: false,
-    horse_speed: 300,
+    horse_speed: 280,
     speed: 90, // default to waking speed, this is overwritten anyway
     resources: {
         wood: 0,

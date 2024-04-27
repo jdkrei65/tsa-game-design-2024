@@ -11,8 +11,8 @@ let player = undefined;
 
 const womanPlayerTilesheet = new gameify.Tileset('images/woman_animated_sprite_full.png', 32, 48);
 const manPlayerTilesheet = new gameify.Tileset('images/man_animated_sprite_full.png', 32, 48);
-const horseWomanTilesheet = new gameify.Tileset('images/sheep_walking.png', 32, 48);
-const horseManTilesheet = new gameify.Tileset('images/sheep_walking.png', 32, 48);
+const horseWomanTilesheet = new gameify.Tileset("images/Ostrich_walking_LR2.png", 64, 48);
+const horseManTilesheet = new gameify.Tileset("images/Ostrich_walking_LR2.png", 64, 48);
 const make_player_anim = (sheet, row) => {
     return new gameify.Animation([
         { image: { type: 'Image', value: sheet.getTile(0, row) }, },
@@ -27,15 +27,15 @@ const make_player_anim = (sheet, row) => {
 }
 const make_horse_anim = (sheet, row) => {
     return new gameify.Animation([
-        { image: { type: 'Image', value: sheet.getTile(0, row) }, },
         { image: { type: 'Image', value: sheet.getTile(1, row) }, },
         { image: { type: 'Image', value: sheet.getTile(2, row) }, },
         { image: { type: 'Image', value: sheet.getTile(3, row) }, },
         { image: { type: 'Image', value: sheet.getTile(4, row) }, },
         { image: { type: 'Image', value: sheet.getTile(5, row) }, },
         { image: { type: 'Image', value: sheet.getTile(6, row) }, },
-        { image: { type: 'Image', value: sheet.getTile(7, row) }, }
-    ], {duration: 750, loop: true})
+        { image: { type: 'Image', value: sheet.getTile(7, row) }, },
+        { image: { type: 'Image', value: sheet.getTile(8, row) }, }
+    ], {duration: 650, loop: true})
 }
 const set_player_animations = (sheet, horseSheet) => {
     player.sprite.animator.set('idle',       new gameify.Animation([], {duration: 500, loop: true}));
@@ -48,7 +48,7 @@ const set_player_animations = (sheet, horseSheet) => {
     player.sprite.animator.set('horse_walk_north', make_horse_anim(horseSheet, 0));
     player.sprite.animator.set('horse_walk_south', make_horse_anim(horseSheet, 0));
     player.sprite.animator.set('horse_walk_east',  make_horse_anim(horseSheet, 0));
-    player.sprite.animator.set('horse_walk_west',  make_horse_anim(horseSheet, 0));
+    player.sprite.animator.set('horse_walk_west',  make_horse_anim(horseSheet, 1));
 }
 
 const all_muted = () => {
