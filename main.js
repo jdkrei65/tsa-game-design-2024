@@ -183,6 +183,7 @@ const womanVillagerTilesheet = new gameify.Tileset('images/woman_animated_sprite
 const player = {
     sprite: new gameify.Sprite(300, 200, womanVillagerTilesheet.getTile(0, 3)),
     direction: new gameify.Vector2d(1, 0),
+    location: 'plains',
     walk_speed: 90, // px per s
     sprint_speed: 150,
     on_horse: false,
@@ -427,31 +428,30 @@ let musicTimer = 30000;
 
 console.log(plainsAudio, (t)=>musicTimer=t);
 
-let currentLocation = 'plains';
 let lastLocation = 'plains';
 
 plainsWorldScene.onUpdate((deltaTime) => {
-    lastLocation = currentLocation;
-    if (player.sprite.position.y < -1900 && !window.AREA_UNLOCK) {
-        currentLocation = 'desert';
+    lastLocation = player.location;
+    if (player.sprite.position.y < -1900 ) {
+        player.location = 'desert';
 
-        if (!levelProgress.isCompleted('items', 'endless flask')) {
+        if (!window.AREA_UNLOCK && !levelProgress.isCompleted('items', 'endless flask')) {
             player.sprite.position.y = -1900;
             dialogue.setScene('dehydration', 0, false);
         }
-    } else if (player.sprite.position.x > 3850 && !window.AREA_UNLOCK) {
-        currentLocation = 'tundra';
+    } else if (player.sprite.position.x > 3850) {
+        player.location = 'tundra';
 
-        if (!levelProgress.isCompleted('items', 'fur coat')) {
+        if (!window.AREA_UNLOCK && !levelProgress.isCompleted('items', 'fur coat')) {
             player.sprite.position.x = 3850;
             dialogue.setScene('hypothermia', 0, false);
         }
     } else {
-        currentLocation = 'plains';
+        player.location = 'plains';
     }
 
-    if (lastLocation !== currentLocation) {
-        levelProgress.completeGoal('map', currentLocation);
+    if (lastLocation !== player.location) {
+        levelProgress.completeGoal('map', player.location);
         if (lastLocation !== 'plains') {
             // only fade when going to plains
             // not when leaving
@@ -472,9 +472,9 @@ plainsWorldScene.onUpdate((deltaTime) => {
                     || plainsAudio3.isPlaying();
 
     let currentAudio = plainsAudio;
-    if (currentLocation == 'desert') {
+    if (player.location == 'desert') {
         currentAudio = desertAudio;
-    } else  if (currentLocation == 'tundra') {
+    } else  if (player.location == 'tundra') {
         currentAudio = tundraAudio;
     } else if (Math.random() > .4) {
         currentAudio = plainsAudio2;

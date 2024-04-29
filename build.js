@@ -16,7 +16,9 @@ const buildingMapTileset = new gameify.Tileset("images/buildings_alex.png", 32, 
 const buildingDesertTileset = new gameify.Tileset("images/buildings_desert.png", 32, 32);
 const buildingMap = new gameify.Tilemap(64, 64);
 const buildingDesertMap = new gameify.Tilemap(64, 64);
+const world_buildingDesertMap = new gameify.Tilemap(64, 64);
 buildingMap.setTileset(buildingMapTileset);
+world_buildingDesertMap.setTileset(buildingDesertTileset);
 buildingDesertMap.setTileset(buildingDesertTileset);
 villagers.addNavObstacleMap(buildingMap);
 const buildButtonImages = {
@@ -181,11 +183,37 @@ faster travel.`,
 
 
 
-buildingDesertMap.place(buildings.house.tilePos.x, buildings.house.tilePos.y, -33, -63);
-buildingDesertMap.place(buildings.house.tilePos.x, buildings.house.tilePos.y, 2, -34);
-buildingDesertMap.place(buildings['forager\'s hut'].tilePos.x, buildings['forager\'s hut'].tilePos.y, 4, -34);
-buildingDesertMap.place(buildings['water tank'].tilePos.x, buildings['water tank'].tilePos.y, 4, -35);
+world_buildingDesertMap.place(buildings.house.tilePos.x, buildings.house.tilePos.y, -33, -63);
+world_buildingDesertMap.place(buildings.house.tilePos.x, buildings.house.tilePos.y, 2, -34);
+world_buildingDesertMap.place(buildings['forager\'s hut'].tilePos.x, buildings['forager\'s hut'].tilePos.y, 4, -34);
+world_buildingDesertMap.place(buildings['water tank'].tilePos.x, buildings['water tank'].tilePos.y, 4, -35);
+world_buildingDesertMap.place(buildings['water tank'].tilePos.x, buildings['water tank'].tilePos.y, 4, -35);
+world_buildingDesertMap.place(buildings['witch hut'].tilePos.x, buildings['witch hut'].tilePos.y, 3, -37);
+world_buildingDesertMap.place(buildings['stable'].tilePos.x, buildings['stable'].tilePos.y, 1, -37);
+buildings.stable.onPlace({
+    cost: {},
+    provides: {},
+    produces: {},
+    name: 'stable'
+}, new gameify.Vector2d(1, -37));
+const addDesertColShapes = () => world_buildingDesertMap.listTiles().forEach(tile => {
+    for (const bName in buildings) {
+        const building = buildings[bName];
+        // toString b/c vector comparisons are weird.
+        if (building.tilePos.toString() === tile.source.toString()) {
 
+            console.log(building, tile);
+            if (building.collisionShape) {
+                let newShape = new building.collisionShape(...building.collisionArgs);
+                newShape.position.x += tile.position.x * buildingMap.twidth;
+                newShape.position.y += tile.position.y * buildingMap.twidth;
+        
+                collisionShapes.addItem(tile.position.multiply(buildingMap.twidth), newShape);
+            }
+        }
+    }
+    return;
+})
 
 
 // Resource cost display
@@ -286,6 +314,7 @@ const placeBuilding = (buildingName, building, position, player) => {
 
         placedBuildings[position.y][position.x] = undefined;
         buildingMap.remove(position.x, position.y);
+        buildingDesertMap.remove(position.x, position.y);
         collisionShapes.removeItem(position.multiply(buildingMap.twidth));
         return;
     }
@@ -356,12 +385,23 @@ const placeBuilding = (buildingName, building, position, player) => {
     };
     const tile = getBuildingImage(building).tileData;
 
-    buildingMap.place(
-        tile.position.x, tile.position.y, // source position
-        position.x, position.y, // destination position
-        0, // rotation
-        tile.size.x, tile.size.y // size (how many tiles tall/wide)
-    );
+    console.log(player.location);
+    if (player.location === 'desert') {
+        buildingDesertMap.place(
+            tile.position.x, tile.position.y, // source position
+            position.x, position.y, // destination position
+            0, // rotation
+            tile.size.x, tile.size.y // size (how many tiles tall/wide)
+        );
+    } else {
+        buildingMap.place(
+            tile.position.x, tile.position.y, // source position
+            position.x, position.y, // destination position
+            0, // rotation
+            tile.size.x, tile.size.y // size (how many tiles tall/wide)
+        );
+
+    }
 
     // call the onPlace function
     if (building.onPlace) building.onPlace(placedBuildings[position.y][position.x], position);
@@ -405,6 +445,7 @@ export const build = {
         }
         screen.add(previewBuildSprite);
         screen.add(buildingMap);
+        screen.add(world_buildingDesertMap);
         screen.add(buildingDesertMap);
         screen.add(resourceCostSprite);
         screen.add(resourceCostText);
@@ -412,6 +453,7 @@ export const build = {
         screen.audio_sfx.add(clickAudio);
         screen.audio_sfx.add(placeBulidingAudio);
         collisionShapes = new StaticSpacialHashArray(window.SPACIAL_HASH_SIZE);
+        addDesertColShapes();
     },
     updateUI: (deltaTime, screen, player) => {
         buttonHovered = false;
@@ -554,6 +596,7 @@ ${currentBuilding.description || ''}`;
     },
     draw: (screen, player) => {
         buildingMap.draw();
+        world_buildingDesertMap.draw();
         buildingDesertMap.draw();
         if (currentlyBuilding && !buttonHovered) {
             previewBuildSprite.image.opacity = 0.5;
@@ -579,3 +622,5 @@ ${currentBuilding.description || ''}`;
         fwhBenefitText.draw();
     }
 }
+
+build.addBuildObstacleMap(world_buildingDesertMap);
