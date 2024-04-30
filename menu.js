@@ -239,7 +239,7 @@ export const menu = {
             }
         });
         menuScene.onDraw(() => {
-            screen.clear('#efe');
+            screen.clear('#38332f');
             bgSprite.draw();
             if (gameify.Image.allImagesLoaded()) {
                 playText.draw();
