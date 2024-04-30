@@ -61,6 +61,8 @@ const get_volume = (vv) => {
     return (screen['audio'+vv].getVolume() || localStorage.getItem('volume' + vv)) ?? .1;
 }
 
+let loadingFlashTimer = 0;
+
 export const menu = {
     openOptions() {
         inputbox.alert(`Music volume:<br>
@@ -83,7 +85,7 @@ export const menu = {
         `);
     },
     menuAudio,
-    createScene(_screen, nextScene, _player) {
+    createScene(_screen, nextScene, _player, loaded) {
         player = _player
         screen = _screen;
 
@@ -169,6 +171,11 @@ export const menu = {
         bgSprite.scale = 0.3;
         screen.add(bgSprite);
 
+        const loadingText = new gameify.Text(
+            'Loading...\nPlease Wait',
+            400, 470, menuTextStyle
+        );
+        screen.add(loadingText);
         const playText = new gameify.Text(
             'Play',
             430, 470, menuTextStyle
@@ -195,31 +202,51 @@ export const menu = {
 
             screen.element.style.cursor = 'pointer';
 
-            if (box.contains(screen.mouse.getPosition())) {
-                playText.style = menuTextHoverStyle;
-                if (screen.mouse.eventJustHappened('left')) {
-                    screen.setScene(charSelectScene);
-                    clickAudio.stop();
-                    clickAudio.play();
-                }
 
-            } else if (optionsBox.contains(screen.mouse.getPosition())) {
-                optionsText.style = menuTextHoverStyle;
-                if (screen.mouse.eventJustHappened('left')) {
-                    menu.openOptions();
-                    clickAudio.stop();
-                    clickAudio.play();
-                }
+            // only play if everything is loaded
+            if (gameify.Image.allImagesLoaded()) {
+                if (box.contains(screen.mouse.getPosition())) {
+                    playText.style = menuTextHoverStyle;
+                    if (screen.mouse.eventJustHappened('left')) {
+                        screen.setScene(charSelectScene);
+                        clickAudio.stop();
+                        clickAudio.play();
+                    }
 
+                } else if (optionsBox.contains(screen.mouse.getPosition())) {
+                    optionsText.style = menuTextHoverStyle;
+                    if (screen.mouse.eventJustHappened('left')) {
+                        menu.openOptions();
+                        clickAudio.stop();
+                        clickAudio.play();
+                    }
+
+                } else {
+                    screen.element.style.cursor = '';
+                }
             } else {
-                screen.element.style.cursor = '';
+                loadingText.string = 'Loading...\n' + gameify.Image.progress();
+                loadingFlashTimer += deltaTime;
+
+                if (loadingFlashTimer > 750*2) {
+                    loadingFlashTimer = 0;
+                }
+                if (loadingFlashTimer > 750) {
+                    loadingText.style = menuTextHoverStyle;
+                } else {
+                    loadingText.style = menuTextStyle;
+                }
             }
         });
         menuScene.onDraw(() => {
             screen.clear('#efe');
             bgSprite.draw();
-            playText.draw();
-            optionsText.draw();
+            if (gameify.Image.allImagesLoaded()) {
+                playText.draw();
+                optionsText.draw();
+            } else {
+                loadingText.draw();
+            }
             if (window.DRAW_SHAPES) {
                 box.draw(screen.context);
                 optionsBox.draw(screen.context);

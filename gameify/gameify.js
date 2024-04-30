@@ -752,7 +752,9 @@ export let gameify = {
             this.texture.onerror = () => {
                 throw new Error(`Your image "${this.#pathName}" couldn't be loaded. Check the path, and make sure you don't have any typos.`);
             }
+            gameify.Image.addWait();
             this.texture.onload = () => {
+                gameify.Image.removeWait();
                 console.info(`Loaded image "${this.#pathName}"`)
                 this.loaded = true;
     

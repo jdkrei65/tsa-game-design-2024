@@ -1,4 +1,9 @@
 
+let total = 0;
+let waiting = 0;
+let allDone = false;
+let doneFunc = () => {};
+
 /** Image class for use in gameify. Usually you'll access this through the gameify object.
  * @example // Use images via gameify
  * // This is the most common way
@@ -16,10 +21,30 @@ export let images = {
      * @arg {String} [path] - The image filepath. (Can also be a dataURI). If not specified, the image is created with no texture
     */
     Image: class {
+        static onAllDone = (func) => {
+            doneFunc = func;
+        };
+        static allImagesLoaded = () => { return allDone }
+        static progress = () => { return (total-waiting) + '/' + total; }
+        static addWait = () => { total += 1; waiting += 1; }
+        static removeWait = () => {
+            waiting -= 1;
+            if (waiting === 0) {
+                window.setTimeout(() => {
+                    if (waiting !== 0) console.log('FAILED DONE');
+                    allDone = true;
+                    doneFunc();
+                }, 1000);
+            }
+        }
+
         constructor(path) {
             this.path = path || "";
 
+
             if (path !== undefined) {
+                images.Image.addWait();
+
                 this.texture = document.createElement("img");
                 this.texture.src = path;
                 let pathName = path;
@@ -32,6 +57,8 @@ export let images = {
                 this.texture.onload = () => {
                     console.info(`Loaded image "${pathName}"`)
                     this.loaded = true;
+
+                    images.Image.removeWait();
         
                     // don't reset the crop if it was already specified.
                     if (!this.cropData.width) this.cropData.width = this.texture.width;
