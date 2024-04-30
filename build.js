@@ -202,7 +202,6 @@ const addDesertColShapes = () => world_buildingDesertMap.listTiles().forEach(til
         // toString b/c vector comparisons are weird.
         if (building.tilePos.toString() === tile.source.toString()) {
 
-            console.log(building, tile);
             if (building.collisionShape) {
                 let newShape = new building.collisionShape(...building.collisionArgs);
                 newShape.position.x += tile.position.x * buildingMap.twidth;
