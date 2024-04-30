@@ -13,6 +13,7 @@ const womanPlayerTilesheet = new gameify.Tileset('images/woman_animated_sprite_f
 const manPlayerTilesheet = new gameify.Tileset('images/man_animated_sprite_full.png', 32, 48);
 const horseTilesheet = new gameify.Tileset("images/Ostrich_walking_LR2.png", 64, 48);
 const horseForwardsTilesheet = new gameify.Tileset("images/Ostrich_walking_F.png", 64, 48);
+const horseBackwardsTilesheet = new gameify.Tileset("images/Ostrich_walking_N.png", 64, 48);
 const make_player_anim = (sheet, row) => {
     return new gameify.Animation([
         { image: { type: 'Image', value: sheet.getTile(0, row) }, },
@@ -45,7 +46,7 @@ const set_player_animations = (sheet) => {
     player.sprite.animator.set('walk_west',  make_player_anim(sheet, 3));
 
     player.sprite.animator.set('horse_idle',       new gameify.Animation([], {duration: 500, loop: true}));
-    player.sprite.animator.set('horse_walk_north', make_horse_anim(horseTilesheet, 0));
+    player.sprite.animator.set('horse_walk_north', make_horse_anim(horseBackwardsTilesheet, 0));
     player.sprite.animator.set('horse_walk_south', make_horse_anim(horseForwardsTilesheet, 0));
     player.sprite.animator.set('horse_walk_east',  make_horse_anim(horseTilesheet, 0));
     player.sprite.animator.set('horse_walk_west',  make_horse_anim(horseTilesheet, 1));

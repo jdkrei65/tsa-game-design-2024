@@ -4,6 +4,12 @@ import { levelProgress } from './levelProgress.js';
 
 const villagerTileset = new gameify.Tileset("images/villagers.png", 32, 48);
 const horseTileset = new gameify.Tileset("images/Ostrich_walking_LR2.png", 64, 48);
+const foxTileset = new gameify.Tileset("images/fox_anim.png", 48, 50);
+const foxRightTileset = new gameify.Tileset("images/fox_anim_right.png", 48, 50);
+const boarTileset = new gameify.Tileset("images/boar_anim.png", 48, 50);
+const boarRightTileset = new gameify.Tileset("images/boar_anim_right.png", 48, 50);
+const sheepTileset = new gameify.Tileset("images/sheep_walking.png", 32, 28);
+const sheepRightTileset = new gameify.Tileset("images/sheep_walking_right.png", 32, 28);
 const witchImage = villagerTileset.getTile(0, 0);
 const villagerManImage = new gameify.Image("images/man_villager.png");
 const villagerWomanImage = new gameify.Image("images/woman_villager.png");
@@ -14,6 +20,7 @@ const popupSprite = new gameify.Sprite(0, 0, talkPopupImage);
 popupSprite.scale = 2;
 
 const default_villager_speed = 15;
+const default_animal_speed = 45;
 const default_horse_speed = 10;
 
 const worldVillagers = [];
@@ -90,6 +97,102 @@ export const villagers = {
             canInteract: (Math.random()*4 > 3) ? true : false,
             closeToPlayer: false,
             sprite: new gameify.Sprite(0, 0, (Math.random()*2 > 1) ? villagerManImage : villagerWomanImage)
+        }
+        villager.sprite.position = home_pos.add({x: 16, y: 12});
+        worldVillagers.push(villager);
+
+        return villager;
+    },
+    addWildlife(home_pos, type) {
+        if (!type) {
+            const n = Math.random()*3
+            if (n < 1) type = 'Fox';
+            else if (n < 2) type = 'Boar';
+            else type = 'Sheep';
+        }
+        const villager = {
+            id: 'wildlife_' + Math.floor(Math.random()*1000),
+            name: type,
+            speed: default_animal_speed,
+            active: true,
+            dialogueNumber: Math.ceil(Math.random()*5),
+            onInteract: (self, player) => { },
+            homeLocation: home_pos,
+            targetedLocation: false,
+            // 1/4 villagers can be talked to
+            canInteract: false,
+            closeToPlayer: false,
+            sprite: new gameify.Sprite(0, 0, foxTileset.getTile(0, 0)),
+            isAnimated: true,
+            wanderDistance: 5000,
+            wanderChance: 10,
+        }
+        if (type == 'Fox') {
+            villager.sprite.animator.set('idle', new gameify.Animation([
+                { image: { type: 'Image', value: foxTileset.getTile(0, 0) }, }
+            ], {duration: 100, loop: true}))
+            villager.sprite.animator.set('move', new gameify.Animation([
+                { image: { type: 'Image', value: foxTileset.getTile(0, 0) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(1, 0) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(2, 0) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(0, 1) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(1, 1) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(2, 1) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(0, 2) }, },
+                { image: { type: 'Image', value: foxTileset.getTile(1, 2) }, }
+            ], {duration: 880, loop: true}))
+            villager.sprite.animator.set('move_right', new gameify.Animation([
+                { image: { type: 'Image', value: foxRightTileset.getTile(0, 0) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(1, 0) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(2, 0) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(0, 1) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(1, 1) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(2, 1) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(0, 2) }, },
+                { image: { type: 'Image', value: foxRightTileset.getTile(1, 2) }, }
+            ], {duration: 880, loop: true}))
+
+        } else if (type == 'Sheep') {
+            villager.sprite.animator.set('idle', new gameify.Animation([
+                { image: { type: 'Image', value: sheepTileset.getTile(0, 0) }, }
+            ], {duration: 100, loop: true}))
+            villager.sprite.animator.set('move', new gameify.Animation([
+                { image: { type: 'Image', value: sheepTileset.getTile(0, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(1, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(2, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(3, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(4, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(5, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(6, 0) }, },
+                { image: { type: 'Image', value: sheepTileset.getTile(7, 0) }, },
+            ], {duration: 770, loop: true}))
+            villager.sprite.animator.set('move_right', new gameify.Animation([
+                { image: { type: 'Image', value: sheepRightTileset.getTile(0, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(1, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(2, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(3, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(4, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(5, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(6, 0) }, },
+                { image: { type: 'Image', value: sheepRightTileset.getTile(7, 0) }, },
+            ], {duration: 770, loop: true}))
+            
+        } else /*if (type == 'Boar')*/ {
+            villager.sprite.animator.set('idle', new gameify.Animation([
+                { image: { type: 'Image', value: boarTileset.getTile(0, 0) }, }
+            ], {duration: 100, loop: true}))
+            villager.sprite.animator.set('move', new gameify.Animation([
+                { image: { type: 'Image', value: boarTileset.getTile(0, 0) }, },
+                { image: { type: 'Image', value: boarTileset.getTile(1, 0) }, },
+                { image: { type: 'Image', value: boarTileset.getTile(0, 1) }, },
+                { image: { type: 'Image', value: boarTileset.getTile(1, 1) }, }
+            ], {duration: 440, loop: true}))
+            villager.sprite.animator.set('move_right', new gameify.Animation([
+                { image: { type: 'Image', value: boarRightTileset.getTile(0, 0) }, },
+                { image: { type: 'Image', value: boarRightTileset.getTile(1, 0) }, },
+                { image: { type: 'Image', value: boarRightTileset.getTile(0, 1) }, },
+                { image: { type: 'Image', value: boarRightTileset.getTile(1, 1) }, }
+            ], {duration: 440, loop: true}))
         }
         villager.sprite.position = home_pos.add({x: 16, y: 12});
         worldVillagers.push(villager);
@@ -190,11 +293,12 @@ export const villagers = {
                 }
             }
 
+            const maxWanderDistance = villager.wanderDistance || 256; // tiles
             if (!villager.targetedLocation) {
                 villager.targetedLocation = navMaps[0].screenToMap(villager.sprite.position)
                                                       .multiply(navMaps[0].twidth)
                                                       .add({x: 16, y: 12});
-                const dir = Math.floor(Math.random() * (/*max=*/500 + 1)); // 4/100 chance to move
+                const dir = Math.floor(Math.random() * (/*max=*/(villager.wanderChance || 500) + 1)); // 4/500 chance to move
                 if (dir === 0) {
                     villager.targetedLocation.y -= 64;
                 } else if (dir === 1) {
@@ -206,7 +310,7 @@ export const villagers = {
                 }
 
                 let problem = false;
-                if (villager.targetedLocation.distanceTo(villager.homeLocation) > 256) {
+                if (villager.targetedLocation.distanceTo(villager.homeLocation) > maxWanderDistance) {
                     problem = true;
                 } else if (villager.targetedLocation.distanceTo(villager.homeLocation) > 192 && Math.random()*4 > 1) {
                     problem = true;
@@ -227,12 +331,17 @@ export const villagers = {
                 // Don't move when close to the player
                 villager.sprite.velocity.x = 0;
                 villager.sprite.velocity.y = 0;
-                if (villager.targetedLocation.x > villager.sprite.position.x) {
+
+                if (Math.abs(villager.targetedLocation.x - villager.sprite.position.x) < 1) {
+                    villager.sprite.velocity.x = 0
+                } else if (villager.targetedLocation.x > villager.sprite.position.x) {
                     villager.sprite.velocity.x = 1
                 } else if (villager.targetedLocation.x < villager.sprite.position.x) {
                     villager.sprite.velocity.x = -1
                 }
-                if (villager.targetedLocation.y > villager.sprite.position.y) {
+                if (Math.abs(villager.targetedLocation.y - villager.sprite.position.y) < 1) {
+                    villager.sprite.velocity.y = 0
+                } else if (villager.targetedLocation.y > villager.sprite.position.y) {
                     villager.sprite.velocity.y = 1
                 } else if (villager.targetedLocation.y < villager.sprite.position.y) {
                     villager.sprite.velocity.y = -1
@@ -243,6 +352,16 @@ export const villagers = {
                 villager.sprite.update(deltaTime);
             } else {
                 villager.targetedLocation = false;
+            }
+
+            if (villager.isAnimated) {
+                if (villager.sprite.velocity.x > 1 || villager.sprite.velocity.y > 1) { // moving right/up
+                    villager.sprite.animator.play('move_right');
+                } else if (villager.sprite.velocity.x < 1 || villager.sprite.velocity.y < 1) { // moving down/left
+                    villager.sprite.animator.play('move');
+                } else {
+                    villager.sprite.animator.play('idle');
+                }
             }
         }
 
@@ -258,3 +377,19 @@ export const villagers = {
         }
     }    
 }
+
+
+villagers.addWildlife(new gameify.Vector2d(-1*64, -1*64));
+villagers.addWildlife(new gameify.Vector2d(-10*64, 4*64));
+villagers.addWildlife(new gameify.Vector2d(-19*64, 6*64));
+villagers.addWildlife(new gameify.Vector2d(-29*64, 1*64));
+villagers.addWildlife(new gameify.Vector2d(-26*64, -15*64));
+villagers.addWildlife(new gameify.Vector2d(-7*64, -15*64));
+villagers.addWildlife(new gameify.Vector2d(1*64, -8*64));
+villagers.addWildlife(new gameify.Vector2d(19*64, -10*64));
+villagers.addWildlife(new gameify.Vector2d(28*64, 8*64));
+villagers.addWildlife(new gameify.Vector2d(22*64, 20*64));
+villagers.addWildlife(new gameify.Vector2d(13*64, 20*64));
+villagers.addWildlife(new gameify.Vector2d(38*64, -8*64));
+villagers.addWildlife(new gameify.Vector2d(37*64, -13*64));
+villagers.addWildlife(new gameify.Vector2d(6*64, -23*64));
